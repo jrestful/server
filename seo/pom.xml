@@ -20,6 +20,14 @@
   <artifactId>seo</artifactId>
   <packaging>jar</packaging>
 
+  <developers>
+    <developer>
+      <id>chma</id>
+      <name>Christophe Maillard</name>
+      <email>christophe.maillard@rocketmail.com</email>
+    </developer>
+  </developers>
+
   <dependencies>
   
     <!-- jrestful -->
