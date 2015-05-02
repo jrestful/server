@@ -1,0 +1,114 @@
+package org.jrestful.web.util;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.jrestful.util.DateUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+
+public class Prerenderer {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Prerenderer.class);
+
+  private static final int ONE_DAY = 1;
+
+  private static final int TWO_SECONDS = 2;
+
+  private static final int TEN_SECONDS = 10;
+
+  private static final int IN_MILLIS = 1000;
+
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
+
+  private final File prerenderedDir;
+
+  public Prerenderer(File prerenderedDir) {
+    this.prerenderedDir = prerenderedDir;
+  }
+
+  public void prerender(String baseUrl, String prerenderUri, HttpServletResponse response) throws Exception {
+    synchronized (Prerenderer.class) {
+      File prerenderedFile = new File(prerenderedDir, toFilename(prerenderUri));
+      byte[] htmlBytes;
+      if (isUpToDate(prerenderedFile)) {
+        htmlBytes = Files.toByteArray(prerenderedFile);
+        LOGGER.debug("URL " + baseUrl + prerenderUri + " formerly fetched, returning " + prerenderedFile);
+      } else {
+        htmlBytes = fetch(baseUrl + prerenderUri).getBytes(UTF_8);
+        Files.write(htmlBytes, prerenderedFile);
+        LOGGER.debug("URL " + baseUrl + prerenderUri + " successfully fetched, returning " + prerenderedFile);
+      }
+      try (InputStream htmlStream = new ByteArrayInputStream(htmlBytes)) {
+        ByteStreams.copy(htmlStream, response.getOutputStream());
+      }
+    }
+  }
+
+  private boolean isUpToDate(File prerenderedFile) {
+    if (prerenderedFile.exists()) {
+      Date threshold = DateUtils.removeToNow(Calendar.DAY_OF_MONTH, ONE_DAY);
+      return prerenderedFile.lastModified() > threshold.getTime();
+    } else {
+      return false;
+    }
+  }
+
+  private String toFilename(String prerenderUri) {
+    return prerenderUri.replaceAll("[^a-zA-Z0-9/]+", "-").replaceAll("/+", "_") + ".html";
+  }
+
+  private String fetch(String url) throws InterruptedException {
+    WebDriver driver = null;
+    try {
+      driver = new PhantomJSDriver();
+      fetch(driver, url);
+      try {
+        LOGGER.debug("Waiting for body to be loaded");
+        WebDriverWait wait = new WebDriverWait(driver, TEN_SECONDS);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("body.loading")));
+        Thread.sleep(TWO_SECONDS * IN_MILLIS);
+      } catch (TimeoutException e) {
+        LOGGER.warn("Body still has class 'loading' after 10 seconds, returning page source as is");
+      }
+      return driver.getPageSource();
+    } finally {
+      if (driver != null) {
+        driver.quit();
+      }
+    }
+  }
+
+  private void fetch(final WebDriver driver, String url) throws InterruptedException {
+    Thread thread = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        driver.get(Thread.currentThread().getName());
+      }
+
+    }, url);
+    thread.start();
+    thread.join(TEN_SECONDS * IN_MILLIS);
+    if (thread.isAlive()) {
+      thread.interrupt();
+      throw new TimeoutException("Timeout of 10 seconds reached when accessing URL " + url);
+    }
+  }
+
+}

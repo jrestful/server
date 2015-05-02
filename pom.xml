@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ! Copyright (c) jrestful.org, all rights reserved.
+ ! This code is licensed under the LGPL 3.0 license,
+ ! available at the root application directory.
+ ! -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.jrestful</groupId>
+  <artifactId>server</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <developers>
+    <developer>
+      <id>chma</id>
+      <name>Christophe Maillard</name>
+      <email>christophe.maillard@rocketmail.com</email>
+    </developer>
+  </developers>
+  
+  <modules>
+    <module>core</module>
+    <module>mongo</module>
+    <module>auth</module>
+    <module>auth-mongo</module>
+    <module>social</module>
+    <module>social-mongo</module>
+    <module>seo</module>
+  </modules>
+
+  <properties>
+    <!-- build -->
+    <jdk.version>1.7</jdk.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- main dependencies -->
+    <spring.version>4.1.5.RELEASE</spring.version>
+    <springSecurity.version>3.2.6.RELEASE</springSecurity.version>
+    <springData.version>1.6.2.RELEASE</springData.version>
+    <springSocial.version>1.1.0.RELEASE</springSocial.version>
+    <springSocialFacebook.version>1.1.1.RELEASE</springSocialFacebook.version>
+    <mongo.version>2.13.0</mongo.version>
+    <servlet.version>3.0-alpha-1</servlet.version>
+  </properties>
+
+  <dependencies>
+
+    <!-- de/serialization -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+
+    <!-- log -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.12</version>
+    </dependency>
+
+    <!-- utils -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+
+    <!-- testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.2</version>
+        <configuration>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

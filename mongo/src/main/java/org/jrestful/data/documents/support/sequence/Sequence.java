@@ -1,0 +1,21 @@
+package org.jrestful.data.documents.support.sequence;
+
+import org.jrestful.data.documents.support.GenericDocument;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "sequences")
+public final class Sequence extends GenericDocument {
+
+  private static final long serialVersionUID = 1L;
+
+  private Long value;
+
+  public Long getValue() {
+    return value;
+  }
+
+  public void setValue(Long value) {
+    this.value = value;
+  }
+
+}
