@@ -19,6 +19,11 @@ public abstract class GenericSequencedDocumentServiceImpl<R extends GenericSeque
   }
 
   @Override
+  public D findBySequence(long sequence) {
+    return repository.findBySequence(sequence);
+  }
+
+  @Override
   public List<D> insert(Iterable<D> documents) {
     for (D document : documents) {
       setSequence(document);

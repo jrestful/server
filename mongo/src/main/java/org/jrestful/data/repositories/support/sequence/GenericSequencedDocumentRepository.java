@@ -5,4 +5,6 @@ import org.jrestful.data.repositories.support.GenericDocumentRepository;
 
 public interface GenericSequencedDocumentRepository<D extends GenericSequencedDocument> extends GenericDocumentRepository<D> {
 
+  D findBySequence(long sequence);
+
 }
