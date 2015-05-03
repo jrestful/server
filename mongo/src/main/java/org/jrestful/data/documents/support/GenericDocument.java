@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class GenericDocument implements Persistable<String> {
 
   private static final long serialVersionUID = 1L;
@@ -39,6 +41,7 @@ public abstract class GenericDocument implements Persistable<String> {
     this.id = id;
   }
 
+  @JsonIgnore
   @Override
   public final boolean isNew() {
     return id == null;
