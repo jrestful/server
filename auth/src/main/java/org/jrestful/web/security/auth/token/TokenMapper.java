@@ -1,6 +1,5 @@
 package org.jrestful.web.security.auth.token;
 
-import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenMapper<K extends Serializable> {
+public class TokenMapper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenMapper.class);
 
@@ -42,7 +41,7 @@ public class TokenMapper<K extends Serializable> {
     return hmac.doFinal(content);
   }
 
-  public String serialize(Token<K> tokenObject) {
+  public String serialize(Token tokenObject) {
     byte[] tokenBytes = JsonUtils.toJson(tokenObject).asBytes();
     byte[] hash = createHmac(tokenBytes);
     StringBuilder builder = new StringBuilder();
@@ -52,7 +51,7 @@ public class TokenMapper<K extends Serializable> {
     return builder.toString();
   }
 
-  public Token<K> deserialize(String tokenString) {
+  public Token deserialize(String tokenString) {
     String[] parts = tokenString.split(Pattern.quote(SEPARATOR), -1);
     if (parts.length == 2 && parts[0].length() > 0 && parts[1].length() > 0) {
       try {
@@ -60,8 +59,7 @@ public class TokenMapper<K extends Serializable> {
         byte[] hash = Base64Utils.decode(parts[1]).asBytes();
         boolean validHash = Arrays.equals(createHmac(tokenBytes), hash);
         if (validHash) {
-          @SuppressWarnings("unchecked")
-          Token<K> tokenObject = JsonUtils.fromJson(tokenBytes, Token.class);
+          Token tokenObject = JsonUtils.fromJson(tokenBytes, Token.class);
           if (tokenObject != null && tokenObject.isValid()) {
             return tokenObject;
           }

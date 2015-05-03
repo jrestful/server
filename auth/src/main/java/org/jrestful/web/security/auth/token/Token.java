@@ -1,25 +1,24 @@
 package org.jrestful.web.security.auth.token;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Token<K extends Serializable> {
+public class Token {
 
-  private final K id;
+  private final String id;
 
   private final Date expirationDate;
 
   @JsonCreator
-  public Token(@JsonProperty("id") K id, @JsonProperty("expirationDate") Date expirationDate) {
+  public Token(@JsonProperty("id") String id, @JsonProperty("expirationDate") Date expirationDate) {
     this.id = id;
     this.expirationDate = expirationDate;
   }
 
-  public K getId() {
+  public String getId() {
     return id;
   }
 
@@ -30,6 +29,11 @@ public class Token<K extends Serializable> {
   @JsonIgnore
   public boolean isValid() {
     return id != null && expirationDate != null && new Date().before(expirationDate);
+  }
+
+  @Override
+  public String toString() {
+    return id.toString();
   }
 
 }

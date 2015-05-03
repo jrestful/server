@@ -41,6 +41,14 @@ public final class RequestUtils {
     response.addCookie(cookie);
   }
 
+  public static String readHeader(HttpServletRequest request, String name) {
+    return request.getHeader(name);
+  }
+
+  public static void writeHeader(HttpServletResponse response, String name, String value) {
+    response.setHeader(name, value);
+  }
+
   private RequestUtils() {
   }
 
