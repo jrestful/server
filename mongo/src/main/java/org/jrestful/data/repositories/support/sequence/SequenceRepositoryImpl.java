@@ -1,9 +1,6 @@
 package org.jrestful.data.repositories.support.sequence;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
 
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
 import org.jrestful.data.documents.support.sequence.Sequence;
@@ -26,8 +23,6 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
   private static final Logger LOGGER = LoggerFactory.getLogger(SequenceRepositoryImpl.class);
 
   private final ConcurrentHashMap<Class<? extends GenericSequencedDocument>, String> collectionsNames = new ConcurrentHashMap<>();
-
-  private final ConcurrentHashMap<String, Long> initialValues = new ConcurrentHashMap<>();
 
   @Autowired
   public SequenceRepositoryImpl(MongoOperations mongoOperations) {
@@ -63,28 +58,14 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
   }
 
   private void initialize(String collectionName) {
-    Long initialValue = initialValues.get(collectionName);
-    if (initialValue == null) {
-      initialValue = 0l;
-      initialValues.putIfAbsent(collectionName, initialValue);
-    }
     Sequence sequence = new Sequence();
     sequence.setId(collectionName);
-    sequence.setValue(initialValue);
+    sequence.setValue(0l);
     try {
       insert(sequence);
-      LOGGER.debug("Sequence initialized at " + initialValue + " for collection " + collectionName);
+      LOGGER.debug("Sequence initialized for collection " + collectionName);
     } catch (DuplicateKeyException ignore) {
       // another thread initialized this collection sequence
-    }
-  }
-
-  @PostConstruct
-  protected void init() {
-    Query query = new Query();
-    List<Sequence> sequences = mongoOperations.findAllAndRemove(query, Sequence.class);
-    for (Sequence sequence : sequences) {
-      initialValues.put(sequence.getId(), sequence.getValue());
     }
   }
 
