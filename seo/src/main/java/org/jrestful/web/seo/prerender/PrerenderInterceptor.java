@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.web.interceptors.UrlInterceptor;
 import org.jrestful.web.util.Prerenderer;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService.Builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +63,14 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   private final File prerenderedDir;
 
+  private final PhantomJSDriverService driverService;
+
   @Autowired
-  public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path}") String phantomjsPath) {
+  public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path}") String phantomjsPath,
+      @Value("${phantomjs.port}") Integer phantomjsPort) {
     prerenderedDir = new File(appDir, "prerendered");
     prerenderedDir.mkdirs();
-    System.setProperty("phantomjs.binary.path", phantomjsPath);
+    driverService = new Builder().usingPhantomJSExecutable(new File(phantomjsPath)).usingPort(phantomjsPort).build();
   }
 
   @Override
@@ -75,7 +80,7 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
       String prerenderUri = request.getAttribute("prerenderUri").toString();
       LOGGER.debug("A bot is requesting URL " + baseUrl + prerenderUri + ", prerendering needed");
       try {
-        Prerenderer prerenderer = new Prerenderer(prerenderedDir);
+        Prerenderer prerenderer = new Prerenderer(prerenderedDir, driverService);
         prerenderer.prerender(baseUrl, prerenderUri, response);
         return false;
       } catch (Exception e) {

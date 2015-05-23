@@ -14,6 +14,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -38,8 +40,11 @@ public class Prerenderer {
 
   private final File prerenderedDir;
 
-  public Prerenderer(File prerenderedDir) {
+  private final PhantomJSDriverService driverService;
+
+  public Prerenderer(File prerenderedDir, PhantomJSDriverService driverService) {
     this.prerenderedDir = prerenderedDir;
+    this.driverService = driverService;
   }
 
   public void prerender(String baseUrl, String prerenderUri, HttpServletResponse response) throws Exception {
@@ -76,7 +81,7 @@ public class Prerenderer {
   private String fetch(String url) throws InterruptedException {
     WebDriver driver = null;
     try {
-      driver = new PhantomJSDriver();
+      driver = new PhantomJSDriver(driverService, DesiredCapabilities.phantomjs());
       fetch(driver, url);
       try {
         LOGGER.debug("Waiting for body to be loaded");
