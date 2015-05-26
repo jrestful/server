@@ -1,16 +1,17 @@
 package org.jrestful.web.seo.prerender;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.web.interceptors.UrlInterceptor;
-import org.jrestful.web.util.Prerenderer;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService.Builder;
+import org.jrestful.web.util.prerender.PrerenderDriverService;
+import org.jrestful.web.util.prerender.Prerenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import com.google.common.collect.Iterables;
 public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrerenderInterceptor.class);
+
+  private static final Pattern DIGITS = Pattern.compile("^\\d+$");
 
   public static class BotsUserAgents implements Predicate<String> {
 
@@ -63,14 +66,27 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   private final File prerenderedDir;
 
-  private final PhantomJSDriverService driverService;
+  private final PrerenderDriverService driverService;
 
   @Autowired
   public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path}") String phantomjsPath,
-      @Value("${phantomjs.port}") Integer phantomjsPort) {
+      @Value("${phantomjs.bind}") String phantomjsBind) throws IOException {
     prerenderedDir = new File(appDir, "prerendered");
     prerenderedDir.mkdirs();
-    driverService = new Builder().usingPhantomJSExecutable(new File(phantomjsPath)).usingPort(phantomjsPort).build();
+    if (DIGITS.matcher(phantomjsBind).matches()) {
+      driverService = new PrerenderDriverService(new File(phantomjsPath), Integer.parseInt(phantomjsBind));
+    } else {
+      String ip;
+      int port;
+      try {
+        String[] parts = phantomjsBind.split(":");
+        ip = parts[0];
+        port = Integer.parseInt(parts[1]);
+      } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+        throw new IllegalArgumentException("Property 'phantomjs.bind' must either be a single port or follow the syntax 'server:port'", e);
+      }
+      driverService = new PrerenderDriverService(new File(phantomjsPath), ip, port);
+    }
   }
 
   @Override
