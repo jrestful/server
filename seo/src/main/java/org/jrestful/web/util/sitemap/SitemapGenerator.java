@@ -1,12 +1,10 @@
-package org.jrestful.web.util;
+package org.jrestful.web.util.sitemap;
 
 import java.io.File;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-
-import org.jrestful.web.util.sitemap.UrlEntries;
 
 public class SitemapGenerator {
 

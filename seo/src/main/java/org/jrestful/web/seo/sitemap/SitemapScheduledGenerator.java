@@ -5,7 +5,7 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
-import org.jrestful.web.util.SitemapGenerator;
+import org.jrestful.web.util.sitemap.SitemapGenerator;
 import org.jrestful.web.util.sitemap.UrlEntries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
