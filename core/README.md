@@ -82,7 +82,7 @@ Update the Spring `contextConfigLocation` parameters:
 
  - `app.version`: The application version.
 
-jrestful registers request interceptors, but will exclude the URLs matching `/static-${app.version}/**`: it is expecting you to map your static resources (images, JS, CSS...) to the URL `/static-${app.version}/**` (e.g. `http://www.domain.tld/static-1.3.9/img/logo.png`). This way, for each new version, browsers will automatically recache the resources.
+jrestful registers request interceptors, but will exclude the URLs matching `/static-${app.version}/**`: it is expecting you to map your static resources (images, JS, CSS...) to the URL `/static-${app.version}/**`, e.g. `http://www.domain.tld/static-1.3.9/img/logo.png` (this way, for new versions, browsers will automatically recache the resources).
 
 #### Example:
 
