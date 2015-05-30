@@ -57,6 +57,8 @@ public class Prerenderer {
         LOGGER.debug("URL " + baseUrl + prerenderUri + " successfully fetched, returning " + prerenderedFile);
       }
       try (InputStream htmlStream = new ByteArrayInputStream(htmlBytes)) {
+        response.addHeader("Content-Type", "text/html;charset=UTF-8");
+        response.addHeader("Vary", "Accept-Encoding");
         ByteStreams.copy(htmlStream, response.getOutputStream());
       }
     }
