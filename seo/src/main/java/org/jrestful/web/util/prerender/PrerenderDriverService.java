@@ -12,26 +12,26 @@ import com.google.common.collect.ImmutableMap;
 
 public class PrerenderDriverService extends DriverService {
 
-  private static final String LOCALHOST = "localhost";
-
   private static final String URL_FIELD_NAME = "url";
 
-  public PrerenderDriverService(File phantomjsPath, String ip, int port) throws IOException {
-    super(phantomjsPath, port, ImmutableList.of("--webdriver=" + ip + ":" + port), ImmutableMap.<String, String> of());
-    if (!LOCALHOST.equals(ip)) {
-      try {
-        Field field = getClass().getSuperclass().getDeclaredField(URL_FIELD_NAME);
-        field.setAccessible(true);
-        field.set(this, new URL("http://" + ip + ":" + port));
-        field.setAccessible(false);
-      } catch (NoSuchFieldException | IllegalAccessException e) {
-        throw new IllegalStateException("Unable to set DriverService#url to http://" + ip + ":" + port, e);
-      }
-    }
+  public PrerenderDriverService(File phantomjsPath, int port, String webdriver) throws IOException {
+    super(phantomjsPath, port, ImmutableList.of("--webdriver=" + webdriver), ImmutableMap.<String, String> of());
   }
 
   public PrerenderDriverService(File phantomjsPath, int port) throws IOException {
-    this(phantomjsPath, LOCALHOST, port);
+    this(phantomjsPath, port, String.valueOf(port));
+  }
+
+  public PrerenderDriverService(File phantomjsPath, String ip, int port) throws IOException {
+    this(phantomjsPath, port, ip + ":" + port);
+    try {
+      Field field = getClass().getSuperclass().getDeclaredField(URL_FIELD_NAME);
+      field.setAccessible(true);
+      field.set(this, new URL("http://" + ip + ":" + port));
+      field.setAccessible(false);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw new IllegalStateException("Unable to set DriverService#url to http://" + ip + ":" + port, e);
+    }
   }
 
 }
