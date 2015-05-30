@@ -73,6 +73,9 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
       @Value("${phantomjs.bind}") String phantomjsBind) throws IOException {
     prerenderedDir = new File(appDir, "prerendered");
     prerenderedDir.mkdirs();
+    for (File file : prerenderedDir.listFiles()) {
+      file.delete();
+    }
     if (DIGITS.matcher(phantomjsBind).matches()) {
       driverService = new PrerenderDriverService(new File(phantomjsPath), Integer.parseInt(phantomjsBind));
     } else {
