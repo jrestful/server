@@ -1,6 +1,6 @@
 # seo
 
-`seo` improves your SEO by generating a sitemap via JAXB and prerendering page for bots via PhantomJS through Selenium.
+`seo` improves your SEO by generating a sitemap via JAXB and prerendering pages for bots via PhantomJS and Selenium.
 
 ## How to install it?
 

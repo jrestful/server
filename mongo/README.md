@@ -42,7 +42,6 @@ Add the context parameter:
  - `mongo.dbname`
  - `mongo.username`
  - `mongo.password`
-
  - `mongo.connectionsPerHost`
  - `mongo.threadsAllowedToBlockForConnectionMultiplier`
  - `mongo.connectTimeout`
