@@ -1,6 +1,6 @@
 # seo
 
-`seo` improves your SEO.
+`seo` improves your SEO by generating a sitemap and prerendering page for bots.
 
 ## How to install it?
 
@@ -61,7 +61,7 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 #### The application paths
 
  - `app.url`: The application base URL (used to generate the sitemap).
- - `app.dir`: The application directory (where writing is allowed).
+ - `app.dir`: The application directory (where writing must be allowed).
 
 `seo` generates a sitemap in `${app.dir}/resources/sitemap.xml` on server startup and every day at 5 am. Spring MVC must be able to serve that file when requested. To do so, add the following tag in your Spring MVC servlet context:
 
@@ -74,7 +74,7 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 #### Example
 
     app.url=http://www.domain.tld
-    app.dir=/local/myapp/data
+    app.dir=/local/myapp/data/1.3.9
 
 ### `jrestfulSeoProps`
 
