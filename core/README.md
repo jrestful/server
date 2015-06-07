@@ -33,7 +33,7 @@ Add the dependency:
 
 ### In your web.xml
 
-Add the `jrestfulAppProps` and `jrestfulSecProps` context parameters:
+Add the context parameters:
 
     <context-param>
       <description>The Spring resource location of the application properties</description>
@@ -84,7 +84,16 @@ Update the Spring `contextConfigLocation` parameters:
 
 jrestful registers request interceptors, but will exclude the URLs matching `/static-${app.version}/**`: it is expecting you to map your static resources (images, JS, CSS...) to the URL `/static-${app.version}/**`, e.g. `http://www.domain.tld/static-1.3.9/img/logo.png` (this way, for new versions, browsers will automatically recache the resources).
 
-#### Example:
+To implement this mapping, add the following tag in your Spring MVC servlet context:
+
+    <mvc:resources
+      mapping="/static-${app.version}/**"
+      location="/static/"
+      cache-period="31556926" />
+
+Here, your resources are expected to be located in a `/static` folder.
+
+#### Example
 
     app.version=1.3.9
 
@@ -97,7 +106,7 @@ jrestful registers request interceptors, but will exclude the URLs matching `/st
 
 The CSRF protection is implemented as explained in [Robbert van Waveren article](http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/).
 
-#### Example:
+#### Example
 
     csrf.headerName=X-CSRF-TOKEN
     csrf.cookieName=MYWEBSITE-CSRF-TOKEN
