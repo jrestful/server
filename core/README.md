@@ -1,6 +1,6 @@
 # core
 
-`core` includes generic classes for services and controllers, as well as CSRF protection and other utilities.
+`core` includes generic classes for services and controllers via Spring and Spring MVC, as well as CSRF protection via Spring Security and other utilities.
 
 ## How to install it?
 
@@ -73,6 +73,16 @@ Update the Spring `contextConfigLocation` parameters:
       </init-param>
       <load-on-startup>1</load-on-startup>
     </servlet>
+
+### In your Spring Security context
+
+Register the CSRF filter:
+
+	<http ...>
+	  ...
+	  <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
+	  ...
+	</http>
 
 ## What is expected in the properties files?
 

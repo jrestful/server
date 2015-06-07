@@ -2,6 +2,9 @@ package org.jrestful.web.seo.sitemap;
 
 import org.jrestful.web.util.sitemap.UrlEntries;
 
+/**
+ * Builds a sitemap.
+ */
 public interface SitemapBuilder {
 
   /**

@@ -1,6 +1,6 @@
 # seo
 
-`seo` improves your SEO by generating a sitemap and prerendering page for bots.
+`seo` improves your SEO by generating a sitemap via JAXB and prerendering page for bots via PhantomJS through Selenium.
 
 ## How to install it?
 
@@ -38,7 +38,7 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 #### Example
 
 	@Component
-	public class FmoSitemapBuilder implements SitemapBuilder {
+	public class MyAppSitemapBuilder implements SitemapBuilder {
 	
 	  @Override
 	  public UrlEntries build(String appUrl) {
