@@ -7,6 +7,9 @@ import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Generic abstract class for a document.
+ */
 public abstract class GenericDocument implements Persistable<String> {
 
   private static final long serialVersionUID = 1L;

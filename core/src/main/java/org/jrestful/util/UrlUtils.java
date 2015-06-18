@@ -6,6 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.CharMatcher;
 
+/**
+ * Operations on URLs.
+ */
 public final class UrlUtils {
 
   private static final String DASH = "-";

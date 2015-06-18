@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * Builds a sitemap on server startup and every day at 5 am.
+ */
 @Component
 public class SitemapScheduledGenerator {
 

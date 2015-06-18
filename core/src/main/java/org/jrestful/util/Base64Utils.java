@@ -4,6 +4,9 @@ import java.nio.charset.Charset;
 
 import org.springframework.security.crypto.codec.Base64;
 
+/**
+ * Base 64 encoding and decoding.
+ */
 public final class Base64Utils {
 
   private static final Charset UTF_8 = Charset.forName("UTF-8");

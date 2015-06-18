@@ -7,6 +7,9 @@ import org.jrestful.data.repositories.support.sequence.SequenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Manages auto-incremented sequences.
+ */
 @Service
 public final class SequenceServiceImpl extends GenericDocumentServiceImpl<SequenceRepository, Sequence> implements SequenceService {
 

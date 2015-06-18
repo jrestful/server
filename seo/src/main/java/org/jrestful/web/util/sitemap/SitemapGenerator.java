@@ -6,6 +6,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+/**
+ * Generates a sitemap via JAXB.
+ */
 public class SitemapGenerator {
 
   private static final String UTF_8 = "UTF-8";

@@ -5,6 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+/**
+ * Sets URL related attributes to requests.
+ */
 public class UrlInterceptor extends HandlerInterceptorAdapter {
 
   public static final String DOMAIN_URL = "domainUrl";

@@ -4,6 +4,10 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.jrestful.web.util.sitemap.UrlEntry.ChangeFreq;
 
+/**
+ * Serializes a <code>&lt;changefreq /></code> tag, as described by the <a
+ * href="http://www.sitemaps.org/protocol.html">Sitemap protocol</a>.
+ */
 public class ChangeFreqAdapter extends XmlAdapter<String, ChangeFreq> {
 
   @Override

@@ -5,6 +5,10 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+/**
+ * Serializes a <code>&lt;lastmod /></code> tag, as described by the <a
+ * href="http://www.sitemaps.org/protocol.html">Sitemap protocol</a>.
+ */
 public class LastModAdapter extends XmlAdapter<String, Date> {
 
   private static final String LAST_MOD_FORMAT = "yyyy-MM-dd";

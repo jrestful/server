@@ -4,6 +4,9 @@ import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
 import org.jrestful.data.documents.support.sequence.Sequence;
 
+/**
+ * Manages auto-incremented sequences.
+ */
 public interface SequenceService extends GenericDocumentService<Sequence> {
 
   Sequence findNext(GenericSequencedDocument document);

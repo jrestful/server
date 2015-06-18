@@ -24,6 +24,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
+/**
+ * Intercepts requests to prerender pages when bots are requesting them, so that
+ * they can see the fully loaded content.
+ */
 public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrerenderInterceptor.class);

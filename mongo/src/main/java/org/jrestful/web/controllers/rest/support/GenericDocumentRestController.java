@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Generic abstract class for a document REST controller.
+ * 
+ * @param <D>
+ *            The document type to manage.
+ */
 public abstract class GenericDocumentRestController<D extends GenericDocument> extends GenericRestController {
 
   protected final GenericDocumentService<D> service;

@@ -24,6 +24,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.google.common.collect.Sets;
 
+/**
+ * CSRF protection filter, implemented as explained in <a href=
+ * "http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/"
+ * >Robbert van Waveren article</a>.
+ */
 @Component
 public class StatelessCsrfFilter extends OncePerRequestFilter {
 

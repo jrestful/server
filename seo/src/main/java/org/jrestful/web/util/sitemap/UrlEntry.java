@@ -14,9 +14,18 @@ import org.jrestful.web.util.sitemap.adapters.PriorityAdapter;
 
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * Serialized to an <code>&lt;url /></code> tag, as described by the <a
+ * href="http://www.sitemaps.org/protocol.html">Sitemap protocol</a>.
+ */
 @XmlType(propOrder = { "loc", "lastMod", "changeFreq", "priority" })
 public class UrlEntry {
 
+  /**
+   * Available values for the <code>&lt;changefreq /></code> tag, as described
+   * by the <a href="http://www.sitemaps.org/protocol.html">Sitemap
+   * protocol</a>.
+   */
   public enum ChangeFreq {
 
     ALWAYS("always"),
@@ -66,7 +75,7 @@ public class UrlEntry {
 
   private Float priority;
 
-public UrlEntry(String loc) {
+  public UrlEntry(String loc) {
     this.loc = loc;
   }
 

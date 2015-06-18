@@ -11,7 +11,11 @@ import org.openqa.selenium.remote.Response;
 
 import com.google.common.base.Throwables;
 
-class PrerenderCommandExecutor extends HttpCommandExecutor {
+/**
+ * Allows GhostDriver to bind on an IP (broadly similar to
+ * {@link PhantomJSCommandExecutor}).
+ */
+public class PrerenderCommandExecutor extends HttpCommandExecutor {
 
   private static final String CONNECTION_REFUSED = "Connection refused";
 

@@ -17,6 +17,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Manages auto-incremented sequenced.
+ */
 @Repository
 public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<Sequence> implements SequenceRepository {
 

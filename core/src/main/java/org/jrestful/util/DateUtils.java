@@ -3,6 +3,9 @@ package org.jrestful.util;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Operations on dates.
+ */
 public final class DateUtils {
 
   public static Date addToNow(int field, int amount) {

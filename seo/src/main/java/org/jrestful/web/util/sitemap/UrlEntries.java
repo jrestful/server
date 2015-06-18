@@ -6,6 +6,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Serialized to an <code>&lt;urlset /></code> tag, as described by the <a
+ * href="http://www.sitemaps.org/protocol.html">Sitemap protocol</a>.
+ */
 @XmlRootElement(name = "urlset")
 public class UrlEntries {
 

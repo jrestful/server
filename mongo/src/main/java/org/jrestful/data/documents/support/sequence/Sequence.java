@@ -3,6 +3,9 @@ package org.jrestful.data.documents.support.sequence;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * Auto-incremented sequence.
+ */
 @Document(collection = "sequences")
 public final class Sequence extends GenericDocument {
 

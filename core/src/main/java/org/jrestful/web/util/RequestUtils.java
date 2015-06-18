@@ -8,6 +8,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Operations on HTTP requests and responses.
+ */
 public final class RequestUtils {
 
   private static final String UTF_8 = "UTF-8";

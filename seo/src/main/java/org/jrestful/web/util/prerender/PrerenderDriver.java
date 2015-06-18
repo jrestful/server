@@ -6,6 +6,7 @@ import java.util.Map;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.DriverCommand;
@@ -14,6 +15,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * Allows GhostDriver to bind on an IP (broadly similar to
+ * {@link PhantomJSDriver}).
+ */
 public class PrerenderDriver extends RemoteWebDriver implements TakesScreenshot {
 
   public static final Map<String, CommandInfo> CUSTOM_COMMANDS;

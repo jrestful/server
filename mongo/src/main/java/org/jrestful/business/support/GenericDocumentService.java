@@ -8,6 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+/**
+ * Generic interface for a document service.
+ * 
+ * @param <D>
+ *            The document type to manage.
+ */
 public interface GenericDocumentService<D extends GenericDocument> extends GenericService {
 
   long count();

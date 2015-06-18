@@ -133,7 +133,7 @@ Example with a request on `http://domain.tld/context/url?param=value`:
 
 ### For the security
 
-A CSRF filter as available. To register it in your Spring Security context:
+A CSRF protection filter as available. To register it in your Spring Security context:
 
     <http ...>
       ...
@@ -147,4 +147,4 @@ A CSRF filter as available. To register it in your Spring Security context:
  - `org.jrestful.util.DateUtils`: operations on dates.
  - `org.jrestful.util.Json64Utils`: JSON serialization and deserialization.
  - `org.jrestful.util.UrlUtils`: operations on URLs.
- - `org.jrestful.util.web.RequestUtils`: operations on requests.
+ - `org.jrestful.util.web.RequestUtils`: operations on HTTP requests and responses.

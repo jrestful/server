@@ -9,6 +9,12 @@ import org.springframework.data.mongodb.repository.query.MongoEntityInformation;
 import org.springframework.data.mongodb.repository.support.MappingMongoEntityInformation;
 import org.springframework.data.mongodb.repository.support.SimpleMongoRepository;
 
+/**
+ * Generic abstract class for a document repository.
+ * 
+ * @param <D>
+ *            The document type to manage.
+ */
 public abstract class GenericDocumentRepositoryImpl<D extends GenericDocument> extends SimpleMongoRepository<D, String> implements
     GenericDocumentRepository<D> {
 

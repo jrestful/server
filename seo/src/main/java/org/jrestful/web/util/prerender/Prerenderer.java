@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
+/**
+ * Prerenders pages when bots are requesting them, so that they can see the
+ * fully loaded content. Prerendered pages will be cached for one day.
+ */
 public class Prerenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Prerenderer.class);

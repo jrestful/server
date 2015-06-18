@@ -8,6 +8,14 @@ import org.jrestful.data.documents.support.sequence.Sequence;
 import org.jrestful.data.repositories.support.sequence.GenericSequencedDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Generic abstract class for a sequenced document service.
+ * 
+ * @param <R>
+ *            The repository of the sequenced document type to manage.
+ * @param <D>
+ *            The sequenced document type to manage.
+ */
 public abstract class GenericSequencedDocumentServiceImpl<R extends GenericSequencedDocumentRepository<D>, D extends GenericSequencedDocument>
     extends GenericDocumentServiceImpl<R, D> implements GenericSequencedDocumentService<D> {
 

@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.service.DriverService;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * Allows GhostDriver to bind on an IP (broadly similar to
+ * {@link PhantomJSDriverService}).
+ */
 public class PrerenderDriverService extends DriverService {
 
   private static final String URL_FIELD_NAME = "url";
