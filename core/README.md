@@ -74,16 +74,6 @@ Update the Spring `contextConfigLocation` parameters:
       <load-on-startup>1</load-on-startup>
     </servlet>
 
-### In your Spring Security context
-
-Register the CSRF filter:
-
-	<http ...>
-	  ...
-	  <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
-	  ...
-	</http>
-
 ## What is expected in the properties files?
 
 ### `jrestfulAppProps`
@@ -123,4 +113,36 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 ## What does `core` provide?
 
-TBC
+### For your controllers
+
+`org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
+
+`org.jrestful.web.interceptors.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`). Example with a request on `http://domain.tld/context/url?param=value``:
+
+ - `UrlInterceptor.DOMAIN_URL`: http<nolink>://domain.tld
+ - `UrlInterceptor.BASE_URL`: http<nolink>://domain.tld/context
+ - `UrlInterceptor.REQUEST_URL`: http<nolink>://domain.tld/context/url
+ - `UrlInterceptor.FULL_URL`: http<nolink>://domain.tld/context/url?param=value
+ - `UrlInterceptor.SHORT_URL`: /url
+
+### For your services
+
+`org.jrestful.business.support.GenericService` and `org.jrestful.business.support.GenericServiceImpl` are generic business interface and abstract class for your services.
+
+### For the security
+
+A CSRF filter as available. To register it in your Spring Security context:
+
+    <http ...>
+      ...
+      <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
+      ...
+    </http>
+
+### Utilities
+
+ - `org.jrestful.util.Base64Utils`: base 64 encoding and decoding.
+ - `org.jrestful.util.DateUtils`: operations on dates.
+ - `org.jrestful.util.Json64Utils`: JSON serialization and deserialization.
+ - `org.jrestful.util.UrlUtils`: operations on URLs.
+ - `org.jrestful.util.web.RequestUtils`: operations on requests.
