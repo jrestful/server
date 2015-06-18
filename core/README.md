@@ -121,10 +121,10 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 Example with a request on `http://domain.tld/context/url?param=value`:
 
- - `UrlInterceptor.DOMAIN_URL`: http&#58;//domain\.tld
- - `UrlInterceptor.BASE_URL`: http&#58;//domain\.tld/context
- - `UrlInterceptor.REQUEST_URL`: http&#58;//domain\.tld/context/url
- - `UrlInterceptor.FULL_URL`: http&#58;//domain\.tld/context/url?param=value
+ - `UrlInterceptor.DOMAIN_URL`: http://domain.tld
+ - `UrlInterceptor.BASE_URL`: http://domain.tld/context
+ - `UrlInterceptor.REQUEST_URL`: http://domain.tld/context/url
+ - `UrlInterceptor.FULL_URL`: http://domain.tld/context/url?param=value
  - `UrlInterceptor.SHORT_URL`: /url
 
 ### For your services
