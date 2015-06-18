@@ -117,12 +117,14 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
 
-`org.jrestful.web.interceptors.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`). Example with a request on `http://domain.tld/context/url?param=value``:
+`org.jrestful.web.interceptors.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
 
- - `UrlInterceptor.DOMAIN_URL`: http<nolink>://domain.tld
- - `UrlInterceptor.BASE_URL`: http<nolink>://domain.tld/context
- - `UrlInterceptor.REQUEST_URL`: http<nolink>://domain.tld/context/url
- - `UrlInterceptor.FULL_URL`: http<nolink>://domain.tld/context/url?param=value
+Example with a request on `http://domain.tld/context/url?param=value`:
+
+ - `UrlInterceptor.DOMAIN_URL`: http&#58;//domain.tld
+ - `UrlInterceptor.BASE_URL`: http&#58;//domain.tld/context
+ - `UrlInterceptor.REQUEST_URL`: http&#58;//domain.tld/context/url
+ - `UrlInterceptor.FULL_URL`: http&#58;//domain.tld/context/url?param=value
  - `UrlInterceptor.SHORT_URL`: /url
 
 ### For your services
