@@ -78,5 +78,24 @@ For more details, see [the Spring Data documentation](http://docs.spring.io/spri
 
 ## What does `mongo` provide?
 
-TBC
+### For your documents
 
+`org.jrestful.data.documents.support.GenericDocument` is an abstract class for your documents.
+
+`org.jrestful.data.documents.support.sequence.GenericSequencedDocument` is an abstract class for your documents that need an auto-incrementing sequence.
+
+### For your repositories
+
+`org.jrestful.data.repositories.support.GenericDocumentRepository` and `org.jrestful.data.repositories.support.GenericDocumentRepositoryImpl` are an interface and an abstract class for your documents repositories.
+
+`org.jrestful.data.repositories.support.sequence.GenericSequencedDocumentRepository` and `org.jrestful.data.repositories.support.sequence.GenericSequencedDocumentRepositoryImpl` are an interface and an abstract class for your sequenced documents repositories.
+
+### For your services
+
+`org.jrestful.business.support.GenericDocumentService` and `org.jrestful.business.support.GenericDocumentServiceImpl` are an interface and an abstract class for your documents services.
+
+`org.jrestful.business.support.sequence.GenericSequencedDocumentService` and `org.jrestful.business.support.sequence.GenericSequencedDocumentServiceImpl` are an interface and an abstract class for your sequenced documents services.
+
+### For your controllers
+
+`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` is an abstract class for your REST documents controllers. Be careful: override the methods if your need authorizations.

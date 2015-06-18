@@ -89,8 +89,3 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 
     phantomjs.path=/local/myapp/phantomjs-1.9.8-patched/phantomjs
     phantomjs.bind=192.168.1.42:23456
-
-## What does `seo` provide?
-
-TBC
-

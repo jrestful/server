@@ -113,6 +113,10 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 ## What does `core` provide?
 
+### For your services
+
+`org.jrestful.business.support.GenericService` and `org.jrestful.business.support.GenericServiceImpl` are an interface and an abstract class for your services.
+
 ### For your controllers
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
@@ -126,10 +130,6 @@ Example with a request on `http://domain.tld/context/url?param=value`:
  - `UrlInterceptor.REQUEST_URL`: http://domain.tld/context/url
  - `UrlInterceptor.FULL_URL`: http://domain.tld/context/url?param=value
  - `UrlInterceptor.SHORT_URL`: /url
-
-### For your services
-
-`org.jrestful.business.support.GenericService` and `org.jrestful.business.support.GenericServiceImpl` are generic business interface and abstract class for your services.
 
 ### For the security
 
