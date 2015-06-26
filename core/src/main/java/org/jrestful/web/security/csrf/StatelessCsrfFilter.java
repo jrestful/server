@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jrestful.web.util.RequestUtils;
+import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class StatelessCsrfFilter extends OncePerRequestFilter {
     boolean accessDenied = false;
     if (requireCsrfProtectionMatcher.matches(request)) {
       String header = request.getHeader(headerName);
-      String cookie = RequestUtils.readCookie(request, cookieName);
+      String cookie = HttpUtils.readCookie(request, cookieName);
       accessDenied = header == null || !header.equals(cookie);
     }
     if (accessDenied) {

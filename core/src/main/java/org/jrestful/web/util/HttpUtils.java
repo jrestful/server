@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Operations on HTTP requests and responses.
  */
-public final class RequestUtils {
+public final class HttpUtils {
 
   private static final String UTF_8 = "UTF-8";
 
@@ -52,7 +52,7 @@ public final class RequestUtils {
     response.setHeader(name, value);
   }
 
-  private RequestUtils() {
+  private HttpUtils() {
   }
 
 }

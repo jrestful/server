@@ -11,7 +11,7 @@ import org.jrestful.util.DateUtils;
 import org.jrestful.web.security.auth.user.AuthUser;
 import org.jrestful.web.security.auth.user.AuthUserService;
 import org.jrestful.web.security.auth.user.UserIdConverter;
-import org.jrestful.web.util.RequestUtils;
+import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +51,14 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
     Date expirationDate = DateUtils.addToNow(Calendar.DAY_OF_MONTH, TEN_DAYS);
     Token tokenObject = new Token(user.getId().toString(), expirationDate);
     String tokenString = tokenMapper.serialize(tokenObject);
-    RequestUtils.writeHeader(response, headerName, tokenString);
-    RequestUtils.writeCookie(response, cookieName, tokenString, TEN_DAYS * IN_SECONDS);
+    HttpUtils.writeHeader(response, headerName, tokenString);
+    HttpUtils.writeCookie(response, cookieName, tokenString, TEN_DAYS * IN_SECONDS);
   }
 
   public U read(HttpServletRequest request) {
-    String tokenString = RequestUtils.readHeader(request, headerName);
+    String tokenString = HttpUtils.readHeader(request, headerName);
     if (tokenString == null) {
-      tokenString = RequestUtils.readCookie(request, cookieName);
+      tokenString = HttpUtils.readCookie(request, cookieName);
     }
     if (tokenString != null) {
       Token tokenObject = tokenMapper.deserialize(tokenString);
