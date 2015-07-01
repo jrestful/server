@@ -37,22 +37,22 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 
 #### Example
 
-	@Component
-	public class MyAppSitemapBuilder implements SitemapBuilder {
-	
-	  @Override
-	  public UrlEntries build(String appUrl) {
-	    UrlEntries urlEntries = new UrlEntries();
-	
-	    UrlEntry homeEntry = new UrlEntry(appUrl);
-	    homeEntry.setChangeFreq(ChangeFreq.DAILY);
-	    homeEntry.setPriority(1f);
-	    urlEntries.add(homeEntry);
-	
-	    return urlEntries;
-	  }
-	
-	}
+    @Component
+    public class MyAppSitemapBuilder implements SitemapBuilder {
+    
+      @Override
+      public UrlEntries build(String appUrl) {
+        UrlEntries urlEntries = new UrlEntries();
+    
+        UrlEntry homeEntry = new UrlEntry(appUrl);
+        homeEntry.setChangeFreq(ChangeFreq.DAILY);
+        homeEntry.setPriority(1f);
+        urlEntries.add(homeEntry);
+    
+        return urlEntries;
+      }
+    
+    }
 
 ## What is expected in the properties files?
 
@@ -65,9 +65,9 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 
 `seo` generates a sitemap in `${app.dir}/resources/sitemap.xml` on server startup and every day at 5 am. Spring MVC must be able to serve that file when requested. To do so, add the following tag in your Spring MVC servlet context:
 
-	<mvc:resources
-	  mapping="/**"
-	  location="file:${app.dir}/resources/" />
+    <mvc:resources
+      mapping="/**"
+      location="file:${app.dir}/resources/" />
 
 `seo` also caches prerendered pages for one day in `${app.dir}/prerendered`.
 

@@ -3,6 +3,7 @@ package org.jrestful.web.controllers.rest.support;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jrestful.business.support.GenericDocumentService;
@@ -30,8 +31,15 @@ public abstract class GenericDocumentRestController<D extends GenericDocument> e
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<RestResource<List<D>>> list() {
-    RestResource<List<D>> resource = new RestResource<>(service.findAll());
+  public ResponseEntity<RestResource<List<RestResource<D>>>> list() {
+    List<D> documents = service.findAll();
+    List<RestResource<D>> resources = new ArrayList<RestResource<D>>();
+    for (D document : documents) {
+      RestResource<D> resource = new RestResource<>(document);
+      resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+      resources.add(resource);
+    }
+    RestResource<List<RestResource<D>>> resource = new RestResource<>(resources);
     resource.add(linkTo(methodOn(getClass()).list()).withSelfRel());
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }

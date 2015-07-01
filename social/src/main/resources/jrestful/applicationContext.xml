@@ -16,7 +16,7 @@
       <list>
         <bean class="org.springframework.social.facebook.security.FacebookAuthenticationService">
           <constructor-arg value="${facebook.key}" />
-          <constructor-arg value="${facebook.secret}" />				
+          <constructor-arg value="${facebook.secret}" />
         </bean>
       </list>
     </property>

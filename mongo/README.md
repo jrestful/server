@@ -58,23 +58,23 @@ For more details, see [the Spring Data documentation](http://docs.spring.io/spri
 
 #### Example
 
-	mongo.host=localhost
-	mongo.port=27017
-	mongo.dbname=myapp
-	mongo.username=myapp
-	mongo.password=myapp
-	
-	mongo.connectionsPerHost=8
-	mongo.threadsAllowedToBlockForConnectionMultiplier=4
-	mongo.connectTimeout=1000
-	mongo.maxWaitTime=1500
-	mongo.autoConnectRetry=true
-	mongo.socketKeepAlive=true
-	mongo.socketTimeout=1500
-	mongo.slaveOk=true
-	mongo.writeNumber=1
-	mongo.writeTimeout=0
-	mongo.writeFsync=true
+    mongo.host=localhost
+    mongo.port=27017
+    mongo.dbname=myapp
+    mongo.username=myapp
+    mongo.password=myapp
+    
+    mongo.connectionsPerHost=8
+    mongo.threadsAllowedToBlockForConnectionMultiplier=4
+    mongo.connectTimeout=1000
+    mongo.maxWaitTime=1500
+    mongo.autoConnectRetry=true
+    mongo.socketKeepAlive=true
+    mongo.socketTimeout=1500
+    mongo.slaveOk=true
+    mongo.writeNumber=1
+    mongo.writeTimeout=0
+    mongo.writeFsync=true
 
 ## What does `mongo` provide?
 

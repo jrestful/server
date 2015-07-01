@@ -46,6 +46,14 @@
       <artifactId>mongo</artifactId>
       <version>${project.version}</version>
     </dependency>
+    
+    <!-- web -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlet.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
   </dependencies>
 
