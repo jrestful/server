@@ -116,6 +116,13 @@
       <artifactId>urlrewritefilter</artifactId>
       <version>4.0.4</version>
     </dependency>
+    
+    <!-- rest -->
+    <dependency>
+      <groupId>org.springframework.hateoas</groupId>
+      <artifactId>spring-hateoas</artifactId>
+      <version>0.17.0.RELEASE</version>
+    </dependency>
 
   </dependencies>
 

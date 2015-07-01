@@ -1,10 +1,12 @@
 package org.jrestful.web.controllers.rest.support;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
-import org.jrestful.web.controllers.rest.support.GenericRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Generic abstract class for a document REST controller.
  * 
  * @param <D>
- *            The document type to manage.
+ *          The document type to manage.
  */
 public abstract class GenericDocumentRestController<D extends GenericDocument> extends GenericRestController {
 
@@ -28,32 +30,40 @@ public abstract class GenericDocumentRestController<D extends GenericDocument> e
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<List<D>> list() {
-    return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
+  public ResponseEntity<RestResource<List<D>>> list() {
+    RestResource<List<D>> resource = new RestResource<>(service.findAll());
+    resource.add(linkTo(methodOn(getClass()).list()).withSelfRel());
+    return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public ResponseEntity<D> get(@PathVariable String id) {
+  public ResponseEntity<RestResource<D>> get(@PathVariable String id) {
     D document = service.findOne(id);
     if (document == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(document, HttpStatus.OK);
+      RestResource<D> resource = new RestResource<>(document);
+      resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+      return new ResponseEntity<>(resource, HttpStatus.OK);
     }
   }
 
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<D> create(@RequestBody D document) {
-    return new ResponseEntity<>(service.insert(document), HttpStatus.CREATED);
+  public ResponseEntity<RestResource<D>> create(@RequestBody D document) {
+    RestResource<D> resource = new RestResource<>(service.insert(document));
+    resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+    return new ResponseEntity<>(resource, HttpStatus.CREATED);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<D> update(@PathVariable String id, @RequestBody D document) {
-    return new ResponseEntity<>(service.save(document), HttpStatus.OK);
+  public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D document) {
+    RestResource<D> resource = new RestResource<>(service.save(document));
+    resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+    return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<D> delete(@PathVariable String id) {
+  public ResponseEntity<?> delete(@PathVariable String id) {
     service.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
