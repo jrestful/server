@@ -5,4 +5,6 @@ import org.jrestful.tests.data.documents.TestDocument;
 
 public interface TestService extends GenericSequencedDocumentService<TestDocument> {
 
+  TestDocument findByLabel(String label);
+  
 }

@@ -3,7 +3,7 @@ package org.jrestful.tests.data.documents;
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "testSequencedDocuments")
+@Document(collection = "tests")
 public class TestDocument extends GenericSequencedDocument {
 
   private static final long serialVersionUID = 1L;

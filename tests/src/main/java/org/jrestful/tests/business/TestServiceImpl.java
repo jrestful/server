@@ -14,4 +14,9 @@ public class TestServiceImpl extends GenericSequencedDocumentServiceImpl<TestRep
     super(testRepository);
   }
 
+  @Override
+  public TestDocument findByLabel(String label) {
+    return repository.findByLabel(label);
+  }
+
 }
