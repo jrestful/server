@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
+import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.ResourceList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,42 +33,39 @@ public abstract class GenericDocumentRestController<D extends GenericDocument> e
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<RestResource<List<RestResource<D>>>> list() {
+  public ResponseEntity<ResourceList<D>> list() {
     List<D> documents = service.findAll();
-    List<RestResource<D>> resources = new ArrayList<RestResource<D>>();
+    List<Resource<D>> resources = new ArrayList<>();
     for (D document : documents) {
-      RestResource<D> resource = new RestResource<>(document);
-      resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+      Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
       resources.add(resource);
     }
-    RestResource<List<RestResource<D>>> resource = new RestResource<>(resources);
-    resource.add(linkTo(methodOn(getClass()).list()).withSelfRel());
-    return new ResponseEntity<>(resource, HttpStatus.OK);
+    ResourceList<D> resourceList = new ResourceList<>(resources, linkTo(methodOn(getClass()).list()));
+    return new ResponseEntity<>(resourceList, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public ResponseEntity<RestResource<D>> get(@PathVariable String id) {
+  public ResponseEntity<Resource<D>> get(@PathVariable String id) {
     D document = service.findOne(id);
     if (document == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      RestResource<D> resource = new RestResource<>(document);
-      resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+      Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
       return new ResponseEntity<>(resource, HttpStatus.OK);
     }
   }
 
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> create(@RequestBody D document) {
-    RestResource<D> resource = new RestResource<>(service.insert(document));
-    resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+  public ResponseEntity<Resource<D>> create(@RequestBody D document) {
+    document = service.insert(document);
+    Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
     return new ResponseEntity<>(resource, HttpStatus.CREATED);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D document) {
-    RestResource<D> resource = new RestResource<>(service.save(document));
-    resource.add(linkTo(methodOn(getClass()).get(resource.getContent().getId())).withSelfRel());
+  public ResponseEntity<Resource<D>> update(@PathVariable String id, @RequestBody D document) {
+    document = service.save(document);
+    Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 

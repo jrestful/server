@@ -72,11 +72,10 @@ public class TestRestControllerTest {
     MvcResult result2 = resultActions2 //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
-        .andExpect(jsonPath("$.content.id", is(test2.getId()))) //
-        .andExpect(jsonPath("$.content.sequence", is(2))) //
-        .andExpect(jsonPath("$.content.label", is("test2"))) //
-        .andExpect(jsonPath("$.links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.links[0].href", is("http://localhost/test/" + test2.getId()))) //
+        .andExpect(jsonPath("$.id", is(test2.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(2))) //
+        .andExpect(jsonPath("$.label", is("test2"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
         .andReturn();
     LOGGER.debug("Create test2 document: " + result2.getResponse().getContentAsString());
 
@@ -84,11 +83,10 @@ public class TestRestControllerTest {
     MvcResult result3 = mockMvc.perform(get("/test/{id}", new Object[] { test2.getId() })) //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
-        .andExpect(jsonPath("$.content.id", is(test2.getId()))) //
-        .andExpect(jsonPath("$.content.sequence", is(2))) //
-        .andExpect(jsonPath("$.content.label", is("test2"))) //
-        .andExpect(jsonPath("$.links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.links[0].href", is("http://localhost/test/" + test2.getId()))) //
+        .andExpect(jsonPath("$.id", is(test2.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(2))) //
+        .andExpect(jsonPath("$.label", is("test2"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
         .andReturn();
     LOGGER.debug("Get test2 document: " + result3.getResponse().getContentAsString());
 
@@ -104,11 +102,10 @@ public class TestRestControllerTest {
     MvcResult result4 = resultActions4 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
-        .andExpect(jsonPath("$.content.id", is(test2.getId()))) //
-        .andExpect(jsonPath("$.content.sequence", is(2))) //
-        .andExpect(jsonPath("$.content.label", is("test2updated"))) //
-        .andExpect(jsonPath("$.links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.links[0].href", is("http://localhost/test/" + test2.getId()))) //
+        .andExpect(jsonPath("$.id", is(test2.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(2))) //
+        .andExpect(jsonPath("$.label", is("test2updated"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
         .andReturn();
     LOGGER.debug("Update test2 document: " + result4.getResponse().getContentAsString());
 
@@ -116,19 +113,19 @@ public class TestRestControllerTest {
     MvcResult result5 = mockMvc.perform(get("/test")) //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
-        .andExpect(jsonPath("$.content", hasSize(2))) //
-        .andExpect(jsonPath("$.content[0].content.id", is(test1.getId()))) //
-        .andExpect(jsonPath("$.content[0].content.sequence", is(1))) //
-        .andExpect(jsonPath("$.content[0].content.label", is("test1"))) //
-        .andExpect(jsonPath("$.content[0].links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.content[0].links[0].href", is("http://localhost/test/" + test1.getId()))) //
-        .andExpect(jsonPath("$.content[1].content.id", is(test2.getId()))) //
-        .andExpect(jsonPath("$.content[1].content.sequence", is(2))) //
-        .andExpect(jsonPath("$.content[1].content.label", is("test2updated"))) //
-        .andExpect(jsonPath("$.content[1].links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.content[1].links[0].href", is("http://localhost/test/" + test2.getId()))) //
-        .andExpect(jsonPath("$.links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.links[0].href", is("http://localhost/test"))) //
+        .andExpect(jsonPath("$._embedded", hasSize(2))) //
+        .andExpect(jsonPath("$._embedded[0].id", is(test1.getId()))) //
+        .andExpect(jsonPath("$._embedded[0].sequence", is(1))) //
+        .andExpect(jsonPath("$._embedded[0].label", is("test1"))) //
+        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/test/" + test1.getId()))) //
+        .andExpect(jsonPath("$._embedded[1].id", is(test2.getId()))) //
+        .andExpect(jsonPath("$._embedded[1].sequence", is(2))) //
+        .andExpect(jsonPath("$._embedded[1].label", is("test2updated"))) //
+        .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/test/" + test2.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test"))) //
+        .andExpect(jsonPath("$._links.item", hasSize(2))) //
+        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/test/" + test1.getId()))) //
+        .andExpect(jsonPath("$._links.item[1].href", is("http://localhost/test/" + test2.getId()))) //
         .andReturn();
     LOGGER.debug("List documents: " + result5.getResponse().getContentAsString());
 
@@ -142,14 +139,14 @@ public class TestRestControllerTest {
     MvcResult result7 = mockMvc.perform(get("/test")) //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
-        .andExpect(jsonPath("$.content", hasSize(1))) //
-        .andExpect(jsonPath("$.content[0].content.id", is(test2.getId()))) //
-        .andExpect(jsonPath("$.content[0].content.sequence", is(2))) //
-        .andExpect(jsonPath("$.content[0].content.label", is("test2updated"))) //
-        .andExpect(jsonPath("$.content[0].links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.content[0].links[0].href", is("http://localhost/test/" + test2.getId()))) //
-        .andExpect(jsonPath("$.links[0].rel", is("self"))) //
-        .andExpect(jsonPath("$.links[0].href", is("http://localhost/test"))) //
+        .andExpect(jsonPath("$._embedded", hasSize(1))) //
+        .andExpect(jsonPath("$._embedded[0].id", is(test2.getId()))) //
+        .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
+        .andExpect(jsonPath("$._embedded[0].label", is("test2updated"))) //
+        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/test/" + test2.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test"))) //
+        .andExpect(jsonPath("$._links.item", hasSize(1))) //
+        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/test/" + test2.getId()))) //
         .andReturn();
     LOGGER.debug("List documents: " + result7.getResponse().getContentAsString());
 

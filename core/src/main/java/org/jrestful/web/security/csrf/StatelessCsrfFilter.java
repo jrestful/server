@@ -26,8 +26,7 @@ import com.google.common.collect.Sets;
 
 /**
  * CSRF protection filter, implemented as explained in <a href=
- * "http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/"
- * >Robbert van Waveren article</a>.
+ * "http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/" >Robbert van Waveren article</a>.
  */
 @Component
 public class StatelessCsrfFilter extends OncePerRequestFilter {
@@ -38,7 +37,7 @@ public class StatelessCsrfFilter extends OncePerRequestFilter {
 
     private static final Set<RequestMethod> NO_PROTECTION_METHODS;
     static {
-      Set<RequestMethod> noProtectionMethods = new HashSet<RequestMethod>();
+      Set<RequestMethod> noProtectionMethods = new HashSet<>();
       noProtectionMethods.add(RequestMethod.GET);
       noProtectionMethods.add(RequestMethod.HEAD);
       noProtectionMethods.add(RequestMethod.TRACE);

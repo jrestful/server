@@ -16,14 +16,13 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * Allows GhostDriver to bind on an IP (broadly similar to
- * {@link PhantomJSDriver}).
+ * Allows GhostDriver to bind on an IP (broadly similar to {@link PhantomJSDriver}).
  */
 public class PrerenderDriver extends RemoteWebDriver implements TakesScreenshot {
 
   public static final Map<String, CommandInfo> CUSTOM_COMMANDS;
   static {
-    Map<String, CommandInfo> customCommands = new HashMap<String, CommandInfo>();
+    Map<String, CommandInfo> customCommands = new HashMap<>();
     customCommands.put("executePhantomScript", new CommandInfo("/session/:sessionId/phantom/execute", HttpVerb.POST));
     CUSTOM_COMMANDS = ImmutableMap.copyOf(customCommands);
   }

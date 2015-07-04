@@ -76,7 +76,7 @@ public class UsersConnectionsRepository<C extends SocialAuthConnection<U>, U ext
 
   @Override
   public ConnectionRepository createConnectionRepository(String userId) {
-    return new UserConnectionsRepository<C, U>(userService.findOne(userIdConverter.convert(userId)), connectionService, connectionFactoryLocator);
+    return new UserConnectionsRepository<>(userService.findOne(userIdConverter.convert(userId)), connectionService, connectionFactoryLocator);
   }
 
 }
