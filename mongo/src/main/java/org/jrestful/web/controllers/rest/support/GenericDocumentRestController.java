@@ -9,7 +9,7 @@ import java.util.List;
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.web.hateoas.Resource;
-import org.jrestful.web.hateoas.ResourceList;
+import org.jrestful.web.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,15 +33,15 @@ public abstract class GenericDocumentRestController<D extends GenericDocument> e
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<ResourceList<D>> list() {
+  public ResponseEntity<Resources<D>> list() {
     List<D> documents = service.findAll();
-    List<Resource<D>> resources = new ArrayList<>();
+    List<Resource<D>> documentResources = new ArrayList<>();
     for (D document : documents) {
-      Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
-      resources.add(resource);
+      Resource<D> documentResource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+      documentResources.add(documentResource);
     }
-    ResourceList<D> resourceList = new ResourceList<>(resources, linkTo(methodOn(getClass()).list()));
-    return new ResponseEntity<>(resourceList, HttpStatus.OK);
+    Resources<D> resources = new Resources<>(documentResources, linkTo(methodOn(getClass()).list()));
+    return new ResponseEntity<>(resources, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)

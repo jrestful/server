@@ -1,6 +1,6 @@
 # core
 
-`core` includes generic classes for services and controllers via Spring and Spring MVC, as well as CSRF protection via Spring Security and other utilities.
+`core` includes generic classes for services and controllers via Spring and Spring MVC, HATEOAS support over HAL, as well as CSRF protection via Spring Security and other utilities.
 
 ## How to install it?
 
@@ -121,6 +121,33 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
 
+`org.jrestful.web.hateoas.Resource` and `org.jrestful.web.hateoas.Resources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
+
+    @RequestMapping(value = "/articles/{id}", method = RequestMethod.GET, produces = "application/hal+json")
+    @ResponseBody
+    public ResponseEntity<Resource<Article>> get(@PathVariable String id) {
+      Article article = articleService.findOne(id);
+      if (article == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      } else {
+        Resource<Article> resource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+      }
+    }
+    
+    @RequestMapping(value = "/articles", method = RequestMethod.GET, produces = "application/hal+json")
+    @ResponseBody
+    public ResponseEntity<Resources<Article>> list() {
+      List<Article> articles = articleService.findAll();
+      List<Resource<Article>> articleResources = new ArrayList<>();
+      for (Article article : articles) {
+        Resource<Article> articleResource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+        articleResources.add(articleResource);
+      }
+      Resources<Article> resources = new Resources<>(articleResources, linkTo(methodOn(getClass()).list()));
+      return new ResponseEntity<>(resources, HttpStatus.OK);
+    }
+
 `org.jrestful.web.interceptors.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
 
 Example with a request on `http://domain.tld/context/url?param=value`:
@@ -147,4 +174,4 @@ A CSRF protection filter as available. To register it in your Spring Security co
  - `org.jrestful.util.DateUtils`: operations on dates.
  - `org.jrestful.util.Json64Utils`: JSON serialization and deserialization.
  - `org.jrestful.util.UrlUtils`: operations on URLs.
- - `org.jrestful.util.web.RequestUtils`: operations on HTTP requests and responses.
+ - `org.jrestful.util.web.HttpUtils`: operations on HTTP requests and responses.

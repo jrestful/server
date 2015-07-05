@@ -13,17 +13,17 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * @param <T>
  *          The type of content to serialize.
  */
-public class ResourceList<T> extends Resource<List<Resource<T>>> {
+public class Resources<T> extends Resource<List<Resource<T>>> {
 
-  public ResourceList(List<Resource<T>> resources, String href) {
+  public Resources(List<Resource<T>> resources, String href) {
     super(resources, href);
-    LinkList items = addLinkList("item");
+    Links items = addLinks("item");
     for (Resource<T> resource : resources) {
       items.add(resource.getHref());
     }
   }
 
-  public ResourceList(List<Resource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
+  public Resources(List<Resource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
     this(resources, hrefBuilder.toString());
   }
 

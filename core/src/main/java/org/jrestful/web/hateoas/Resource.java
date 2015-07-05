@@ -43,25 +43,23 @@ public class Resource<T> {
     return addLink(rel, hrefBuilder.toString());
   }
 
-  public LinkList addLinkList(String rel) throws IllegalArgumentException {
+  public Links addLinks(String rel) throws IllegalArgumentException {
     if (links.containsKey(rel)) {
       throw new IllegalArgumentException("A link with this rel already exists");
     }
-    LinkList linkList = new LinkList();
-    links.put(rel, linkList);
-    return linkList;
+    Links links = new Links();
+    this.links.put(rel, links);
+    return links;
   }
 
-  @JsonIgnore
   public Link getLink(String rel) {
     ResourceLink link = links.get(rel);
-    return (Link) (link.isLink() ? link : null);
+    return (Link) (link instanceof Link ? link : null);
   }
 
-  @JsonIgnore
-  public LinkList getLinkList(String rel) {
+  public Links getLinks(String rel) {
     ResourceLink link = links.get(rel);
-    return (LinkList) (link.isLinkList() ? link : null);
+    return (Links) (link instanceof Links ? link : null);
   }
 
   @JsonIgnore

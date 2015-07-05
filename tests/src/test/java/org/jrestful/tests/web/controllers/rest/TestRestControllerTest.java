@@ -56,8 +56,10 @@ public class TestRestControllerTest {
 
     // create test1 document
     TestDocument test1 = new TestDocument("test1");
-    mockMvc.perform( //
-        post("/test").contentType(MediaType.APPLICATION_JSON_VALUE).content(JsonUtils.toJson(test1).asString()));
+    ResultActions resultActions1 = mockMvc.perform( //
+        post("/test").contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(test1).asString()));
+    LOGGER.debug(resultActions1.andReturn().getResponse().getContentAsString());
     test1 = testService.findByLabel("test1");
     Assert.assertNotNull(test1);
     Assert.assertEquals("test1", test1.getLabel());
@@ -65,52 +67,55 @@ public class TestRestControllerTest {
     // create test2 document and check
     TestDocument test2 = new TestDocument("test2");
     ResultActions resultActions2 = mockMvc.perform( //
-        post("/test").contentType(MediaType.APPLICATION_JSON_VALUE).content(JsonUtils.toJson(test2).asString()));
+        post("/test").contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(test2).asString()));
+    LOGGER.debug(resultActions2.andReturn().getResponse().getContentAsString());
     test2 = testService.findByLabel("test2");
     Assert.assertNotNull(test2);
     Assert.assertEquals("test2", test2.getLabel());
-    MvcResult result2 = resultActions2 //
+    resultActions2 //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
         .andExpect(jsonPath("$.id", is(test2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.label", is("test2"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
-        .andReturn();
-    LOGGER.debug("Create test2 document: " + result2.getResponse().getContentAsString());
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId())));
 
     // get test2 document and check
-    MvcResult result3 = mockMvc.perform(get("/test/{id}", new Object[] { test2.getId() })) //
+    ResultActions resultActions3 = mockMvc.perform( //
+        get("/test/{id}", new Object[] { test2.getId() }));
+    LOGGER.debug(resultActions3.andReturn().getResponse().getContentAsString());
+    resultActions3 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
         .andExpect(jsonPath("$.id", is(test2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.label", is("test2"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
-        .andReturn();
-    LOGGER.debug("Get test2 document: " + result3.getResponse().getContentAsString());
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId())));
 
     // update test2 document and check
     test2.setLabel("test2updated");
     ResultActions resultActions4 = mockMvc.perform( //
         put("/test/{id}", new Object[] { test2.getId() }).contentType(MediaType.APPLICATION_JSON_VALUE).content(JsonUtils.toJson(test2).asString()));
+    LOGGER.debug(resultActions4.andReturn().getResponse().getContentAsString());
     test2 = testService.findByLabel("test2");
     Assert.assertNull(test2);
     test2 = testService.findByLabel("test2updated");
     Assert.assertNotNull(test2);
     Assert.assertEquals("test2updated", test2.getLabel());
-    MvcResult result4 = resultActions4 //
+    resultActions4 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
         .andExpect(jsonPath("$.id", is(test2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.label", is("test2updated"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId()))) //
-        .andReturn();
-    LOGGER.debug("Update test2 document: " + result4.getResponse().getContentAsString());
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/test/" + test2.getId())));
 
     // list documents and check
-    MvcResult result5 = mockMvc.perform(get("/test")) //
+    ResultActions resultActions5 = mockMvc.perform( //
+        get("/test"));
+    LOGGER.debug(resultActions5.andReturn().getResponse().getContentAsString());
+    resultActions5 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
         .andExpect(jsonPath("$._embedded", hasSize(2))) //
@@ -125,18 +130,22 @@ public class TestRestControllerTest {
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/test"))) //
         .andExpect(jsonPath("$._links.item", hasSize(2))) //
         .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/test/" + test1.getId()))) //
-        .andExpect(jsonPath("$._links.item[1].href", is("http://localhost/test/" + test2.getId()))) //
-        .andReturn();
-    LOGGER.debug("List documents: " + result5.getResponse().getContentAsString());
+        .andExpect(jsonPath("$._links.item[1].href", is("http://localhost/test/" + test2.getId())));
 
     // delete test1 document and check
-    mockMvc.perform(delete("/test/{id}", new Object[] { test1.getId() })) //
+    ResultActions resultActions6 = mockMvc.perform( //
+        delete("/test/{id}", new Object[] { test1.getId() }));
+    LOGGER.debug(resultActions6.andReturn().getResponse().getContentAsString());
+    resultActions6 //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
     test1 = testService.findByLabel("test1");
     Assert.assertNull(test1);
 
     // list documents and check
-    MvcResult result7 = mockMvc.perform(get("/test")) //
+    ResultActions resultActions7 = mockMvc.perform( //
+        get("/test"));
+    LOGGER.debug(resultActions7.andReturn().getResponse().getContentAsString());
+    resultActions7 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE)) //
         .andExpect(jsonPath("$._embedded", hasSize(1))) //
@@ -146,10 +155,7 @@ public class TestRestControllerTest {
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/test/" + test2.getId()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/test"))) //
         .andExpect(jsonPath("$._links.item", hasSize(1))) //
-        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/test/" + test2.getId()))) //
-        .andReturn();
-    LOGGER.debug("List documents: " + result7.getResponse().getContentAsString());
+        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/test/" + test2.getId())));
 
   }
-
 }

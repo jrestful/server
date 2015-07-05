@@ -26,16 +26,6 @@ public class Link implements ResourceLink, Map<String, String> {
   }
 
   @Override
-  public boolean isLink() {
-    return true;
-  }
-
-  @Override
-  public boolean isLinkList() {
-    return false;
-  }
-
-  @Override
   public int size() {
     return attributes.size();
   }

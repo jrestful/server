@@ -5,8 +5,4 @@ package org.jrestful.web.hateoas;
  */
 public interface ResourceLink {
 
-  boolean isLink();
-
-  boolean isLinkList();
-
 }

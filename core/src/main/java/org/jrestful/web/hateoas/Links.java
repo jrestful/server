@@ -11,7 +11,7 @@ import org.springframework.hateoas.core.LinkBuilderSupport;
 /**
  * List of HAL links.
  */
-public class LinkList implements ResourceLink, List<Link> {
+public class Links implements ResourceLink, List<Link> {
 
   private final List<Link> links = new ArrayList<>();
 
@@ -23,16 +23,6 @@ public class LinkList implements ResourceLink, List<Link> {
 
   public Link add(LinkBuilderSupport<?> hrefBuilder) {
     return add(hrefBuilder.toString());
-  }
-
-  @Override
-  public boolean isLink() {
-    return false;
-  }
-
-  @Override
-  public boolean isLinkList() {
-    return true;
   }
 
   @Override
