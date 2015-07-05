@@ -31,6 +31,46 @@ Add the context parameter:
       <param-value>WEB-INF/seo.properties</param-value>
     </context-param>
 
+### In your URL rewriting
+
+As the URL mapping is done client-side by AngularJS, the server has to forward those URL to `/`. This can easily get done with [Tuckey UrlRewriteFilter](http://tuckey.org/urlrewrite/), by adding a file `urlrewrite.xml` in your `WEB-INF` folder. Example:
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+    <urlrewrite>
+      
+      <rule>
+        <from>^/home$</from>
+        <to>/</to>
+      </rule>
+      
+      <rule>
+      	<from>^/article/.*$</from>
+      	<to>/</to>
+      </rule>
+    
+    </urlrewrite>
+
+The prerenderer has to know the original URL: it will look for it in a `prerenderUri` request attribute. To automatically add this request attribute, simply update your URL rewriting as follow:
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+    <urlrewrite>
+      
+      <rule>
+        <from>^/home$</from>
+        <set name="prerenderUri">$0</set>
+        <to>/</to>
+      </rule>
+      
+      <rule>
+        <from>^/article/.*$</from>
+        <set name="prerenderUri">$0</set>
+        <to>/</to>
+      </rule>
+    
+    </urlrewrite>
+
 ### In your code
 
 Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Spring component.
