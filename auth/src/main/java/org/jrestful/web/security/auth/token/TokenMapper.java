@@ -65,7 +65,7 @@ public class TokenMapper {
           }
         }
       } catch (IllegalArgumentException e) {
-        LOGGER.error("Authentication tampering attempt");
+        LOGGER.warn("Authentication tampering attempt");
       }
     }
     return null;
