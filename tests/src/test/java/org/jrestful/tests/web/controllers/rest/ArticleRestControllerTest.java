@@ -118,6 +118,10 @@ public class ArticleRestControllerTest {
     resultActions5 //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(jsonPath("$.pageIndex", is(0))) //
+        .andExpect(jsonPath("$.pageSize", is(25))) //
+        .andExpect(jsonPath("$.totalPages", is(1))) //
+        .andExpect(jsonPath("$.totalItems", is(2))) //
         .andExpect(jsonPath("$._embedded", hasSize(2))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article1.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(1))) //
@@ -127,10 +131,10 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._embedded[1].sequence", is(2))) //
         .andExpect(jsonPath("$._embedded[1].title", is("article2updated"))) //
         .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles"))) //
-        .andExpect(jsonPath("$._links.item", hasSize(2))) //
-        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/articles/" + article1.getId()))) //
-        .andExpect(jsonPath("$._links.item[1].href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=0&pageSize=25"))) //
+        .andExpect(jsonPath("$._links.items", hasSize(2))) //
+        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/articles/" + article2.getId())));
 
     // delete article1
     ResultActions resultActions6 = mockMvc.perform( //
@@ -153,9 +157,34 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
         .andExpect(jsonPath("$._embedded[0].title", is("article2updated"))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles"))) //
-        .andExpect(jsonPath("$._links.item", hasSize(1))) //
-        .andExpect(jsonPath("$._links.item[0].href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=0&pageSize=25"))) //
+        .andExpect(jsonPath("$._links.items", hasSize(1))) //
+        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article2.getId())));
+    
+    // generate articles
+    for (int i = 1; i <= 9; i++) {
+      articleService.insert(new Article("generated" + i));
+    }
+    Assert.assertEquals(10, articleService.count());
+    
+    // list articles
+    ResultActions resultActions8 = mockMvc.perform( //
+        get("/articles?pageIndex=2&pageSize=2"));
+    LOGGER.debug(resultActions8.andReturn().getResponse().getContentAsString());
+    resultActions8 //
+        .andExpect(status().is(HttpStatus.OK.value())) //
+        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(jsonPath("$.pageIndex", is(2))) //
+        .andExpect(jsonPath("$.pageSize", is(2))) //
+        .andExpect(jsonPath("$.totalPages", is(5))) //
+        .andExpect(jsonPath("$.totalItems", is(10))) //
+        .andExpect(jsonPath("$._embedded", hasSize(2))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=2&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.first.href", is("http://localhost/articles?pageIndex=0&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.previous.href", is("http://localhost/articles?pageIndex=1&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.next.href", is("http://localhost/articles?pageIndex=3&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.last.href", is("http://localhost/articles?pageIndex=4&pageSize=2")));
 
   }
+  
 }

@@ -17,7 +17,7 @@ public class Resources<T> extends Resource<List<Resource<T>>> {
 
   public Resources(List<Resource<T>> resources, String href) {
     super(resources, href);
-    Links items = addLinks("item");
+    Links items = addLinks("items");
     for (Resource<T> resource : resources) {
       items.add(resource.getHref());
     }

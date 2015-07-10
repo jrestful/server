@@ -8,8 +8,11 @@ import java.util.List;
 
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
+import org.jrestful.web.hateoas.PageableResources;
 import org.jrestful.web.hateoas.Resource;
-import org.jrestful.web.hateoas.Resources;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Generic abstract class for a document REST controller.
@@ -33,14 +37,27 @@ public abstract class GenericDocumentRestController<D extends GenericDocument> e
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<Resources<D>> list() {
-    List<D> documents = service.findAll();
+  public ResponseEntity<PageableResources<D>> list(@RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "25") int pageSize) {
+    Pageable pageRequest = new PageRequest(pageIndex, pageSize);
+    Page<D> page = service.findAll(pageRequest);
     List<Resource<D>> documentResources = new ArrayList<>();
-    for (D document : documents) {
+    for (D document : page) {
       Resource<D> documentResource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
       documentResources.add(documentResource);
     }
-    Resources<D> resources = new Resources<>(documentResources, linkTo(methodOn(getClass()).list()));
+    PageableResources<D> resources = new PageableResources<>(documentResources, linkTo(methodOn(getClass()).list(pageIndex, pageSize)));
+    if (!page.isFirst()) {
+      resources.addLink("first", linkTo(methodOn(getClass()).list(0, pageSize)));
+      resources.addLink("previous", linkTo(methodOn(getClass()).list(pageIndex - 1, pageSize)));
+    }
+    if (!page.isLast()) {
+      resources.addLink("next", linkTo(methodOn(getClass()).list(pageIndex + 1, pageSize)));
+      resources.addLink("last", linkTo(methodOn(getClass()).list(page.getTotalPages() - 1, pageSize)));
+    }
+    resources.setPageIndex(pageIndex);
+    resources.setPageSize(pageSize);
+    resources.setTotalPages(page.getTotalPages());
+    resources.setTotalItems(page.getTotalElements());
     return new ResponseEntity<>(resources, HttpStatus.OK);
   }
 
