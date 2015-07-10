@@ -19,18 +19,8 @@
   <mvc:annotation-driven />
   
   <mvc:interceptors>
-  
-    <mvc:interceptor>
-      <mvc:mapping path="/**" />
-      <mvc:exclude-mapping path="/static-${app.version}/**" />
-      <bean class="org.jrestful.web.interceptors.UrlInterceptor" />
-    </mvc:interceptor>
-    
+    <bean class="org.jrestful.web.interceptors.UrlInterceptor" />
   </mvc:interceptors>
-    
-  <security:global-method-security pre-post-annotations="enabled" />
-  
-  <task:annotation-driven />
 
   <bean name="fongo" class="com.github.fakemongo.Fongo">
     <constructor-arg value="InMemoryMongo" />
