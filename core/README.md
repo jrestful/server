@@ -123,7 +123,7 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
 
 `org.jrestful.web.hateoas.Resource` and `org.jrestful.web.hateoas.Resources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
 
-    @RequestMapping(value = "/articles/{id}", method = RequestMethod.GET, produces = "application/hal+json")
+    @RequestMapping(value = "/articles/{id}", method = RequestMethod.GET, produces = Resource.HAL_MEDIA_TYPE)
     @ResponseBody
     public ResponseEntity<Resource<Article>> get(@PathVariable String id) {
       Article article = articleService.findOne(id);
@@ -135,7 +135,7 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
       }
     }
     
-    @RequestMapping(value = "/articles", method = RequestMethod.GET, produces = "application/hal+json")
+    @RequestMapping(value = "/articles", method = RequestMethod.GET, produces = Resource.HAL_MEDIA_TYPE)
     @ResponseBody
     public ResponseEntity<Resources<Article>> list() {
       List<Article> articles = articleService.findAll();

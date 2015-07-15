@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.jrestful.tests.business.ArticleService;
 import org.jrestful.tests.data.documents.Article;
 import org.jrestful.util.JsonUtils;
+import org.jrestful.web.hateoas.Resource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class ArticleRestControllerTest {
     Assert.assertEquals("article2", article2.getTitle());
     resultActions2 //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
@@ -86,7 +87,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions3.andReturn().getResponse().getContentAsString());
     resultActions3 //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
@@ -105,7 +106,7 @@ public class ArticleRestControllerTest {
     Assert.assertEquals("article2updated", article2.getTitle());
     resultActions4 //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2updated"))) //
@@ -117,7 +118,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions5.andReturn().getResponse().getContentAsString());
     resultActions5 //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(0))) //
         .andExpect(jsonPath("$.pageSize", is(25))) //
         .andExpect(jsonPath("$.totalPages", is(1))) //
@@ -151,7 +152,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions7.andReturn().getResponse().getContentAsString());
     resultActions7 //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$._embedded", hasSize(1))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
@@ -160,20 +161,20 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=0&pageSize=25"))) //
         .andExpect(jsonPath("$._links.items", hasSize(1))) //
         .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article2.getId())));
-    
+
     // generate articles
     for (int i = 1; i <= 9; i++) {
       articleService.insert(new Article("generated" + i));
     }
     Assert.assertEquals(10, articleService.count());
-    
+
     // list articles
     ResultActions resultActions8 = mockMvc.perform( //
         get("/articles?pageIndex=2&pageSize=2"));
     LOGGER.debug(resultActions8.andReturn().getResponse().getContentAsString());
     resultActions8 //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType("application/hal+json")) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(2))) //
         .andExpect(jsonPath("$.pageSize", is(2))) //
         .andExpect(jsonPath("$.totalPages", is(5))) //
@@ -186,5 +187,5 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.last.href", is("http://localhost/articles?pageIndex=4&pageSize=2")));
 
   }
-  
+
 }

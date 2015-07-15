@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 public class Resource<T> {
 
+  public static final String HAL_MEDIA_TYPE = "application/hal+json";
+
   private final T content;
 
   private final Map<String, ResourceLink> links = new LinkedHashMap<>();
