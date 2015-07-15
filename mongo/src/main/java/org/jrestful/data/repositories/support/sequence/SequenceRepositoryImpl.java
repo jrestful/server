@@ -1,5 +1,9 @@
 package org.jrestful.data.repositories.support.sequence;
 
+import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
@@ -9,11 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
@@ -54,10 +55,11 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
   }
 
   private Sequence findNext(String collectionName) {
-    Query query = new Query(Criteria.where("_id").is(collectionName));
-    Update update = new Update().inc("value", 1);
-    FindAndModifyOptions options = new FindAndModifyOptions().returnNew(true);
-    return mongoOperations.findAndModify(query, update, options, Sequence.class);
+    return mongoOperations.findAndModify( //
+        query(where("_id").is(collectionName)), //
+        new Update().inc("value", 1), //
+        options().returnNew(true), //
+        Sequence.class);
   }
 
   private void initialize(String collectionName) {
