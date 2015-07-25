@@ -2,13 +2,17 @@ package org.jrestful.context.support;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.MultiValueMap;
 
-class IfPropertiesDefinedCondition implements Condition {
+/**
+ * Loads a bean only if specified properties are defined.
+ */
+public class IfPropertiesDefinedCondition implements Condition {
 
   @Override
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -17,20 +21,27 @@ class IfPropertiesDefinedCondition implements Condition {
     if (propertiesNames.length == 0) {
       return false;
     }
-    boolean propertiesDefined = true;
     String propertiesBeanName = (String) attributes.getFirst("propertiesBeanName");
     if (propertiesBeanName.isEmpty()) {
       Environment environment = context.getEnvironment();
       for (String propertyName : propertiesNames) {
-        propertiesDefined &= environment.containsProperty(propertyName);
+        if (!environment.containsProperty(propertyName)) {
+          return false;
+        }
       }
     } else {
-      Properties properties = (Properties) context.getBeanFactory().getBean(propertiesBeanName);
-      for (String propertyName : propertiesNames) {
-        propertiesDefined &= properties.containsKey(propertyName);
+      try {
+        Properties properties = (Properties) context.getBeanFactory().getBean(propertiesBeanName);
+        for (String propertyName : propertiesNames) {
+          if (!properties.containsKey(propertyName)) {
+            return false;
+          }
+        }
+      } catch (NoSuchBeanDefinitionException ignore) {
+        return false;
       }
     }
-    return propertiesDefined;
+    return true;
   }
 
 }

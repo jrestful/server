@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jrestful.context.support.IfPropertiesDefined;
 import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import com.google.common.collect.Sets;
  * "http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/" >Robbert van Waveren article</a>.
  */
 @Component
+@IfPropertiesDefined(value = { "csrf.headerName", "csrf.cookieName" }, propertiesBeanName = "secProps")
 public class StatelessCsrfFilter extends OncePerRequestFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StatelessCsrfFilter.class);

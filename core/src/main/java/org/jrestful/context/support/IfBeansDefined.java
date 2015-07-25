@@ -9,16 +9,14 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * Can be added over Spring component to create an instance only if some properties are defined.
+ * Can be added over Spring component to create an instance only if some beans are defined.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(IfPropertiesDefinedCondition.class)
-public @interface IfPropertiesDefined {
+@Conditional(IfBeansDefinedCondition.class)
+public @interface IfBeansDefined {
 
-  String[] value();
-
-  String propertiesBeanName() default "";
+  Class<?>[] value();
 
 }

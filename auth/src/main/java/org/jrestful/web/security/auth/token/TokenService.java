@@ -39,7 +39,7 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
 
   @Autowired
   public TokenService(AuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
-      @Value("${auth.cookieName}") String cookieName, @Value("${auth.headerName}") String headerName) {
+      @Value("${auth.cookieName:#{null}}") String cookieName, @Value("${auth.headerName}") String headerName) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;
@@ -52,12 +52,14 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
     Token tokenObject = new Token(user.getId().toString(), expirationDate);
     String tokenString = tokenMapper.serialize(tokenObject);
     HttpUtils.writeHeader(response, headerName, tokenString);
-    HttpUtils.writeCookie(response, cookieName, tokenString, TEN_DAYS * IN_SECONDS);
+    if (cookieName != null) {
+      HttpUtils.writeCookie(response, cookieName, tokenString, TEN_DAYS * IN_SECONDS);
+    }
   }
 
   public U read(HttpServletRequest request) {
     String tokenString = HttpUtils.readHeader(request, headerName);
-    if (tokenString == null) {
+    if (tokenString == null && cookieName != null) {
       tokenString = HttpUtils.readCookie(request, cookieName);
     }
     if (tokenString != null) {

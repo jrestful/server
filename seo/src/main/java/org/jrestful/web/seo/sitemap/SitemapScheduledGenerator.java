@@ -5,6 +5,7 @@ import java.io.File;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
+import org.jrestful.context.support.IfBeansDefined;
 import org.jrestful.web.util.sitemap.SitemapGenerator;
 import org.jrestful.web.util.sitemap.UrlEntries;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
  * Builds a sitemap on server startup and every day at 5 am.
  */
 @Component
+@IfBeansDefined(SitemapBuilder.class)
 public class SitemapScheduledGenerator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SitemapScheduledGenerator.class);
