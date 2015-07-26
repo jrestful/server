@@ -3,11 +3,13 @@ package org.jrestful.web.util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * Sets URL related attributes to requests.
  */
+@Component
 public class UrlInterceptor extends HandlerInterceptorAdapter {
 
   public static final String DOMAIN_URL = "domainUrl";

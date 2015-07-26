@@ -19,13 +19,13 @@
   
     <mvc:interceptor>
       <mvc:mapping path="/api-${app.apiVersion}/**" />
-      <bean class="org.jrestful.web.security.cors.CorsInterceptor" />
+      <ref bean="corsInterceptor" />
     </mvc:interceptor>
   
     <mvc:interceptor>
       <mvc:mapping path="/**" />
       <mvc:exclude-mapping path="/static-${app.version}/**" />
-      <bean class="org.jrestful.web.util.UrlInterceptor" />
+      <ref bean="urlInterceptor" />
     </mvc:interceptor>
     
   </mvc:interceptors>

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -27,6 +28,7 @@ import com.google.common.collect.Iterables;
 /**
  * Intercepts requests to prerender pages when bots are requesting them, so that they can see the fully loaded content.
  */
+@Component
 public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrerenderInterceptor.class);

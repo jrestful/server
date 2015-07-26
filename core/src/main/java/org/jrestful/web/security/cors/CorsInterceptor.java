@@ -5,11 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * Handles CORS requests.
  */
+@Component
 public class CorsInterceptor extends HandlerInterceptorAdapter {
 
   private final String allowOrigin;

@@ -18,7 +18,7 @@
     <mvc:interceptor>
       <mvc:mapping path="/**" />
       <mvc:exclude-mapping path="/static-${app.version}/**" />
-      <bean class="org.jrestful.web.seo.prerender.PrerenderInterceptor" />
+      <ref bean="prerenderInterceptor" />
     </mvc:interceptor>
     
   </mvc:interceptors>
