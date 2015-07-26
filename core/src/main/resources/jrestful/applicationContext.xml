@@ -13,7 +13,7 @@
   <util:properties id="appProps" location="${jrestfulAppProps}" />
   <context:property-placeholder properties-ref="appProps" ignore-unresolvable="true" />
   
-  <util:properties id="secProps" location="${jrestfulSecProps:classpath:jrestful/fallback.properties}" />
+  <util:properties id="secProps" location="${jrestfulSecProps}" ignore-resource-not-found="true" />
   <context:property-placeholder properties-ref="secProps" ignore-unresolvable="true" />
 
   <context:component-scan base-package="org.jrestful">
