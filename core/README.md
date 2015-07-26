@@ -97,19 +97,47 @@ Here, your resources are expected to be located in a `/static` folder.
 
     app.version=1.3.9
 
+### The API version
+
+ - `app.apiVersion`: The API version.
+
+jrestful registers request interceptors that only match URL starting with `/api-${app.apiVersion}/**`. To implement your API behind this mapping, use a placeholder in the `@RequestMapping` annotation:
+
+    @RestController
+    @RequestMapping("/api-${app.apiVersion}")
+    public class ArticleController {
+    
+    }
+
+#### Example
+
+    app.apiVersion=1.3
+
 ### `jrestfulSecProps`
 
-#### The CSRF parameters
+#### The CSRF parameters (optional)
 
  - `csrf.headerName`: The request header that will be read for CSRF protection.
  - `csrf.cookieName`: The cookie that will be read for CSRF protection.
 
 The CSRF protection is implemented as explained in [Robbert van Waveren article](http://blog.jdriven.com/2014/10/stateless-spring-security-part-1-stateless-csrf-protection/).
 
+If not provided, the filter won't be registrable.
+
 #### Example
 
     csrf.headerName=X-CSRF-TOKEN
     csrf.cookieName=MYWEBSITE-CSRF-TOKEN
+
+#### The CORS parameters (optional)
+
+ - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api-${app.apiVersion}/**`.
+
+If not provided, no header will be added.
+
+#### Example
+
+    cors.allowOrigin=*
 
 ## What does `core` provide?
 
@@ -148,7 +176,9 @@ The CSRF protection is implemented as explained in [Robbert van Waveren article]
       return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-`org.jrestful.web.interceptors.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
+Be aware that `ControllerLinkBuilder` isn't able to resolve placeholders yet: you may need to hardcode them in your mapping until a fix is provided (see https://github.com/spring-projects/spring-hateoas/issues/220).
+
+`org.jrestful.web.util.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
 
 Example with a request on `http://domain.tld/context/url?param=value`:
 

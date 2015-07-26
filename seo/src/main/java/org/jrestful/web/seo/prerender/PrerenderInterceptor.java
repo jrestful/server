@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jrestful.web.interceptors.UrlInterceptor;
+import org.jrestful.web.util.UrlInterceptor;
 import org.jrestful.web.util.prerender.PrerenderDriverService;
 import org.jrestful.web.util.prerender.Prerenderer;
 import org.slf4j.Logger;
@@ -25,8 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 
 /**
- * Intercepts requests to prerender pages when bots are requesting them, so that
- * they can see the fully loaded content.
+ * Intercepts requests to prerender pages when bots are requesting them, so that they can see the fully loaded content.
  */
 public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
@@ -68,37 +67,42 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
 
   }
 
-  private final File prerenderedDir;
+  private final boolean prerender;
 
-  private final PrerenderDriverService driverService;
+  private File prerenderedDir;
+
+  private PrerenderDriverService driverService;
 
   @Autowired
-  public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path}") String phantomjsPath,
-      @Value("${phantomjs.bind}") String phantomjsBind) throws IOException {
-    prerenderedDir = new File(appDir, "prerendered");
-    prerenderedDir.mkdirs();
-    for (File file : prerenderedDir.listFiles()) {
-      file.delete();
-    }
-    if (DIGITS.matcher(phantomjsBind).matches()) {
-      driverService = new PrerenderDriverService(new File(phantomjsPath), Integer.parseInt(phantomjsBind));
-    } else {
-      String ip;
-      int port;
-      try {
-        String[] parts = phantomjsBind.split(":");
-        ip = parts[0];
-        port = Integer.parseInt(parts[1]);
-      } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-        throw new IllegalArgumentException("Property 'phantomjs.bind' must either be a single port or follow the syntax 'server:port'", e);
+  public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path:#{null}}") String phantomjsPath,
+      @Value("${phantomjs.bind:#{null}}") String phantomjsBind) throws IOException {
+    prerender = phantomjsPath != null && phantomjsBind != null;
+    if (prerender) {
+      prerenderedDir = new File(appDir, "prerendered");
+      prerenderedDir.mkdirs();
+      for (File file : prerenderedDir.listFiles()) {
+        file.delete();
       }
-      driverService = new PrerenderDriverService(new File(phantomjsPath), ip, port);
+      if (DIGITS.matcher(phantomjsBind).matches()) {
+        driverService = new PrerenderDriverService(new File(phantomjsPath), Integer.parseInt(phantomjsBind));
+      } else {
+        String ip;
+        int port;
+        try {
+          String[] parts = phantomjsBind.split(":");
+          ip = parts[0];
+          port = Integer.parseInt(parts[1]);
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+          throw new IllegalArgumentException("Property 'phantomjs.bind' must either be a single port or follow the syntax 'server:port'", e);
+        }
+        driverService = new PrerenderDriverService(new File(phantomjsPath), ip, port);
+      }
     }
   }
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    if (isPrerenderable(request) && isBot(request)) {
+    if (prerender && isPrerenderable(request) && isBot(request)) {
       String baseUrl = request.getAttribute(UrlInterceptor.BASE_URL).toString();
       String prerenderUri = request.getAttribute("prerenderUri").toString();
       LOGGER.debug("A bot is requesting URL " + baseUrl + prerenderUri + ", prerendering needed");

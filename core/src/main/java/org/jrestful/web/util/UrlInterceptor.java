@@ -1,4 +1,4 @@
-package org.jrestful.web.interceptors;
+package org.jrestful.web.util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

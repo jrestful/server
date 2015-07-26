@@ -19,7 +19,7 @@
   <mvc:annotation-driven />
   
   <mvc:interceptors>
-    <bean class="org.jrestful.web.interceptors.UrlInterceptor" />
+    <bean class="org.jrestful.web.util.UrlInterceptor" />
   </mvc:interceptors>
 
   <bean name="fongo" class="com.github.fakemongo.Fongo">

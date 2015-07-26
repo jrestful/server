@@ -71,9 +71,11 @@ The prerenderer has to know the original URL: it will look for it in a `prerende
     
     </urlrewrite>
 
-### In your code
+### In your code (optional)
 
 Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Spring component.
+
+If not provided, no sitemap will be generated.
 
 #### Example
 
@@ -118,12 +120,14 @@ Implement `org.jrestful.web.seo.sitemap.SitemapBuilder`, and register it as a Sp
 
 ### `jrestfulSeoProps`
 
-#### The PhantomJS parameters
+#### The PhantomJS parameters (optional)
 
  - `phantomjs.path`: The path to the PhantomJS executable.
  - `phantomjs.bind`: The IP/port PhantomJS GhostDriver will bind on. It can be either a single port (e.g. `23456`) or an IP/port (e.g. `192.168.1.42:23456`).
 
 `seo` uses PhantomJS to prerender pages when bots are requesting them, so that they can see the fully loaded content. While PhantomJS default binds on localhost, some servers do not allow it (e.g. [OpenShift](https://www.openshift.com/)). A patched version of PhantomJS can be found at the root directory of `seo` (see [this post](http://stackoverflow.com/q/30506496/1225328) on Stack Overflow), which allows specifying the IP to bind on (hence the possibility of giving the IP for the `phantomjs.bind` property).
+
+If not provided, prerendering won't be done.
 
 #### Example
 
