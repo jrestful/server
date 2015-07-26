@@ -3,8 +3,8 @@ package org.jrestful.context.support;
 import java.util.Properties;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.MultiValueMap;
@@ -12,7 +12,7 @@ import org.springframework.util.MultiValueMap;
 /**
  * Loads a bean only if specified properties are defined.
  */
-public class IfPropertiesDefinedCondition implements Condition {
+public class IfPropertiesDefinedCondition implements ConfigurationCondition {
 
   @Override
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -42,6 +42,11 @@ public class IfPropertiesDefinedCondition implements Condition {
       }
     }
     return true;
+  }
+
+  @Override
+  public ConfigurationPhase getConfigurationPhase() {
+    return ConfigurationPhase.REGISTER_BEAN;
   }
 
 }
