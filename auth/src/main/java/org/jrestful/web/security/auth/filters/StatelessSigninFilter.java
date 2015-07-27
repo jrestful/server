@@ -33,7 +33,7 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   private final TokenService<U, K> tokenService;
 
   @Autowired
-  public StatelessSigninFilter(AuthUserService<U, K> userService, TokenService<U, K> tokenService, @Value("${auth.tokenEndpoint}") String endpoint,
+  public StatelessSigninFilter(AuthUserService<U, K> userService, TokenService<U, K> tokenService, @Value("#{secProps['auth.tokenEndpoint']}") String endpoint,
       AuthenticationManager authenticationManager) {
     super(new AntPathRequestMatcher(endpoint));
     setAuthenticationManager(authenticationManager);

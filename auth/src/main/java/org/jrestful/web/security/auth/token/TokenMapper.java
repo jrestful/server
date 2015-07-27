@@ -28,7 +28,7 @@ public class TokenMapper {
   private final Mac hmac;
 
   @Autowired
-  public TokenMapper(@Value("${auth.tokenSecret}") String secret) {
+  public TokenMapper(@Value("#{secProps['auth.tokenSecret']}") String secret) {
     try {
       hmac = Mac.getInstance(HMAC);
       hmac.init(new SecretKeySpec(DatatypeConverter.parseBase64Binary(secret), HMAC));

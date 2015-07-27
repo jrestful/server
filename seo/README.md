@@ -31,6 +31,16 @@ Add the context parameter:
       <param-value>WEB-INF/seo.properties</param-value>
     </context-param>
 
+### In your contexts
+
+No placeholder is defined by jrestful, but properties beans are available:
+
+ - `jrestfulSeoProps` properties are available in a bean named `seoProps`
+
+You can then register placeholders based on these beans if needed:
+
+    <context:property-placeholder properties-ref="seoProps" ignore-unresolvable="true" />
+
 ### In your URL rewriting
 
 As the URL mapping is done client-side by AngularJS, the server has to forward those URL to `/`. This can easily get done with [Tuckey UrlRewriteFilter](http://tuckey.org/urlrewrite/), by adding a file `urlrewrite.xml` in your `WEB-INF` folder. Example:

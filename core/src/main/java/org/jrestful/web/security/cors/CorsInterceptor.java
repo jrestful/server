@@ -17,7 +17,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
   private final String allowOrigin;
 
   @Autowired
-  public CorsInterceptor(@Value("${cors.allowOrigin:#{null}}") String allowOrigin) {
+  public CorsInterceptor(@Value("#{secProps['cors.allowOrigin']}") String allowOrigin) {
     this.allowOrigin = allowOrigin;
   }
 

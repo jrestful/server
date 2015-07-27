@@ -31,6 +31,16 @@ Add the context parameter:
       <param-value>classpath:mongo.properties</param-value>
     </context-param>
 
+### In your contexts
+
+No placeholder is defined by jrestful, but properties beans are available:
+
+ - `jrestfulMongoProps` properties are available in a bean named `mongoProps`
+
+You can then register placeholders based on these beans if needed:
+
+    <context:property-placeholder properties-ref="mongoProps" ignore-unresolvable="true" />
+
 ## What is expected in the properties files?
 
 ### `jrestfulMongoProps`

@@ -76,8 +76,8 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
   private PrerenderDriverService driverService;
 
   @Autowired
-  public PrerenderInterceptor(@Value("${app.dir}") String appDir, @Value("${phantomjs.path:#{null}}") String phantomjsPath,
-      @Value("${phantomjs.bind:#{null}}") String phantomjsBind) throws IOException {
+  public PrerenderInterceptor(@Value("#{appProps['app.dir']}") String appDir, @Value("#{seoProps['phantomjs.path']}") String phantomjsPath,
+      @Value("#{seoProps['phantomjs.bind']}") String phantomjsBind) throws IOException {
     prerender = phantomjsPath != null && phantomjsBind != null;
     if (prerender) {
       prerenderedDir = new File(appDir, "prerendered");

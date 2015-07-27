@@ -39,7 +39,7 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
 
   @Autowired
   public TokenService(AuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
-      @Value("${auth.cookieName:#{null}}") String cookieName, @Value("${auth.headerName}") String headerName) {
+      @Value("#{secProps['auth.cookieName']}") String cookieName, @Value("#{secProps['auth.headerName']}") String headerName) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;

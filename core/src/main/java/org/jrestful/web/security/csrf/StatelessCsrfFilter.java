@@ -63,7 +63,7 @@ public class StatelessCsrfFilter extends OncePerRequestFilter {
   private final String cookieName;
 
   @Autowired
-  public StatelessCsrfFilter(@Value("${csrf.headerName}") String headerName, @Value("${csrf.cookieName}") String cookieName) {
+  public StatelessCsrfFilter(@Value("#{secProps['csrf.headerName']}") String headerName, @Value("#{secProps['csrf.cookieName']}") String cookieName) {
     this.headerName = headerName;
     this.cookieName = cookieName;
   }

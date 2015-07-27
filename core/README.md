@@ -74,6 +74,18 @@ Update the Spring `contextConfigLocation` parameters:
       <load-on-startup>1</load-on-startup>
     </servlet>
 
+### In your contexts
+
+No placeholder is defined by jrestful, but properties beans are available:
+
+ - `jrestfulAppProps` properties are available in a bean named `appProps`
+ - `jrestfulSecProps` properties are available in a bean named `secProps`
+
+You can then register placeholders based on these beans if needed:
+
+    <context:property-placeholder properties-ref="appProps" ignore-unresolvable="true" />
+    <context:property-placeholder properties-ref="secProps" ignore-unresolvable="true" />
+
 ## What is expected in the properties files?
 
 ### `jrestfulAppProps`
@@ -151,31 +163,34 @@ If not provided, no header will be added.
 
 `org.jrestful.web.hateoas.Resource` and `org.jrestful.web.hateoas.Resources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
 
-    @RequestMapping(value = "/articles/{id}", method = RequestMethod.GET, produces = Resource.HAL_MEDIA_TYPE)
-    @ResponseBody
-    public ResponseEntity<Resource<Article>> get(@PathVariable String id) {
-      Article article = articleService.findOne(id);
-      if (article == null) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      } else {
-        Resource<Article> resource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
-        return new ResponseEntity<>(resource, HttpStatus.OK);
-      }
-    }
-    
-    @RequestMapping(value = "/articles", method = RequestMethod.GET, produces = Resource.HAL_MEDIA_TYPE)
-    @ResponseBody
-    public ResponseEntity<Resources<Article>> list() {
-      List<Article> articles = articleService.findAll();
-      List<Resource<Article>> articleResources = new ArrayList<>();
-      for (Article article : articles) {
-        Resource<Article> articleResource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
-        articleResources.add(articleResource);
-      }
-      Resources<Article> resources = new Resources<>(articleResources, linkTo(methodOn(getClass()).list()));
-      return new ResponseEntity<>(resources, HttpStatus.OK);
-    }
+    @RestController
+    @RequestMapping(value = "/api-${app.apiVersion}/articles", produces = Resource.HAL_MEDIA_TYPE)
+    public class ArticleRestController extends GenericRestController {
 
+      @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+      public ResponseEntity<Resource<Article>> get(@PathVariable String id) {
+        Article article = articleService.findOne(id);
+        if (article == null) {
+          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+          Resource<Article> resource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+          return new ResponseEntity<>(resource, HttpStatus.OK);
+        }
+      }
+      
+      @RequestMapping(method = RequestMethod.GET)
+      public ResponseEntity<Resources<Article>> list() {
+        List<Article> articles = articleService.findAll();
+        List<Resource<Article>> articleResources = new ArrayList<>();
+        for (Article article : articles) {
+          Resource<Article> articleResource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+          articleResources.add(articleResource);
+        }
+        Resources<Article> resources = new Resources<>(articleResources, linkTo(methodOn(getClass()).list()));
+        return new ResponseEntity<>(resources, HttpStatus.OK);
+      }
+
+    }
 Be aware that `ControllerLinkBuilder` isn't able to resolve placeholders yet: you may need to hardcode them in your mapping until a fix is provided (see https://github.com/spring-projects/spring-hateoas/issues/220).
 
 `org.jrestful.web.util.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).

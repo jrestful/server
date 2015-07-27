@@ -11,10 +11,7 @@
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
 
   <util:properties id="appProps" location="${jrestfulAppProps}" />
-  <context:property-placeholder properties-ref="appProps" ignore-unresolvable="true" />
-  
-  <util:properties id="secProps" location="${jrestfulSecProps}" />
-  <context:property-placeholder properties-ref="secProps" ignore-unresolvable="true" />
+  <util:properties id="secProps" location="${jrestfulSecProps}" ignore-resource-not-found="true" />
 
   <context:component-scan base-package="org.jrestful">
     <context:exclude-filter type="regex" expression="org\.jrestful\.web\.controllers\..*" />

@@ -31,7 +31,7 @@ public class SitemapScheduledGenerator {
   private final File sitemap;
 
   @Autowired
-  public SitemapScheduledGenerator(@Value("${app.url}") String appUrl, SitemapBuilder sitemapBuilder, @Value("${app.dir}") String appDir) {
+  public SitemapScheduledGenerator(@Value("#{appProps['app.url']}") String appUrl, SitemapBuilder sitemapBuilder, @Value("#{appProps['app.dir']}") String appDir) {
     this.appUrl = appUrl;
     this.sitemapBuilder = sitemapBuilder;
     sitemap = new File(appDir, "resources/sitemap.xml");
