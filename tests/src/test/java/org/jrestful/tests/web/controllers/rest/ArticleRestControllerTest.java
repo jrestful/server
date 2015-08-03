@@ -11,9 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.jrestful.tests.business.ArticleService;
+import org.jrestful.tests.business.UserService;
 import org.jrestful.tests.data.documents.Article;
+import org.jrestful.tests.data.documents.User;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +24,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -30,6 +36,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import com.google.common.collect.Lists;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "classpath*:jrestful/tests/applicationContext.xml" })
@@ -41,39 +49,96 @@ public class ArticleRestControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
+  private WebApplicationContext webApplicationContext;
+
+  @Autowired
+  private FilterChainProxy springSecurityFilterChain;
+
+  @Autowired
   private ArticleService articleService;
 
   @Autowired
-  private WebApplicationContext webApplicationContext;
+  private UserService userService;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+  
+  @Value("#{secProps['auth.tokenEndpoint']}")
+  private String signinEndpoint;
+
+  @Value("#{secProps['auth.headerName']}")
+  private String authHeader;
 
   @Before
   public void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
   }
 
   @Test
   public void testRest() throws Exception {
 
-    // create article1
+    ResultActions resultActions;
+
+    // create article1 but 403 (ROLE_ADMIN needed)
     Article article1 = new Article("article1");
-    ResultActions resultActions1 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article1).asString()));
-    LOGGER.debug(resultActions1.andReturn().getResponse().getContentAsString());
+    Assert.assertEquals(HttpStatus.FORBIDDEN.value(), resultActions.andReturn().getResponse().getStatus());
+
+    // try to login but 401 (user does not exist)
+    EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
+    resultActions = mockMvc.perform( //
+        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(emailPassword).asString()));
+    Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
+
+    // create user
+    User user = new User();
+    user.setEmail("john.doe@jrestful.org");
+    user.setPassword(passwordEncoder.encode("jrestful"));
+    user.setRoles(Lists.newArrayList("ROLE_ADMIN"));
+    user = userService.insert(user);
+
+    // try to login but 401 (user is not enabled)
+    resultActions = mockMvc.perform( //
+        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(emailPassword).asString()));
+    Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
+
+    // enable user
+    user.setEnabled(true);
+    user = userService.save(user);
+
+    // login
+    resultActions = mockMvc.perform( //
+        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(emailPassword).asString()));
+    String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
+    Assert.assertNotNull(authToken);
+
+    // create article1
+    article1 = new Article("article1");
+    resultActions = mockMvc.perform( //
+        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
+            .content(JsonUtils.toJson(article1).asString()));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
     Assert.assertNotNull(article1);
     Assert.assertEquals("article1", article1.getTitle());
 
     // create article2
     Article article2 = new Article("article2");
-    ResultActions resultActions2 = mockMvc.perform( //
-        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) //
+    resultActions = mockMvc.perform( //
+        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) // //
+        .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
-    LOGGER.debug(resultActions2.andReturn().getResponse().getContentAsString());
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
     Assert.assertNotNull(article2);
     Assert.assertEquals("article2", article2.getTitle());
-    resultActions2 //
+    resultActions //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
@@ -82,10 +147,10 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
 
     // get article2
-    ResultActions resultActions3 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         get("/articles/{id}", new Object[] { article2.getId() }));
-    LOGGER.debug(resultActions3.andReturn().getResponse().getContentAsString());
-    resultActions3 //
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
@@ -95,16 +160,16 @@ public class ArticleRestControllerTest {
 
     // update article2
     article2.setTitle("article2updated");
-    ResultActions resultActions4 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         put("/articles/{id}", new Object[] { article2.getId() }).contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article2).asString()));
-    LOGGER.debug(resultActions4.andReturn().getResponse().getContentAsString());
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
     Assert.assertNull(article2);
     article2 = articleService.findByTitle("article2updated");
     Assert.assertNotNull(article2);
     Assert.assertEquals("article2updated", article2.getTitle());
-    resultActions4 //
+    resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
@@ -113,10 +178,10 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
 
     // list articles
-    ResultActions resultActions5 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         get("/articles"));
-    LOGGER.debug(resultActions5.andReturn().getResponse().getContentAsString());
-    resultActions5 //
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(0))) //
@@ -138,19 +203,19 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/articles/" + article2.getId())));
 
     // delete article1
-    ResultActions resultActions6 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         delete("/articles/{id}", new Object[] { article1.getId() }));
-    LOGGER.debug(resultActions6.andReturn().getResponse().getContentAsString());
-    resultActions6 //
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
     article1 = articleService.findByTitle("article1");
     Assert.assertNull(article1);
 
     // list articles
-    ResultActions resultActions7 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         get("/articles"));
-    LOGGER.debug(resultActions7.andReturn().getResponse().getContentAsString());
-    resultActions7 //
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$._embedded", hasSize(1))) //
@@ -169,10 +234,10 @@ public class ArticleRestControllerTest {
     Assert.assertEquals(10, articleService.count());
 
     // list articles
-    ResultActions resultActions8 = mockMvc.perform( //
+    resultActions = mockMvc.perform( //
         get("/articles?pageIndex=2&pageSize=2"));
-    LOGGER.debug(resultActions8.andReturn().getResponse().getContentAsString());
-    resultActions8 //
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(2))) //

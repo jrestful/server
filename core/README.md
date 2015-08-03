@@ -1,6 +1,6 @@
 # core
 
-`core` includes generic classes for services and controllers via Spring and Spring MVC, HATEOAS support over HAL, as well as CSRF protection via Spring Security and other utilities.
+`core` includes generic classes for services and controllers via Spring and Spring MVC, HATEOAS support over HAL, as well as CSRF protection via Spring Security, CORS parameterization, and other utilities.
 
 ## How to install it?
 

@@ -33,8 +33,8 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   private final TokenService<U, K> tokenService;
 
   @Autowired
-  public StatelessSigninFilter(AuthUserService<U, K> userService, TokenService<U, K> tokenService, @Value("#{secProps['auth.tokenEndpoint']}") String endpoint,
-      AuthenticationManager authenticationManager) {
+  public StatelessSigninFilter(AuthUserService<U, K> userService, TokenService<U, K> tokenService,
+      @Value("#{secProps['auth.tokenEndpoint']}") String endpoint, AuthenticationManager authenticationManager) {
     super(new AntPathRequestMatcher(endpoint));
     setAuthenticationManager(authenticationManager);
     this.userService = userService;
@@ -44,6 +44,9 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
     EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
+    if (input == null) {
+      return null;
+    }
     U user = userService.findByEmail(input.getEmail());
     K id = user == null ? null : user.getId();
     String password = input.getPassword();

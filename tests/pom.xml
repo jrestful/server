@@ -41,6 +41,16 @@
       <artifactId>mongo</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jrestful</groupId>
+      <artifactId>auth</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jrestful</groupId>
+      <artifactId>auth-mongo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <!-- web -->
     <dependency>
