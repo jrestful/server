@@ -13,15 +13,18 @@ import org.springframework.data.mongodb.repository.support.SimpleMongoRepository
  * Generic abstract class for a document repository.
  * 
  * @param <D>
- *            The document type to manage.
+ *          The document type to manage.
  */
 public abstract class GenericDocumentRepositoryImpl<D extends GenericDocument> extends SimpleMongoRepository<D, String> implements
     GenericDocumentRepository<D> {
+
+  protected final Class<D> documentClass;
 
   protected final MongoOperations mongoOperations;
 
   public GenericDocumentRepositoryImpl(Class<D> documentClass, MongoOperations mongoOperations) {
     super(getMetadata(documentClass, mongoOperations), mongoOperations);
+    this.documentClass = documentClass;
     this.mongoOperations = mongoOperations;
   }
 

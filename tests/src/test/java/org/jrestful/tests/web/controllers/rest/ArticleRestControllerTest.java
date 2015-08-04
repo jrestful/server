@@ -62,7 +62,7 @@ public class ArticleRestControllerTest {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-  
+
   @Value("#{secProps['auth.tokenEndpoint']}")
   private String signinEndpoint;
 
@@ -79,17 +79,19 @@ public class ArticleRestControllerTest {
 
     ResultActions resultActions;
 
-    // create article1 but 403 (ROLE_ADMIN needed)
+    // create article1 but 403 (role ADMIN needed)
     Article article1 = new Article("article1");
     resultActions = mockMvc.perform( //
-        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) //
+        post("/articles") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article1).asString()));
     Assert.assertEquals(HttpStatus.FORBIDDEN.value(), resultActions.andReturn().getResponse().getStatus());
 
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+        post(signinEndpoint) //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
 
@@ -97,12 +99,13 @@ public class ArticleRestControllerTest {
     User user = new User();
     user.setEmail("john.doe@jrestful.org");
     user.setPassword(passwordEncoder.encode("jrestful"));
-    user.setRoles(Lists.newArrayList("ROLE_ADMIN"));
+    user.setRoles(Lists.newArrayList("ADMIN"));
     user = userService.insert(user);
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+        post(signinEndpoint) //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
 
@@ -112,7 +115,8 @@ public class ArticleRestControllerTest {
 
     // login
     resultActions = mockMvc.perform( //
-        post(signinEndpoint).contentType(MediaType.APPLICATION_JSON_VALUE) //
+        post(signinEndpoint) //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
     Assert.assertNotNull(authToken);
@@ -120,7 +124,8 @@ public class ArticleRestControllerTest {
     // create article1
     article1 = new Article("article1");
     resultActions = mockMvc.perform( //
-        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) //
+        post("/articles") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
@@ -128,11 +133,25 @@ public class ArticleRestControllerTest {
     Assert.assertNotNull(article1);
     Assert.assertEquals("article1", article1.getTitle());
 
+    // get article1 by sequence
+    resultActions = mockMvc.perform( //
+        get("/articles/{sequence}", new Object[] { article1.getSequence() }) //
+            .param("by", "sequence"));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(status().is(HttpStatus.OK.value())) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(jsonPath("$.id", is(article1.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(1))) //
+        .andExpect(jsonPath("$.title", is("article1"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId())));
+
     // create article2
     Article article2 = new Article("article2");
     resultActions = mockMvc.perform( //
-        post("/articles").contentType(MediaType.APPLICATION_JSON_VALUE) // //
-        .header(authHeader, authToken) //
+        post("/articles") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
@@ -158,10 +177,32 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.title", is("article2"))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
 
+    // update article1 by sequence
+    article1.setTitle("article1updated");
+    resultActions = mockMvc.perform( //
+        put("/articles/{sequence}", new Object[] { article1.getSequence() }) //
+            .param("by", "sequence") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(article1).asString()));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    article1 = articleService.findByTitle("article1");
+    Assert.assertNull(article1);
+    article1 = articleService.findByTitle("article1updated");
+    Assert.assertNotNull(article1);
+    Assert.assertEquals("article1updated", article1.getTitle());
+    resultActions //
+        .andExpect(status().is(HttpStatus.OK.value())) //
+        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(jsonPath("$.id", is(article1.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(1))) //
+        .andExpect(jsonPath("$.title", is("article1updated"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId())));
+
     // update article2
     article2.setTitle("article2updated");
     resultActions = mockMvc.perform( //
-        put("/articles/{id}", new Object[] { article2.getId() }).contentType(MediaType.APPLICATION_JSON_VALUE) //
+        put("/articles/{id}", new Object[] { article2.getId() }) //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
@@ -191,7 +232,7 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._embedded", hasSize(2))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article1.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(1))) //
-        .andExpect(jsonPath("$._embedded[0].title", is("article1"))) //
+        .andExpect(jsonPath("$._embedded[0].title", is("article1updated"))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._embedded[1].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[1].sequence", is(2))) //
@@ -208,7 +249,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
-    article1 = articleService.findByTitle("article1");
+    article1 = articleService.findByTitle("article1updated");
     Assert.assertNull(article1);
 
     // list articles
@@ -227,8 +268,18 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.items", hasSize(1))) //
         .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article2.getId())));
 
+    // delete article2 by sequence
+    resultActions = mockMvc.perform( //
+        delete("/articles/{sequence}", new Object[] { article2.getSequence() }) //
+            .param("by", "sequence"));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+    article2 = articleService.findByTitle("article2updated");
+    Assert.assertNull(article2);
+
     // generate articles
-    for (int i = 1; i <= 9; i++) {
+    for (int i = 1; i <= 10; i++) {
       articleService.insert(new Article("generated" + i));
     }
     Assert.assertEquals(10, articleService.count());

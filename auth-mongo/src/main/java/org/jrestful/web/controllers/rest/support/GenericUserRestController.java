@@ -15,9 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-public abstract class GenericUserRestController<U extends GenericUser> extends GenericDocumentRestController<U> {
+public abstract class GenericUserRestController<S extends GenericUserService<U>, U extends GenericUser> extends
+    GenericSequencedDocumentRestController<S, U> {
 
-  public GenericUserRestController(GenericUserService<U> service) {
+  public GenericUserRestController(S service) {
     super(service);
   }
 

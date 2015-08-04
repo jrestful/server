@@ -1,20 +1,20 @@
-package org.jrestful.business.support.sequence;
+package org.jrestful.business.support;
 
 import java.util.List;
 
-import org.jrestful.business.support.GenericDocumentServiceImpl;
+import org.jrestful.business.support.sequence.SequenceService;
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
 import org.jrestful.data.documents.support.sequence.Sequence;
-import org.jrestful.data.repositories.support.sequence.GenericSequencedDocumentRepository;
+import org.jrestful.data.repositories.support.GenericSequencedDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Generic abstract class for a sequenced document service.
  * 
  * @param <R>
- *            The repository of the sequenced document type to manage.
+ *          The repository of the sequenced document type to manage.
  * @param <D>
- *            The sequenced document type to manage.
+ *          The sequenced document type to manage.
  */
 public abstract class GenericSequencedDocumentServiceImpl<R extends GenericSequencedDocumentRepository<D>, D extends GenericSequencedDocument>
     extends GenericDocumentServiceImpl<R, D> implements GenericSequencedDocumentService<D> {
@@ -29,6 +29,11 @@ public abstract class GenericSequencedDocumentServiceImpl<R extends GenericSeque
   @Override
   public D findBySequence(long sequence) {
     return repository.findBySequence(sequence);
+  }
+
+  @Override
+  public int deleteBySequence(long sequence) {
+    return repository.deleteBySequence(sequence);
   }
 
   @Override
