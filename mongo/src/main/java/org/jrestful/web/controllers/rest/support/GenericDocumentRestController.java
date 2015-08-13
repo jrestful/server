@@ -10,6 +10,7 @@ import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.web.hateoas.PageableResources;
 import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.Resources;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     List<Resource<D>> documentResources = new ArrayList<>();
     for (D document : page) {
       Resource<D> documentResource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+      addAdditionalLinks(documentResource);
       documentResources.add(documentResource);
     }
     PageableResources<D> resources = new PageableResources<>(documentResources, linkTo(methodOn(getClass()).list(pageIndex, pageSize)));
@@ -58,6 +60,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     resources.setPageSize(pageSize);
     resources.setTotalPages(page.getTotalPages());
     resources.setTotalItems(page.getTotalElements());
+    addAdditionalLinks(resources);
     return new ResponseEntity<>(resources, HttpStatus.OK);
   }
 
@@ -68,6 +71,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+      addAdditionalLinks(resource);
       return new ResponseEntity<>(resource, HttpStatus.OK);
     }
   }
@@ -76,6 +80,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   public ResponseEntity<Resource<D>> create(@RequestBody D document) {
     document = service.insert(document);
     Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+    addAdditionalLinks(resource);
     return new ResponseEntity<>(resource, HttpStatus.CREATED);
   }
 
@@ -83,6 +88,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   public ResponseEntity<Resource<D>> update(@PathVariable String id, @RequestBody D document) {
     document = service.save(document);
     Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+    addAdditionalLinks(resource);
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 
@@ -90,6 +96,14 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   public ResponseEntity<?> delete(@PathVariable String id) {
     service.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  protected void addAdditionalLinks(Resource<D> resource) {
+    // no-op
+  }
+
+  protected void addAdditionalLinks(Resources<D> resources) {
+    // no-op
   }
 
 }

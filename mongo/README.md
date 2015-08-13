@@ -108,4 +108,4 @@ For more details, see [the Spring Data documentation](http://docs.spring.io/spri
 
 ### For your controllers
 
-`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` is an abstract class for your documents REST controllers. Be careful: override the methods if your need authorizations.
+`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` and `org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController` are abstract classes for your documents and sequenced documents REST controllers. Be careful: override the predefined methods if your need authorizations.

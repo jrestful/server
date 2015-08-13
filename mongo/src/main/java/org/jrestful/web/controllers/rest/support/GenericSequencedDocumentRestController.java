@@ -34,6 +34,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+      addAdditionalLinks(resource);
       return new ResponseEntity<>(resource, HttpStatus.OK);
     }
   }
@@ -42,6 +43,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
   public ResponseEntity<Resource<D>> updateBySequence(@PathVariable Long sequence, @RequestBody D document) {
     document = service.save(document);
     Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+    addAdditionalLinks(resource);
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 
