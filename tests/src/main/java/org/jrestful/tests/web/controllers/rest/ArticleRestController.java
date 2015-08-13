@@ -3,8 +3,8 @@ package org.jrestful.tests.web.controllers.rest;
 import org.jrestful.tests.business.ArticleService;
 import org.jrestful.tests.data.documents.Article;
 import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController;
-import org.jrestful.web.hateoas.Resource;
-import org.jrestful.web.hateoas.Resources;
+import org.jrestful.web.hateoas.RestResource;
+import org.jrestful.web.hateoas.RestResources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/articles", produces = Resource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericSequencedDocumentRestController<ArticleService, Article> {
 
   @Autowired
@@ -23,17 +23,17 @@ public class ArticleRestController extends GenericSequencedDocumentRestControlle
 
   @Override
   @PreAuthorize(value = "hasRole('ADMIN')")
-  public ResponseEntity<Resource<Article>> create(@RequestBody Article document) {
+  public ResponseEntity<RestResource<Article>> create(@RequestBody Article document) {
     return super.create(document);
   }
 
   @Override
-  protected void addAdditionalLinks(Resource<Article> resource) {
+  protected void addAdditionalLinks(RestResource<Article> resource) {
     resource.addLink("resource", "http://resource.com");
   }
 
   @Override
-  protected void addAdditionalLinks(Resources<Article> resources) {
+  protected void addAdditionalLinks(RestResources<Article> resources) {
     resources.addLink("resources", "http://resources.com");
   }
 

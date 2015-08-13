@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * HAL link, with a mandatory "href" attribute.
+ * REST link, with a mandatory "href" attribute.
  */
 public class Link implements ResourceLink, Map<String, String> {
 

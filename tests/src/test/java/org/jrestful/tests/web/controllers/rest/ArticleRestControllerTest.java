@@ -15,7 +15,7 @@ import org.jrestful.tests.business.UserService;
 import org.jrestful.tests.data.documents.Article;
 import org.jrestful.tests.data.documents.User;
 import org.jrestful.util.JsonUtils;
-import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
 import org.junit.Before;
@@ -140,7 +140,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(1))) //
         .andExpect(jsonPath("$.title", is("article1"))) //
@@ -160,7 +160,7 @@ public class ArticleRestControllerTest {
     Assert.assertEquals("article2", article2.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
@@ -173,7 +173,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
@@ -195,7 +195,7 @@ public class ArticleRestControllerTest {
     Assert.assertEquals("article1updated", article1.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(1))) //
         .andExpect(jsonPath("$.title", is("article1updated"))) //
@@ -216,7 +216,7 @@ public class ArticleRestControllerTest {
     Assert.assertEquals("article2updated", article2.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2updated"))) //
@@ -229,7 +229,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(0))) //
         .andExpect(jsonPath("$.pageSize", is(25))) //
         .andExpect(jsonPath("$.totalPages", is(1))) //
@@ -266,7 +266,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$._embedded", hasSize(1))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
@@ -300,7 +300,7 @@ public class ArticleRestControllerTest {
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
-        .andExpect(content().contentType(Resource.HAL_MEDIA_TYPE)) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.pageIndex", is(2))) //
         .andExpect(jsonPath("$.pageSize", is(2))) //
         .andExpect(jsonPath("$.totalPages", is(5))) //

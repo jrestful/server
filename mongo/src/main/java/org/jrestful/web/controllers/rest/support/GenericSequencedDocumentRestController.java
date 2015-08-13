@@ -5,7 +5,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.jrestful.business.support.GenericSequencedDocumentService;
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
-import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.RestResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,21 +28,21 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
   }
 
   @RequestMapping(value = "/{sequence}", method = RequestMethod.GET, params = "by=sequence")
-  public ResponseEntity<Resource<D>> getBySequence(@PathVariable Long sequence) {
+  public ResponseEntity<RestResource<D>> getBySequence(@PathVariable Long sequence) {
     D document = service.findBySequence(sequence);
     if (document == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+      RestResource<D> resource = new RestResource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
       addAdditionalLinks(resource);
       return new ResponseEntity<>(resource, HttpStatus.OK);
     }
   }
 
   @RequestMapping(value = "/{sequence}", method = RequestMethod.PUT, params = "by=sequence", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Resource<D>> updateBySequence(@PathVariable Long sequence, @RequestBody D document) {
+  public ResponseEntity<RestResource<D>> updateBySequence(@PathVariable Long sequence, @RequestBody D document) {
     document = service.save(document);
-    Resource<D> resource = new Resource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
+    RestResource<D> resource = new RestResource<>(document, linkTo(methodOn(getClass()).get(document.getId())));
     addAdditionalLinks(resource);
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }

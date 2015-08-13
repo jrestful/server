@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
- * HAL resource.
+ * REST resource, with HATEOAS over HAL.
  * 
  * @param <T>
  *          The type of content to serialize.
  */
-public class Resource<T> {
+public class RestResource<T> {
 
   public static final String HAL_MEDIA_TYPE = "application/hal+json";
 
@@ -23,12 +23,12 @@ public class Resource<T> {
 
   private final Map<String, ResourceLink> links = new LinkedHashMap<>();
 
-  public Resource(T content, String href) {
+  public RestResource(T content, String href) {
     this.content = content;
     addLink(Link.SELF, href);
   }
 
-  public Resource(T content, LinkBuilderSupport<?> hrefBuilder) {
+  public RestResource(T content, LinkBuilderSupport<?> hrefBuilder) {
     this(content, hrefBuilder.toString());
   }
 

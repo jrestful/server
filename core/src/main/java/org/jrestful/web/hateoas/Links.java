@@ -9,7 +9,7 @@ import java.util.ListIterator;
 import org.springframework.hateoas.core.LinkBuilderSupport;
 
 /**
- * List of HAL links.
+ * List of REST links.
  */
 public class Links implements ResourceLink, List<Link> {
 

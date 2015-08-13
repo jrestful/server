@@ -6,7 +6,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import org.jrestful.business.support.user.GenericUserService;
 import org.jrestful.data.documents.support.user.GenericUser;
 import org.jrestful.web.beans.UserProfile;
-import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public abstract class GenericUserRestController<S extends GenericUserService<U>,
   }
 
   @RequestMapping(value = "/profile", method = RequestMethod.GET)
-  public ResponseEntity<Resource<UserProfile>> profile() {
+  public ResponseEntity<RestResource<UserProfile>> profile() {
     UserProfile userProfile = new UserProfile();
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth != null) {
@@ -32,7 +32,7 @@ public abstract class GenericUserRestController<S extends GenericUserService<U>,
         userProfile = new UserProfile((AuthUser<?>) details);
       }
     }
-    Resource<UserProfile> resource = new Resource<>(userProfile, linkTo(methodOn(getClass()).profile()));
+    RestResource<UserProfile> resource = new RestResource<>(userProfile, linkTo(methodOn(getClass()).profile()));
     return new ResponseEntity<>(resource, HttpStatus.OK);
   }
 

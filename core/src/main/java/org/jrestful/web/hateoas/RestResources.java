@@ -8,29 +8,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
- * List of HAL resources.
+ * List of REST resources, with HATEOAS over HAL.
  * 
  * @param <T>
  *          The type of content to serialize.
  */
-public class Resources<T> extends Resource<List<Resource<T>>> {
+public class RestResources<T> extends RestResource<List<RestResource<T>>> {
 
-  public Resources(List<Resource<T>> resources, String href) {
+  public RestResources(List<RestResource<T>> resources, String href) {
     super(resources, href);
     Links items = addLinks("items");
-    for (Resource<T> resource : resources) {
+    for (RestResource<T> resource : resources) {
       items.add(resource.getHref());
     }
   }
 
-  public Resources(List<Resource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
+  public RestResources(List<RestResource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
     this(resources, hrefBuilder.toString());
   }
 
   @Override
   @JsonUnwrapped(enabled = false)
   @JsonProperty("_embedded")
-  public List<Resource<T>> getContent() {
+  public List<RestResource<T>> getContent() {
     return super.getContent();
   }
 
