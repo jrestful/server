@@ -4,6 +4,7 @@ import org.jrestful.tests.business.ArticleService;
 import org.jrestful.tests.data.documents.Article;
 import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController;
 import org.jrestful.web.hateoas.Resource;
+import org.jrestful.web.hateoas.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,16 @@ public class ArticleRestController extends GenericSequencedDocumentRestControlle
   @PreAuthorize(value = "hasRole('ADMIN')")
   public ResponseEntity<Resource<Article>> create(@RequestBody Article document) {
     return super.create(document);
+  }
+
+  @Override
+  protected void addAdditionalLinks(Resource<Article> resource) {
+    resource.addLink("resource", "http://resource.com");
+  }
+
+  @Override
+  protected void addAdditionalLinks(Resources<Article> resources) {
+    resources.addLink("resources", "http://resources.com");
   }
 
 }

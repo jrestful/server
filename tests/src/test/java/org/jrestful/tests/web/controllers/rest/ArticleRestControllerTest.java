@@ -144,7 +144,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(1))) //
         .andExpect(jsonPath("$.title", is("article1"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // create article2
     Article article2 = new Article("article2");
@@ -163,7 +164,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // get article2
     resultActions = mockMvc.perform( //
@@ -175,7 +177,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // update article1 by sequence
     article1.setTitle("article1updated");
@@ -196,7 +199,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(1))) //
         .andExpect(jsonPath("$.title", is("article1updated"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // update article2
     article2.setTitle("article2updated");
@@ -216,7 +220,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(2))) //
         .andExpect(jsonPath("$.title", is("article2updated"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // list articles
     resultActions = mockMvc.perform( //
@@ -234,14 +239,17 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._embedded[0].sequence", is(1))) //
         .andExpect(jsonPath("$._embedded[0].title", is("article1updated"))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._embedded[1].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[1].sequence", is(2))) //
         .andExpect(jsonPath("$._embedded[1].title", is("article2updated"))) //
         .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._embedded[1]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=0&pageSize=25"))) //
         .andExpect(jsonPath("$._links.items", hasSize(2))) //
         .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article1.getId()))) //
-        .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
     // delete article1
     resultActions = mockMvc.perform( //
@@ -264,9 +272,11 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
         .andExpect(jsonPath("$._embedded[0].title", is("article2updated"))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/articles?pageIndex=0&pageSize=25"))) //
         .andExpect(jsonPath("$._links.items", hasSize(1))) //
-        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article2.getId())));
+        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
     // delete article2 by sequence
     resultActions = mockMvc.perform( //
@@ -300,7 +310,8 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$._links.first.href", is("http://localhost/articles?pageIndex=0&pageSize=2"))) //
         .andExpect(jsonPath("$._links.previous.href", is("http://localhost/articles?pageIndex=1&pageSize=2"))) //
         .andExpect(jsonPath("$._links.next.href", is("http://localhost/articles?pageIndex=3&pageSize=2"))) //
-        .andExpect(jsonPath("$._links.last.href", is("http://localhost/articles?pageIndex=4&pageSize=2")));
+        .andExpect(jsonPath("$._links.last.href", is("http://localhost/articles?pageIndex=4&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
   }
 

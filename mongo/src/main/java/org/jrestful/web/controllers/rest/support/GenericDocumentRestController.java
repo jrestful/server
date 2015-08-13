@@ -56,11 +56,11 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
       resources.addLink("next", linkTo(methodOn(getClass()).list(pageIndex + 1, pageSize)));
       resources.addLink("last", linkTo(methodOn(getClass()).list(page.getTotalPages() - 1, pageSize)));
     }
+    addAdditionalLinks(resources);
     resources.setPageIndex(pageIndex);
     resources.setPageSize(pageSize);
     resources.setTotalPages(page.getTotalPages());
     resources.setTotalItems(page.getTotalElements());
-    addAdditionalLinks(resources);
     return new ResponseEntity<>(resources, HttpStatus.OK);
   }
 
