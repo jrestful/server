@@ -108,4 +108,20 @@ For more details, see [the Spring Data documentation](http://docs.spring.io/spri
 
 ### For your controllers
 
-`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` and `org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController` are abstract classes for your documents and sequenced documents REST controllers. Be careful: override the predefined methods if your need authorizations.
+`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` and `org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController` are abstract classes for your documents and sequenced documents REST controllers.
+
+`GenericDocumentRestController` defines 5 methods:
+
+ - `list(int pageIndex, int pageSize)`, mapped on `GET /`, returning status 200 (OK)
+ - `get(String id)`, mapped on `GET /{id}`, returning status 200 (OK) or 404 (NOT FOUND)
+ - `create(D document)`, mapped on `POST /`, returning status 201 (CREATED)
+ - `update(String id, D document)`, mapped on `PUT /{id}`, returning status 200 (OK)
+ - `delete(String id)`, mapped on `DELETE /{id}`, returning status 204 (NO CONTENT)
+
+`GenericSequencedDocumentRestController` defines 3 methods:
+
+ - `getBySequence(Long sequence)`, mapped on `GET /{sequence}` with param `by=sequence`, returning status 200 (OK) or 404 (NOT FOUND)
+ - `updateBySequence(Long sequence, D document)`, mapped on `PUT /{sequence}` with param `by=sequence`, returning status 200 (OK)
+ - `deleteBySequence(Long sequence)`, mapped on `DELETE /{sequence}` with param `by=sequence`, returning status 204 (NO CONTENT)
+
+Be careful: override the predefined methods if your need authorizations.
