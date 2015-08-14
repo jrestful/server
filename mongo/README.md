@@ -9,27 +9,31 @@
 ### In your pom.xml
 
 Add the dependency:
-    
-    <dependencies>
-    
-      <dependency>
-        <groupId>org.jrestful</groupId>
-        <artifactId>mongo</artifactId>
-        <version>${jrestful.version}</version>
-      </dependency>
-    
-    </dependencies>
+
+```xml
+<dependencies>
+
+  <dependency>
+    <groupId>org.jrestful</groupId>
+    <artifactId>mongo</artifactId>
+    <version>${jrestful.version}</version>
+  </dependency>
+
+</dependencies>
+```
 
 ### In your web.xml
 
 Add the context parameter:
 
-    <context-param>
-      <description>The Spring resource location of the MongoDB properties</description>
-      <param-name>jrestfulMongoProps</param-name>
-      <!-- Example: -->
-      <param-value>classpath:mongo.properties</param-value>
-    </context-param>
+```xml
+<context-param>
+  <description>The Spring resource location of the MongoDB properties</description>
+  <param-name>jrestfulMongoProps</param-name>
+  <!-- Example: -->
+  <param-value>classpath:mongo.properties</param-value>
+</context-param>
+```
 
 ### In your contexts
 
@@ -39,7 +43,9 @@ No placeholder is defined by jrestful, but properties beans are available:
 
 You can then register placeholders based on these beans if needed:
 
-    <context:property-placeholder properties-ref="mongoProps" ignore-unresolvable="true" />
+```xml
+<context:property-placeholder properties-ref="mongoProps" ignore-unresolvable="true" />
+```
 
 ## What is expected in the properties files?
 
@@ -68,23 +74,25 @@ For more details, see [the Spring Data documentation](http://docs.spring.io/spri
 
 #### Example
 
-    mongo.host=localhost
-    mongo.port=27017
-    mongo.dbname=myapp
-    mongo.username=myapp
-    mongo.password=myapp
-    
-    mongo.connectionsPerHost=8
-    mongo.threadsAllowedToBlockForConnectionMultiplier=4
-    mongo.connectTimeout=1000
-    mongo.maxWaitTime=1500
-    mongo.autoConnectRetry=true
-    mongo.socketKeepAlive=true
-    mongo.socketTimeout=1500
-    mongo.slaveOk=true
-    mongo.writeNumber=1
-    mongo.writeTimeout=0
-    mongo.writeFsync=true
+```properties
+mongo.host=localhost
+mongo.port=27017
+mongo.dbname=myapp
+mongo.username=myapp
+mongo.password=myapp
+
+mongo.connectionsPerHost=8
+mongo.threadsAllowedToBlockForConnectionMultiplier=4
+mongo.connectTimeout=1000
+mongo.maxWaitTime=1500
+mongo.autoConnectRetry=true
+mongo.socketKeepAlive=true
+mongo.socketTimeout=1500
+mongo.slaveOk=true
+mongo.writeNumber=1
+mongo.writeTimeout=0
+mongo.writeFsync=true
+```
 
 ## What does `mongo` provide?
 
