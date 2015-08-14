@@ -8,71 +8,79 @@
 
 Add the repository:
 
-    <repositories>
-      <repository>
-        <id>jrestul-mvn-repo</id>
-        <url>https://raw.github.com/jrestful/server/mvn-repo/</url>
-        <snapshots>
-          <enabled>true</enabled>
-          <updatePolicy>always</updatePolicy>
-        </snapshots>
-      </repository>
-    </repositories>
+```xml
+<repositories>
+  <repository>
+    <id>jrestul-mvn-repo</id>
+    <url>https://raw.github.com/jrestful/server/mvn-repo/</url>
+    <snapshots>
+      <enabled>true</enabled>
+      <updatePolicy>always</updatePolicy>
+    </snapshots>
+  </repository>
+</repositories>
+```
 
 Add the dependency:
-    
-    <dependencies>
-    
-      <dependency>
-        <groupId>org.jrestful</groupId>
-        <artifactId>core</artifactId>
-        <version>${jrestful.version}</version>
-      </dependency>
-    
-    </dependencies>
+
+```xml
+<dependencies>
+
+  <dependency>
+    <groupId>org.jrestful</groupId>
+    <artifactId>core</artifactId>
+    <version>${jrestful.version}</version>
+  </dependency>
+
+</dependencies>
+```
 
 ### In your web.xml
 
 Add the context parameters:
 
-    <context-param>
-      <description>The Spring resource location of the application properties</description>
-      <param-name>jrestfulAppProps</param-name>
-      <!-- Example: -->
-      <param-value>classpath:application.properties</param-value>
-    </context-param>
-    
-    <context-param>
-      <description>The Spring resource location of the security properties</description>
-      <param-name>jrestfulSecProps</param-name>
-      <!-- Example: -->
-      <param-value>WEB-INF/security.properties</param-value>
-    </context-param>
+```xml
+<context-param>
+  <description>The Spring resource location of the application properties</description>
+  <param-name>jrestfulAppProps</param-name>
+  <!-- Example: -->
+  <param-value>classpath:application.properties</param-value>
+</context-param>
+
+<context-param>
+  <description>The Spring resource location of the security properties</description>
+  <param-name>jrestfulSecProps</param-name>
+  <!-- Example: -->
+  <param-value>WEB-INF/security.properties</param-value>
+</context-param>
+```
 
 Update the Spring `contextConfigLocation` parameters:
 
-    <context-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>
-        ...
-        classpath*:jrestful/applicationContext.xml
-        ...
-      </param-value>
-    </context-param>
-    
-    <servlet>
-      <servlet-name>dispatcher</servlet-name>
-      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-      <init-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-          ...
-          classpath*:jrestful/servlet/servletContext.xml
-          ...
-        </param-value>
-      </init-param>
-      <load-on-startup>1</load-on-startup>
-    </servlet>
+```xml
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>
+    ...
+    classpath*:jrestful/applicationContext.xml
+    ...
+  </param-value>
+</context-param>
+
+<servlet>
+  <servlet-name>dispatcher</servlet-name>
+  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  <init-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      ...
+      classpath*:jrestful/servlet/servletContext.xml
+      ...
+    </param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+</servlet>
+```
 
 ### In your contexts
 
@@ -83,8 +91,10 @@ No placeholder is defined by jrestful, but properties beans are available:
 
 You can then register placeholders based on these beans if needed:
 
-    <context:property-placeholder properties-ref="appProps" ignore-unresolvable="true" />
-    <context:property-placeholder properties-ref="secProps" ignore-unresolvable="true" />
+```xml
+<context:property-placeholder properties-ref="appProps" ignore-unresolvable="true" />
+<context:property-placeholder properties-ref="secProps" ignore-unresolvable="true" />
+```
 
 ## What is expected in the properties files?
 
@@ -98,16 +108,20 @@ jrestful registers request interceptors, but will exclude the URLs matching `/st
 
 To implement this mapping, add the following tag in your Spring MVC servlet context:
 
-    <mvc:resources
-      mapping="/static-${app.version}/**"
-      location="/static/"
-      cache-period="31556926" />
+```xml
+<mvc:resources
+  mapping="/static-${app.version}/**"
+  location="/static/"
+  cache-period="31556926" />
+```
 
 Here, your resources are expected to be located in a `/static` folder.
 
 #### Example
 
-    app.version=1.3.9
+```properties
+app.version=1.3.9
+```
 
 ### The API version
 
@@ -115,15 +129,19 @@ Here, your resources are expected to be located in a `/static` folder.
 
 jrestful registers request interceptors that only match URL starting with `/api-${app.apiVersion}/**`. To implement your API behind this mapping, use a placeholder in the `@RequestMapping` annotation:
 
-    @RestController
-    @RequestMapping("/api-${app.apiVersion}")
-    public class ArticleController {
-    
-    }
+```java
+@RestController
+@RequestMapping("/api-${app.apiVersion}")
+public class ArticleController {
+
+}
+```
 
 #### Example
 
-    app.apiVersion=1.3
+```properties
+app.apiVersion=1.3
+```
 
 ### `jrestfulSecProps`
 
@@ -138,8 +156,10 @@ If not provided, the filter won't be registrable.
 
 #### Example
 
-    csrf.headerName=X-CSRF-TOKEN
-    csrf.cookieName=MYWEBSITE-CSRF-TOKEN
+```properties
+csrf.headerName=X-CSRF-TOKEN
+csrf.cookieName=MYWEBSITE-CSRF-TOKEN
+```
 
 #### The CORS parameters (optional)
 
@@ -149,7 +169,9 @@ If not provided, no header will be added.
 
 #### Example
 
-    cors.allowOrigin=*
+```properties
+cors.allowOrigin=*
+```
 
 ## What does `core` provide?
 
@@ -163,34 +185,39 @@ If not provided, no header will be added.
 
 `org.jrestful.web.hateoas.RestResource`, `org.jrestful.web.hateoas.RestResources` and `org.jrestful.web.hateoas.PageableRestResources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
 
-    @RestController
-    @RequestMapping(value = "/api-${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
-    public class ArticleRestController extends GenericRestController {
+```java
+@RestController
+@RequestMapping(value = "/api-${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
+public class ArticleRestController extends GenericRestController {
+  
+  ...
 
-      @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-      public ResponseEntity<RestResource<Article>> get(@PathVariable String id) {
-        Article article = articleService.findOne(id);
-        if (article == null) {
-          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-          RestResource<Article> resource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
-          return new ResponseEntity<>(resource, HttpStatus.OK);
-        }
-      }
-      
-      @RequestMapping(method = RequestMethod.GET)
-      public ResponseEntity<RestResources<Article>> list() {
-        List<Article> articles = articleService.findAll();
-        List<RestResource<Article>> articleResources = new ArrayList<>();
-        for (Article article : articles) {
-          RestResource<Article> articleResource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
-          articleResources.add(articleResource);
-        }
-        RestResources<Article> resources = new RestResources<>(articleResources, linkTo(methodOn(getClass()).list()));
-        return new ResponseEntity<>(resources, HttpStatus.OK);
-      }
-
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+  public ResponseEntity<RestResource<Article>> get(@PathVariable String id) {
+    Article article = articleService.findOne(id);
+    if (article == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      RestResource<Article> resource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+      return new ResponseEntity<>(resource, HttpStatus.OK);
     }
+  }
+  
+  @RequestMapping(method = RequestMethod.GET)
+  public ResponseEntity<RestResources<Article>> list() {
+    List<Article> articles = articleService.findAll();
+    List<RestResource<Article>> articleResources = new ArrayList<>();
+    for (Article article : articles) {
+      RestResource<Article> articleResource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+      articleResources.add(articleResource);
+    }
+    RestResources<Article> resources = new RestResources<>(articleResources, linkTo(methodOn(getClass()).list()));
+    return new ResponseEntity<>(resources, HttpStatus.OK);
+  }
+
+}
+```
+
 Be aware that `ControllerLinkBuilder` isn't able to resolve placeholders yet: you may need to hardcode them in your mapping until a fix is provided (see https://github.com/spring-projects/spring-hateoas/issues/220).
 
 `org.jrestful.web.util.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
@@ -207,11 +234,13 @@ Example with a request on `http://domain.tld/context/url?param=value`:
 
 A CSRF protection filter as available. To register it in your Spring Security context:
 
-    <http ...>
-      ...
-      <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
-      ...
-    </http>
+```xml
+<http ...>
+  ...
+  <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
+  ...
+</http>
+```
 
 ### Utilities
 
