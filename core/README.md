@@ -161,32 +161,32 @@ If not provided, no header will be added.
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
 
-`org.jrestful.web.hateoas.Resource` and `org.jrestful.web.hateoas.Resources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
+`org.jrestful.web.hateoas.RestResource` and `org.jrestful.web.hateoas.RestResources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
 
     @RestController
-    @RequestMapping(value = "/api-${app.apiVersion}/articles", produces = Resource.HAL_MEDIA_TYPE)
+    @RequestMapping(value = "/api-${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
     public class ArticleRestController extends GenericRestController {
 
       @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-      public ResponseEntity<Resource<Article>> get(@PathVariable String id) {
+      public ResponseEntity<RestResource<Article>> get(@PathVariable String id) {
         Article article = articleService.findOne(id);
         if (article == null) {
           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-          Resource<Article> resource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+          RestResource<Article> resource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
           return new ResponseEntity<>(resource, HttpStatus.OK);
         }
       }
       
       @RequestMapping(method = RequestMethod.GET)
-      public ResponseEntity<Resources<Article>> list() {
+      public ResponseEntity<RestResources<Article>> list() {
         List<Article> articles = articleService.findAll();
-        List<Resource<Article>> articleResources = new ArrayList<>();
+        List<RestResource<Article>> articleResources = new ArrayList<>();
         for (Article article : articles) {
-          Resource<Article> articleResource = new Resource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+          RestResource<Article> articleResource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
           articleResources.add(articleResource);
         }
-        Resources<Article> resources = new Resources<>(articleResources, linkTo(methodOn(getClass()).list()));
+        RestResources<Article> resources = new RestResources<>(articleResources, linkTo(methodOn(getClass()).list()));
         return new ResponseEntity<>(resources, HttpStatus.OK);
       }
 
