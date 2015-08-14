@@ -161,7 +161,7 @@ If not provided, no header will be added.
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
 
-`org.jrestful.web.hateoas.RestResource` and `org.jrestful.web.hateoas.RestResources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
+`org.jrestful.web.hateoas.RestResource`, `org.jrestful.web.hateoas.RestResources` and `org.jrestful.web.hateoas.PageableRestResources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
 
     @RestController
     @RequestMapping(value = "/api-${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
