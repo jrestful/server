@@ -9,27 +9,31 @@
 ### In your pom.xml
 
 Add the dependency:
-    
-    <dependencies>
-    
-      <dependency>
-        <groupId>org.jrestful</groupId>
-        <artifactId>seo</artifactId>
-        <version>${jrestful.version}</version>
-      </dependency>
-    
-    </dependencies>
+
+```xml
+<dependencies>
+
+  <dependency>
+    <groupId>org.jrestful</groupId>
+    <artifactId>seo</artifactId>
+    <version>${jrestful.version}</version>
+  </dependency>
+
+</dependencies>
+```
 
 ### In your web.xml
 
 Add the context parameter:
 
-    <context-param>
-      <description>The Spring resource location of the SEO properties</description>
-      <param-name>jrestfulSeoProps</param-name>
-      <!-- Example: -->
-      <param-value>WEB-INF/seo.properties</param-value>
-    </context-param>
+```xml
+<context-param>
+  <description>The Spring resource location of the SEO properties</description>
+  <param-name>jrestfulSeoProps</param-name>
+  <!-- Example: -->
+  <param-value>WEB-INF/seo.properties</param-value>
+</context-param>
+```
 
 ### In your contexts
 
@@ -39,47 +43,53 @@ No placeholder is defined by jrestful, but properties beans are available:
 
 You can then register placeholders based on these beans if needed:
 
-    <context:property-placeholder properties-ref="seoProps" ignore-unresolvable="true" />
+```xml
+<context:property-placeholder properties-ref="seoProps" ignore-unresolvable="true" />
+```
 
 ### In your URL rewriting
 
 As the URL mapping is done client-side by AngularJS, the server has to forward those URL to `/`. This can easily get done with [Tuckey UrlRewriteFilter](http://tuckey.org/urlrewrite/), by adding a file `urlrewrite.xml` in your `WEB-INF` folder. Example:
 
-    <?xml version="1.0" encoding="utf-8"?>
-    <!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
-    <urlrewrite>
-      
-      <rule>
-        <from>^/home$</from>
-        <to>/</to>
-      </rule>
-      
-      <rule>
-      	<from>^/article/.*$</from>
-      	<to>/</to>
-      </rule>
-    
-    </urlrewrite>
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+<urlrewrite>
+  
+  <rule>
+    <from>^/home$</from>
+    <to>/</to>
+  </rule>
+  
+  <rule>
+  	<from>^/article/.*$</from>
+  	<to>/</to>
+  </rule>
+
+</urlrewrite>
+```
 
 The prerenderer has to know the original URL: it will look for it in a `prerenderUri` request attribute. To automatically add this request attribute, simply update your URL rewriting as follow:
 
-    <?xml version="1.0" encoding="utf-8"?>
-    <!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
-    <urlrewrite>
-      
-      <rule>
-        <from>^/home$</from>
-        <set name="prerenderUri">$0</set>
-        <to>/</to>
-      </rule>
-      
-      <rule>
-        <from>^/article/.*$</from>
-        <set name="prerenderUri">$0</set>
-        <to>/</to>
-      </rule>
-    
-    </urlrewrite>
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+<urlrewrite>
+  
+  <rule>
+    <from>^/home$</from>
+    <set name="prerenderUri">$0</set>
+    <to>/</to>
+  </rule>
+  
+  <rule>
+    <from>^/article/.*$</from>
+    <set name="prerenderUri">$0</set>
+    <to>/</to>
+  </rule>
+
+</urlrewrite>
+```
 
 ### In your code (optional)
 
@@ -89,22 +99,24 @@ If not provided, no sitemap will be generated.
 
 #### Example
 
-    @Component
-    public class MyAppSitemapBuilder implements SitemapBuilder {
-    
-      @Override
-      public UrlEntries build(String appUrl) {
-        UrlEntries urlEntries = new UrlEntries();
-    
-        UrlEntry homeEntry = new UrlEntry(appUrl);
-        homeEntry.setChangeFreq(ChangeFreq.DAILY);
-        homeEntry.setPriority(1f);
-        urlEntries.add(homeEntry);
-    
-        return urlEntries;
-      }
-    
-    }
+```java
+@Component
+public class MyAppSitemapBuilder implements SitemapBuilder {
+
+  @Override
+  public UrlEntries build(String appUrl) {
+    UrlEntries urlEntries = new UrlEntries();
+
+    UrlEntry homeEntry = new UrlEntry(appUrl);
+    homeEntry.setChangeFreq(ChangeFreq.DAILY);
+    homeEntry.setPriority(1f);
+    urlEntries.add(homeEntry);
+
+    return urlEntries;
+  }
+
+}
+```
 
 ## What is expected in the properties files?
 
@@ -117,16 +129,20 @@ If not provided, no sitemap will be generated.
 
 `seo` generates a sitemap in `${app.dir}/resources/sitemap.xml` on server startup and every day at 5 am. Spring MVC must be able to serve that file when requested. To do so, add the following tag in your Spring MVC servlet context:
 
-    <mvc:resources
-      mapping="/**"
-      location="file:${app.dir}/resources/" />
+```xml
+<mvc:resources
+  mapping="/**"
+  location="file:${app.dir}/resources/" />
+```
 
 `seo` also caches prerendered pages for one day in `${app.dir}/prerendered`.
 
 #### Example
 
-    app.url=http://www.domain.tld
-    app.dir=/local/myapp/data/1.3.9
+```properties
+app.url=http://www.domain.tld
+app.dir=/local/myapp/data/1.3.9
+```
 
 ### `jrestfulSeoProps`
 
@@ -141,5 +157,7 @@ If not provided, prerendering won't be done.
 
 #### Example
 
-    phantomjs.path=/local/myapp/phantomjs-1.9.8-patched/phantomjs
-    phantomjs.bind=192.168.1.42:23456
+```properties
+phantomjs.path=/local/myapp/phantomjs-1.9.8-patched/phantomjs
+phantomjs.bind=192.168.1.42:23456
+```
