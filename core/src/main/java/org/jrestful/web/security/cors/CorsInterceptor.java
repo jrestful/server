@@ -16,18 +16,33 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
 
   private final String allowOrigin;
 
+  private final String allowMethods;
+
+  private final String allowHeaders;
+
+  private final String maxAge;
+
   @Autowired
-  public CorsInterceptor(@Value("#{secProps['cors.allowOrigin']}") String allowOrigin) {
+  public CorsInterceptor(@Value("#{secProps['cors.allowOrigin']}") String allowOrigin,
+      @Value("#{secProps['cors.allowMethods'] ?: 'GET, POST, PUT, DELTE'}") String allowMethods,
+      @Value("#{secProps['cors.allowHeaders']}") String allowHeaders, @Value("#{secProps['cors.maxAge']}") String maxAge) {
     this.allowOrigin = allowOrigin;
+    this.allowMethods = allowMethods;
+    this.allowHeaders = allowHeaders;
+    this.maxAge = maxAge;
   }
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     if (allowOrigin != null) {
       response.setHeader("Access-Control-Allow-Origin", allowOrigin);
-      response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-      response.setHeader("Access-Control-Max-Age", "3600");
-      response.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+      response.setHeader("Access-Control-Allow-Methods", allowMethods);
+      if (allowHeaders != null) {
+        response.setHeader("Access-Control-Allow-Headers", allowHeaders);
+      }
+      if (maxAge != null) {
+        response.setHeader("Access-Control-Max-Age", maxAge);
+      }
     }
     return super.preHandle(request, response, handler);
   }

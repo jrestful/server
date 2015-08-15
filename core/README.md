@@ -127,15 +127,7 @@ app.version=1.3.9
 
  - `app.apiVersion`: The API version.
 
-jrestful registers request interceptors that only match URL starting with `/api-${app.apiVersion}/**`. To implement your API behind this mapping, use a placeholder in the `@RequestMapping` annotation:
-
-```java
-@RestController
-@RequestMapping("/api-${app.apiVersion}")
-public class ArticleController {
-
-}
-```
+jrestful registers request interceptors that only match URL starting with `/api-${app.apiVersion}`.
 
 #### Example
 
@@ -163,7 +155,10 @@ csrf.cookieName=MYWEBSITE-CSRF-TOKEN
 
 #### The CORS parameters (optional)
 
- - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api-${app.apiVersion}/**`.
+ - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
+  - `cors.allowMethods` (defaulted to `GET, POST, PUT, DELETE`): The `Access-Control-Allow-Methods` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
+  - `cors.allowHeaders` (optional): The `Access-Control-Allow-Headers` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
+  - `cors.maxAge` (optional): The `Access-Control-Max-Age` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
 
 If not provided, no header will be added.
 
@@ -171,6 +166,9 @@ If not provided, no header will be added.
 
 ```properties
 cors.allowOrigin=*
+cors.allowMethods=GET, POST
+cors.allowHeaders=X-Requested-With
+cors.maxAge=3600
 ```
 
 ## What does `core` provide?
@@ -187,7 +185,7 @@ cors.allowOrigin=*
 
 ```java
 @RestController
-@RequestMapping(value = "/api-${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api-${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericRestController {
   
   ...
