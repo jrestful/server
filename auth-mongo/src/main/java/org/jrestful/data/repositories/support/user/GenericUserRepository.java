@@ -7,6 +7,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface GenericUserRepository<U extends GenericUser> extends GenericSequencedDocumentRepository<U> {
 
-  U findByEmail(String email);
+  U findOneByEmail(String email);
 
 }

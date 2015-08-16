@@ -12,8 +12,8 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   }
 
   @Override
-  public final U findByEmail(String email) {
-    return repository.findByEmail(email);
+  public final U findOneByEmail(String email) {
+    return repository.findOneByEmail(email);
   }
 
 }

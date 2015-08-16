@@ -6,7 +6,4 @@ import org.jrestful.web.security.auth.user.AuthUserService;
 
 public interface GenericUserService<U extends GenericUser> extends GenericSequencedDocumentService<U>, AuthUserService<U, String> {
 
-  @Override
-  U findOne(String id);
-
 }

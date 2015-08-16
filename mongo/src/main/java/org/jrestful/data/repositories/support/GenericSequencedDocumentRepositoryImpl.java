@@ -20,7 +20,7 @@ public abstract class GenericSequencedDocumentRepositoryImpl<D extends GenericSe
   }
 
   @Override
-  public final D findBySequence(long sequence) {
+  public final D findOneBySequence(long sequence) {
     return mongoOperations.findOne(query(where("sequence").is(sequence)), documentClass);
   }
 

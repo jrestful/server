@@ -6,6 +6,6 @@ public interface AuthUserService<U extends AuthUser<K>, K extends Serializable> 
 
   U findOne(K id);
 
-  U findByEmail(String email);
+  U findOneByEmail(String email);
 
 }

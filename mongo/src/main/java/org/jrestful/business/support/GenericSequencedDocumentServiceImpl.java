@@ -27,8 +27,8 @@ public abstract class GenericSequencedDocumentServiceImpl<R extends GenericSeque
   }
 
   @Override
-  public D findBySequence(long sequence) {
-    return repository.findBySequence(sequence);
+  public D findOneBySequence(long sequence) {
+    return repository.findOneBySequence(sequence);
   }
 
   @Override

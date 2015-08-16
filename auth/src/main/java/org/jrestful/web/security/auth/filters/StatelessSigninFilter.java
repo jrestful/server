@@ -47,7 +47,7 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
     if (input == null) {
       return null;
     }
-    U user = userService.findByEmail(input.getEmail());
+    U user = userService.findOneByEmail(input.getEmail());
     K id = user == null ? null : user.getId();
     String password = input.getPassword();
     Collection<? extends GrantedAuthority> authorities = user == null ? null : user.getAuthorities();

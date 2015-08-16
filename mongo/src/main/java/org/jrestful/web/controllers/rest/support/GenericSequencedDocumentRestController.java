@@ -29,7 +29,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
 
   @RequestMapping(value = "/{sequence}", method = RequestMethod.GET, params = "by=sequence")
   public ResponseEntity<RestResource<D>> getBySequence(@PathVariable Long sequence) {
-    D document = service.findBySequence(sequence);
+    D document = service.findOneBySequence(sequence);
     if (document == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {

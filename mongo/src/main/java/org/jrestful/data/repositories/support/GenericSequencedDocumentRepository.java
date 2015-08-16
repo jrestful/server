@@ -12,7 +12,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface GenericSequencedDocumentRepository<D extends GenericSequencedDocument> extends GenericDocumentRepository<D> {
 
-  D findBySequence(long sequence);
+  D findOneBySequence(long sequence);
 
   // TODO wait for spring-data-mongodb 1.7.3.RELEASE so that void can be used
   int deleteBySequence(long sequence);
