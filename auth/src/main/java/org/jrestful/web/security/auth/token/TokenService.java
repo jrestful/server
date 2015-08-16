@@ -23,9 +23,7 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
-  private static final int TEN_DAYS = 10;
-
-  private static final int IN_SECONDS = 24 * 60 * 60;
+  private static final int IN_SECONDS = 60;
 
   private final AuthUserService<U, K> userService;
 
@@ -37,23 +35,27 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
 
   private final String headerName;
 
+  private final int tokenLifetime;
+
   @Autowired
   public TokenService(AuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
-      @Value("#{secProps['auth.cookieName']}") String cookieName, @Value("#{secProps['auth.headerName']}") String headerName) {
+      @Value("#{secProps['auth.cookieName']}") String cookieName, @Value("#{secProps['auth.headerName']}") String headerName,
+      @Value("#{secProps['auth.tokenLifetime'] ?: 1400}") int tokenLifetime) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;
     this.cookieName = cookieName;
     this.headerName = headerName;
+    this.tokenLifetime = tokenLifetime;
   }
 
   public void write(U user, HttpServletResponse response) {
-    Date expirationDate = DateUtils.addToNow(Calendar.DAY_OF_MONTH, TEN_DAYS);
+    Date expirationDate = DateUtils.addToNow(Calendar.MINUTE, tokenLifetime);
     Token tokenObject = new Token(user.getId().toString(), expirationDate);
     String tokenString = tokenMapper.serialize(tokenObject);
     HttpUtils.writeHeader(response, headerName, tokenString);
     if (cookieName != null) {
-      HttpUtils.writeCookie(response, cookieName, tokenString, TEN_DAYS * IN_SECONDS);
+      HttpUtils.writeCookie(response, cookieName, tokenString, tokenLifetime * IN_SECONDS);
     }
   }
 
