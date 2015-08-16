@@ -10,7 +10,7 @@
     <constructor-arg name="strength" value="11" />
   </bean>
   
-  <bean id="http403ForbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+  <bean id="forbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
   
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider user-service-ref="userDetailsService">
