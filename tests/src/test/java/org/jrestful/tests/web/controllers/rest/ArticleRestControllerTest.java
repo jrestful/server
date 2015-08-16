@@ -63,8 +63,8 @@ public class ArticleRestControllerTest {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  @Value("#{secProps['auth.tokenEndpoint']}")
-  private String signinEndpoint;
+  @Value("#{appProps['app.apiVersion']}")
+  private String apiVersion;
 
   @Value("#{secProps['auth.headerName']}")
   private String authHeader;
@@ -90,7 +90,7 @@ public class ArticleRestControllerTest {
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post(signinEndpoint) //
+        post("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
@@ -104,7 +104,7 @@ public class ArticleRestControllerTest {
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        post(signinEndpoint) //
+        post("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
@@ -115,7 +115,7 @@ public class ArticleRestControllerTest {
 
     // login
     resultActions = mockMvc.perform( //
-        post(signinEndpoint) //
+        post("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
