@@ -47,7 +47,7 @@
     <constructor-arg name="strength" value="11" />
   </bean>
   
-  <bean id="http403ForbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+  <bean id="forbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
   
   <security:global-method-security pre-post-annotations="enabled" />
   
@@ -57,7 +57,7 @@
     </security:authentication-provider>
   </security:authentication-manager>
   
-  <security:http create-session="stateless" use-expressions="true" entry-point-ref="http403ForbiddenEntryPoint">
+  <security:http create-session="stateless" use-expressions="true" entry-point-ref="forbiddenEntryPoint">
     <security:custom-filter ref="statelessSigninFilter" position="FORM_LOGIN_FILTER" />
     <security:custom-filter ref="statelessAuthFilter" position="PRE_AUTH_FILTER" />
   </security:http>
