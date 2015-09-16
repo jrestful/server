@@ -29,8 +29,6 @@
     <module>mongo</module>
     <module>auth</module>
     <module>auth-mongo</module>
-    <module>social</module>
-    <module>social-mongo</module>
     <module>seo</module>
     <module>tests</module>
   </modules>
