@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
-import org.jrestful.web.hateoas.PageableRestResources;
+import org.jrestful.web.hateoas.PagedRestResources;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.hateoas.RestResources;
 import org.springframework.data.domain.Page;
@@ -38,7 +38,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<PageableRestResources<D>> list(@RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "25") int pageSize) {
+  public ResponseEntity<PagedRestResources<D>> list(@RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "25") int pageSize) {
     Pageable pageRequest = new PageRequest(pageIndex, pageSize);
     Page<D> page = service.findAll(pageRequest);
     List<RestResource<D>> documentResources = new ArrayList<>();
@@ -47,7 +47,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
       addAdditionalLinks(documentResource);
       documentResources.add(documentResource);
     }
-    PageableRestResources<D> resources = new PageableRestResources<>(documentResources, linkTo(methodOn(getClass()).list(pageIndex, pageSize)));
+    PagedRestResources<D> resources = new PagedRestResources<>(documentResources, linkTo(methodOn(getClass()).list(pageIndex, pageSize)));
     if (!page.isFirst()) {
       resources.addLink("first", linkTo(methodOn(getClass()).list(0, pageSize)));
       resources.addLink("previous", linkTo(methodOn(getClass()).list(pageIndex - 1, pageSize)));

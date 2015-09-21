@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.hateoas.core.LinkBuilderSupport;
 
 /**
- * Pageable list of REST resources, with HATEOAS over HAL.
+ * Paged list of REST resources, with HATEOAS over HAL.
  * 
  * @param <T>
  *          The type of content to serialize.
  */
-public class PageableRestResources<T> extends RestResources<T> {
+public class PagedRestResources<T> extends RestResources<T> {
 
   private int pageIndex;
 
@@ -20,11 +20,11 @@ public class PageableRestResources<T> extends RestResources<T> {
 
   private long totalItems;
 
-  public PageableRestResources(List<RestResource<T>> resources, String href) {
+  public PagedRestResources(List<RestResource<T>> resources, String href) {
     super(resources, href);
   }
 
-  public PageableRestResources(List<RestResource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
+  public PagedRestResources(List<RestResource<T>> resources, LinkBuilderSupport<?> hrefBuilder) {
     this(resources, hrefBuilder.toString());
   }
 
