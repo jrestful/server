@@ -3,6 +3,8 @@ package org.jrestful.web.controllers.rest.support;
 import static org.jrestful.web.controllers.rest.support.RestResponse.noContent;
 import static org.jrestful.web.controllers.rest.support.RestResponse.notFound;
 import static org.jrestful.web.controllers.rest.support.RestResponse.ok;
+import static org.jrestful.web.hateoas.support.LinkBuilder.link;
+import static org.jrestful.web.hateoas.support.LinkBuilder.to;
 
 import org.jrestful.business.support.GenericSequencedDocumentService;
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;

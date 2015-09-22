@@ -10,18 +10,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class LinkBuilder {
 
-  private final ControllerLinkBuilderFactory factory = new ControllerLinkBuilderFactory();
+  private static final ControllerLinkBuilderFactory FACTORY = new ControllerLinkBuilderFactory();
 
   @Autowired
   public LinkBuilder(UriPlaceholdersResolver resolver) {
-    factory.setUriComponentsContributors(Arrays.asList(resolver));
+    FACTORY.setUriComponentsContributors(Arrays.asList(resolver));
   }
 
-  public ControllerLinkBuilder linkTo(Object invocationValue) {
-    return factory.linkTo(invocationValue);
+  public static ControllerLinkBuilder link(Object invocationValue) {
+    return FACTORY.linkTo(invocationValue);
   }
 
-  public <T> T methodOn(Class<T> controller, Object... parameters) {
+  public static <T> T to(Class<T> controller, Object... parameters) {
     return ControllerLinkBuilder.methodOn(controller, parameters);
   }
 

@@ -187,6 +187,7 @@ cors.maxAge=3600
 
 ```java
 import static org.jrestful.web.controllers.rest.support.RestResponse.*;
+import static org.jrestful.web.hateoas.support.LinkBuilder.*;
 
 ...
 

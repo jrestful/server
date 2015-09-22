@@ -1,6 +1,8 @@
 package org.jrestful.web.controllers.rest.support;
 
 import static org.jrestful.web.controllers.rest.support.RestResponse.ok;
+import static org.jrestful.web.hateoas.support.LinkBuilder.link;
+import static org.jrestful.web.hateoas.support.LinkBuilder.to;
 
 import org.jrestful.business.support.user.GenericUserService;
 import org.jrestful.data.documents.support.user.GenericUser;
