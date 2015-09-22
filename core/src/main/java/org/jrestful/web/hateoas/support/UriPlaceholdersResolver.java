@@ -24,11 +24,12 @@ public class UriPlaceholdersResolver implements UriComponentsContributor, Embedd
 
   @Override
   public void enhance(UriComponentsBuilder builder, MethodParameter parameter, Object value) {
-    if (!resolvedPaths.containsKey(parameter.getMethod())) {
+    Method method = parameter.getMethod();
+    if (!resolvedPaths.containsKey(method)) {
       String resolvedPath = resolver.resolveStringValue(builder.build().getPath());
-      resolvedPaths.putIfAbsent(parameter.getMethod(), resolvedPath);
+      resolvedPaths.putIfAbsent(method, resolvedPath);
     }
-    builder.replacePath(resolvedPaths.get(parameter.getMethod()));
+    builder.replacePath(resolvedPaths.get(method));
   }
 
   @Override
