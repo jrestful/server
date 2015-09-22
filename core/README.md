@@ -181,9 +181,15 @@ cors.maxAge=3600
 
 `org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
 
-`org.jrestful.web.hateoas.RestResource`, `org.jrestful.web.hateoas.RestResources` and `org.jrestful.web.hateoas.PagedRestResources` help you responding to REST requests with HATEOAS over HAL. Example, where the `linkTo` and `methodOn` methods belong to `org.springframework.hateoas.mvc.ControllerLinkBuilder`:
+`org.jrestful.web.hateoas.RestResource`, `org.jrestful.web.hateoas.RestResources` and `org.jrestful.web.hateoas.PagedRestResources` help you responding to REST requests with HATEOAS over HAL.
+
+#### Example
 
 ```java
+import static org.jrestful.web.controllers.rest.support.RestResponse.*;
+
+...
+
 @RestController
 @RequestMapping(value = "/api-${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericRestController {
@@ -194,10 +200,10 @@ public class ArticleRestController extends GenericRestController {
   public ResponseEntity<RestResource<Article>> get(@PathVariable String id) {
     Article article = articleService.findOne(id);
     if (article == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return notFound();
     } else {
-      RestResource<Article> resource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
-      return new ResponseEntity<>(resource, HttpStatus.OK);
+      RestResource<Article> resource = new RestResource<>(article, link(to(getClass()).get(article.getId())));
+      return ok(resource);
     }
   }
   
@@ -206,17 +212,15 @@ public class ArticleRestController extends GenericRestController {
     List<Article> articles = articleService.findAll();
     List<RestResource<Article>> articleResources = new ArrayList<>();
     for (Article article : articles) {
-      RestResource<Article> articleResource = new RestResource<>(article, linkTo(methodOn(getClass()).get(article.getId())));
+      RestResource<Article> articleResource = new RestResource<>(article, link(to(getClass()).get(article.getId())));
       articleResources.add(articleResource);
     }
-    RestResources<Article> resources = new RestResources<>(articleResources, linkTo(methodOn(getClass()).list()));
-    return new ResponseEntity<>(resources, HttpStatus.OK);
+    RestResources<Article> resources = new RestResources<>(articleResources, link(to(getClass()).list()));
+    return ok(resources);
   }
 
 }
 ```
-
-Be aware that `ControllerLinkBuilder` isn't able to resolve placeholders yet: you may need to hardcode them in your mapping until a fix is provided (see https://github.com/spring-projects/spring-hateoas/issues/220).
 
 `org.jrestful.web.util.UrlInterceptor` (automatically registered) adds attributes for each request (excluding those matching `/static-${app.version}/**`).
 

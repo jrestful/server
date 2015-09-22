@@ -19,6 +19,8 @@
   <util:properties id="appProps" location="classpath:jrestful/tests/application.properties" />
   <util:properties id="secProps" location="classpath:jrestful/tests/security.properties" ignore-resource-not-found="true" />
 
+  <context:property-placeholder properties-ref="appProps" />
+
   <!-- core -->
 
   <context:component-scan base-package="org.jrestful" />

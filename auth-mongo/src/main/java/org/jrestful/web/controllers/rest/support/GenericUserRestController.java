@@ -1,14 +1,12 @@
 package org.jrestful.web.controllers.rest.support;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.jrestful.web.controllers.rest.support.RestResponse.ok;
 
 import org.jrestful.business.support.user.GenericUserService;
 import org.jrestful.data.documents.support.user.GenericUser;
 import org.jrestful.web.beans.UserProfile;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.AuthUser;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,8 +30,8 @@ public abstract class GenericUserRestController<S extends GenericUserService<U>,
         userProfile = new UserProfile((AuthUser<?>) details);
       }
     }
-    RestResource<UserProfile> resource = new RestResource<>(userProfile, linkTo(methodOn(getClass()).profile()));
-    return new ResponseEntity<>(resource, HttpStatus.OK);
+    RestResource<UserProfile> resource = new RestResource<>(userProfile, link(to(getClass()).profile()));
+    return ok(resource);
   }
 
 }
