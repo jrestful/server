@@ -55,7 +55,7 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
     String tokenString = tokenMapper.serialize(tokenObject);
     HttpUtils.writeHeader(response, headerName, tokenString);
     if (cookieName != null) {
-      HttpUtils.writeCookie(response, cookieName, tokenString, tokenLifetime * IN_SECONDS);
+      HttpUtils.writeCookie(response, cookieName, tokenString, tokenLifetime * IN_SECONDS, true);
     }
   }
 
