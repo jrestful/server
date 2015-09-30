@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -45,7 +46,7 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
     EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
     if (input == null) {
-      return null;
+      throw new EmailPasswordNotFoundException();
     }
     U user = userService.findOneByEmail(input.getEmail());
     K id = user == null ? null : user.getId();
@@ -63,6 +64,16 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
     U user = (U) authentication.getDetails();
     tokenService.write(user, response);
     SecurityContextHolder.getContext().setAuthentication(authentication);
+  }
+
+  private static class EmailPasswordNotFoundException extends AuthenticationException {
+
+    private static final long serialVersionUID = 1L;
+
+    public EmailPasswordNotFoundException() {
+      super("Email and/or password not found in request");
+    }
+
   }
 
 }
