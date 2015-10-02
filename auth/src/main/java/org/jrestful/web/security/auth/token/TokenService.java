@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +31,8 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
   private final UserIdConverter<K> userIdConverter;
 
   private final String cookieName;
+  
+  private final boolean securedCookie;
 
   private final String headerName;
 
@@ -37,13 +40,14 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
 
   @Autowired
   public TokenService(AuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
-      @Value("#{secProps['auth.cookieName']}") String cookieName, @Value("#{secProps['auth.headerName']}") String headerName,
-      @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
+      @Value("#{secProps['auth.headerName']}") String headerName, @Value("#{secProps['auth.cookieName']}") String cookieName,
+      @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie, @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;
-    this.cookieName = cookieName;
     this.headerName = headerName;
+    this.cookieName = cookieName;
+    this.securedCookie = securedCookie;
     this.tokenLifetime = tokenLifetime;
   }
 
@@ -53,7 +57,11 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
     String tokenString = tokenMapper.serialize(tokenObject);
     HttpUtils.writeHeader(response, headerName, tokenString);
     if (cookieName != null) {
-      HttpUtils.writeCookie(response, cookieName, tokenString, tokenLifetime, true);
+      Cookie cookie = HttpUtils.writeCookie(response, cookieName, tokenString);
+      cookie.setMaxAge(tokenLifetime);
+      cookie.setPath("/");
+      cookie.setHttpOnly(true);
+      cookie.setSecure(securedCookie);
     }
   }
 

@@ -31,7 +31,7 @@ public final class HttpUtils {
     return null;
   }
 
-  public static void writeCookie(HttpServletResponse response, String name, String value, int maxAge, boolean httpOnly) {
+  public static Cookie writeCookie(HttpServletResponse response, String name, String value) {
     try {
       name = URLEncoder.encode(name, UTF_8);
       value = URLEncoder.encode(value, UTF_8);
@@ -39,10 +39,8 @@ public final class HttpUtils {
       // cannot happen
     }
     Cookie cookie = new Cookie(name, value);
-    cookie.setMaxAge(maxAge);
-    cookie.setPath("/");
-    cookie.setHttpOnly(httpOnly);
     response.addCookie(cookie);
+    return cookie;
   }
 
   public static String readHeader(HttpServletRequest request, String name) {
