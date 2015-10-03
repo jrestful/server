@@ -33,80 +33,80 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
   private boolean passwordExpired;
 
   @Override
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public final void setName(String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
   @JsonIgnore
   @Override
-  public final String getEmail() {
+  public String getEmail() {
     return email;
   }
 
-  public final void setEmail(String email) {
+  public void setEmail(String email) {
     this.email = email;
   }
 
   @JsonIgnore
   @Override
-  public final String getPassword() {
+  public String getPassword() {
     return password;
   }
 
-  public final void setPassword(String password) {
+  public void setPassword(String password) {
     this.password = password;
   }
 
   @Override
-  public final List<String> getRoles() {
+  public List<String> getRoles() {
     return roles;
   }
 
-  public final void setRoles(List<String> roles) {
+  public void setRoles(List<String> roles) {
     this.roles = roles;
   }
 
   @JsonIgnore
   @Override
-  public final boolean isEnabled() {
+  public boolean isEnabled() {
     return enabled;
   }
 
-  public final void setEnabled(boolean enabled) {
+  public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
   @JsonIgnore
   @Override
-  public final boolean isAccountLocked() {
+  public boolean isAccountLocked() {
     return accountLocked;
   }
 
-  public final void setAccountLocked(boolean accountLocked) {
+  public void setAccountLocked(boolean accountLocked) {
     this.accountLocked = accountLocked;
   }
 
   @JsonIgnore
   @Override
-  public final boolean isAccountExpired() {
+  public boolean isAccountExpired() {
     return accountExpired;
   }
 
-  public final void setAccountExpired(boolean accountExpired) {
+  public void setAccountExpired(boolean accountExpired) {
     this.accountExpired = accountExpired;
   }
 
   @JsonIgnore
   @Override
-  public final boolean isPasswordExpired() {
+  public boolean isPasswordExpired() {
     return passwordExpired;
   }
 
-  public final void setPasswordExpired(boolean passwordExpired) {
+  public void setPasswordExpired(boolean passwordExpired) {
     this.passwordExpired = passwordExpired;
   }
 
