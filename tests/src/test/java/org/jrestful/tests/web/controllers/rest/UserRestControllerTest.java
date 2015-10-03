@@ -9,16 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.jrestful.tests.components.article.ArticleService;
 import org.jrestful.tests.components.user.User;
-import org.jrestful.tests.components.user.UserService;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,37 +22,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.Lists;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "classpath*:jrestful/tests/applicationContext.xml" })
-@WebAppConfiguration
-public class UserRestControllerTest {
+public class UserRestControllerTest extends TestHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserRestControllerTest.class);
-
-  private MockMvc mockMvc;
-
-  @Autowired
-  private WebApplicationContext webApplicationContext;
-
-  @Autowired
-  private FilterChainProxy springSecurityFilterChain;
-
-  @Autowired
-  private ArticleService articleService;
-
-  @Autowired
-  private UserService userService;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
@@ -66,11 +38,6 @@ public class UserRestControllerTest {
 
   @Value("#{secProps['auth.headerName']}")
   private String authHeader;
-
-  @Before
-  public void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
-  }
 
   @Test
   public void testRest() throws Exception {

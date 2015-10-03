@@ -11,16 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.jrestful.tests.components.article.Article;
-import org.jrestful.tests.components.article.ArticleService;
 import org.jrestful.tests.components.user.User;
-import org.jrestful.tests.components.user.UserService;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,37 +24,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.Lists;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "classpath*:jrestful/tests/applicationContext.xml" })
-@WebAppConfiguration
-public class ArticleRestControllerTest {
+public class ArticleRestControllerTest extends TestHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ArticleRestControllerTest.class);
-
-  private MockMvc mockMvc;
-
-  @Autowired
-  private WebApplicationContext webApplicationContext;
-
-  @Autowired
-  private FilterChainProxy springSecurityFilterChain;
-
-  @Autowired
-  private ArticleService articleService;
-
-  @Autowired
-  private UserService userService;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
@@ -68,11 +40,6 @@ public class ArticleRestControllerTest {
 
   @Value("#{secProps['auth.headerName']}")
   private String authHeader;
-
-  @Before
-  public void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
-  }
 
   @Test
   public void testRest() throws Exception {
@@ -126,8 +93,8 @@ public class ArticleRestControllerTest {
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
-        .andExpect(jsonPath("$.sequence", is(1))) //
-        .andExpect(jsonPath("$.title", is("article1"))) //
+        .andExpect(jsonPath("$.sequence", is(article1.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.title", is(article1.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
@@ -146,8 +113,8 @@ public class ArticleRestControllerTest {
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
-        .andExpect(jsonPath("$.sequence", is(2))) //
-        .andExpect(jsonPath("$.title", is("article2"))) //
+        .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
@@ -159,8 +126,8 @@ public class ArticleRestControllerTest {
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
-        .andExpect(jsonPath("$.sequence", is(2))) //
-        .andExpect(jsonPath("$.title", is("article2"))) //
+        .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
@@ -181,8 +148,8 @@ public class ArticleRestControllerTest {
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
-        .andExpect(jsonPath("$.sequence", is(1))) //
-        .andExpect(jsonPath("$.title", is("article1updated"))) //
+        .andExpect(jsonPath("$.sequence", is(article1.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.title", is(article1.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
@@ -202,8 +169,8 @@ public class ArticleRestControllerTest {
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
-        .andExpect(jsonPath("$.sequence", is(2))) //
-        .andExpect(jsonPath("$.title", is("article2updated"))) //
+        .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
@@ -220,13 +187,13 @@ public class ArticleRestControllerTest {
         .andExpect(jsonPath("$.totalItems", is(2))) //
         .andExpect(jsonPath("$._embedded", hasSize(2))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article1.getId()))) //
-        .andExpect(jsonPath("$._embedded[0].sequence", is(1))) //
-        .andExpect(jsonPath("$._embedded[0].title", is("article1updated"))) //
+        .andExpect(jsonPath("$._embedded[0].sequence", is(article1.getSequence().intValue()))) //
+        .andExpect(jsonPath("$._embedded[0].title", is(article1.getTitle()))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._embedded[1].id", is(article2.getId()))) //
-        .andExpect(jsonPath("$._embedded[1].sequence", is(2))) //
-        .andExpect(jsonPath("$._embedded[1].title", is("article2updated"))) //
+        .andExpect(jsonPath("$._embedded[1].sequence", is(article2.getSequence().intValue()))) //
+        .andExpect(jsonPath("$._embedded[1].title", is(article2.getTitle()))) //
         .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._embedded[1]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
@@ -253,8 +220,8 @@ public class ArticleRestControllerTest {
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$._embedded", hasSize(1))) //
         .andExpect(jsonPath("$._embedded[0].id", is(article2.getId()))) //
-        .andExpect(jsonPath("$._embedded[0].sequence", is(2))) //
-        .andExpect(jsonPath("$._embedded[0].title", is("article2updated"))) //
+        .andExpect(jsonPath("$._embedded[0].sequence", is(article2.getSequence().intValue()))) //
+        .andExpect(jsonPath("$._embedded[0].title", is(article2.getTitle()))) //
         .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
