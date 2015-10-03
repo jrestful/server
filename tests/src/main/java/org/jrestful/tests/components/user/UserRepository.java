@@ -1,7 +1,6 @@
-package org.jrestful.tests.data.repositories;
+package org.jrestful.tests.components.user;
 
 import org.jrestful.data.repositories.support.user.GenericUserRepository;
-import org.jrestful.tests.data.documents.User;
 
 public interface UserRepository extends GenericUserRepository<User> {
 

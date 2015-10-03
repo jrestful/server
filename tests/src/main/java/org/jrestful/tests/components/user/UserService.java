@@ -1,7 +1,6 @@
-package org.jrestful.tests.business;
+package org.jrestful.tests.components.user;
 
 import org.jrestful.business.support.user.GenericUserService;
-import org.jrestful.tests.data.documents.User;
 
 public interface UserService extends GenericUserService<User> {
 

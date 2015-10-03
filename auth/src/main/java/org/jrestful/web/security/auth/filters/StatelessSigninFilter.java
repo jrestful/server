@@ -46,7 +46,7 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
     EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
     if (input == null) {
-      throw new EmailPasswordNotFoundException();
+      throw new MalformedRequestException();
     }
     U user = userService.findOneByEmail(input.getEmail());
     K id = user == null ? null : user.getId();
@@ -66,11 +66,11 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
-  private static class EmailPasswordNotFoundException extends AuthenticationException {
+  private static class MalformedRequestException extends AuthenticationException {
 
     private static final long serialVersionUID = 1L;
 
-    public EmailPasswordNotFoundException() {
+    public MalformedRequestException() {
       super("Email and/or password not found in request");
     }
 

@@ -1,7 +1,5 @@
 package org.jrestful.web.security.auth.user;
 
-import java.io.Serializable;
-
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +16,7 @@ public class CurrentUser {
   }
 
   @SuppressWarnings("unchecked")
-  public static <U extends AuthUser<K>, K extends Serializable> U get(Class<U> type) {
+  public static <U extends AuthUser<?>> U get(Class<U> type) {
     if (isAnonymous()) {
       return null;
     } else {
@@ -26,7 +24,7 @@ public class CurrentUser {
     }
   }
 
-  public static <U extends AuthUser<K>, K extends Serializable> U get() {
+  public static <U extends AuthUser<?>> U get() {
     return get(null);
   }
 

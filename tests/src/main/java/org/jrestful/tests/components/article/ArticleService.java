@@ -1,7 +1,6 @@
-package org.jrestful.tests.business;
+package org.jrestful.tests.components.article;
 
 import org.jrestful.business.support.GenericSequencedDocumentService;
-import org.jrestful.tests.data.documents.Article;
 
 public interface ArticleService extends GenericSequencedDocumentService<Article> {
 

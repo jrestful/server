@@ -1,8 +1,6 @@
-package org.jrestful.tests.business;
+package org.jrestful.tests.components.user;
 
 import org.jrestful.business.support.user.GenericUserServiceImpl;
-import org.jrestful.tests.data.documents.User;
-import org.jrestful.tests.data.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

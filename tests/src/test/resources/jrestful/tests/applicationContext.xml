@@ -41,7 +41,7 @@
     <constructor-arg ref="mongoDbFactory"/>
   </bean>
   
-  <mongo:repositories base-package="org.jrestful.tests.data.repositories" />
+  <mongo:repositories base-package="org.jrestful.tests" />
   
   <!-- auth -->
   

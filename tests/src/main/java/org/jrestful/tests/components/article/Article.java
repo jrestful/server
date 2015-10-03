@@ -1,4 +1,4 @@
-package org.jrestful.tests.data.documents;
+package org.jrestful.tests.components.article;
 
 import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
 import org.springframework.data.mongodb.core.mapping.Document;

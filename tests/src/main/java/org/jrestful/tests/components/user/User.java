@@ -1,4 +1,4 @@
-package org.jrestful.tests.data.documents;
+package org.jrestful.tests.components.user;
 
 import org.jrestful.data.documents.support.user.GenericUser;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,5 +7,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User extends GenericUser {
 
   private static final long serialVersionUID = 1L;
+
+  private String city;
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
 
 }

@@ -1,8 +1,6 @@
-package org.jrestful.tests.business;
+package org.jrestful.tests.components.article;
 
 import org.jrestful.business.support.GenericSequencedDocumentServiceImpl;
-import org.jrestful.tests.data.documents.Article;
-import org.jrestful.tests.data.repositories.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

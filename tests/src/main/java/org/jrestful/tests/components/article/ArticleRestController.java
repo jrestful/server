@@ -1,7 +1,5 @@
-package org.jrestful.tests.web.controllers.rest;
+package org.jrestful.tests.components.article;
 
-import org.jrestful.tests.business.ArticleService;
-import org.jrestful.tests.data.documents.Article;
 import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.hateoas.RestResources;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "${url.articles}", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api-${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericSequencedDocumentRestController<ArticleService, Article> {
 
   @Autowired
@@ -22,7 +20,7 @@ public class ArticleRestController extends GenericSequencedDocumentRestControlle
   }
 
   @Override
-  @PreAuthorize(value = "hasRole('ADMIN')")
+  @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
   public ResponseEntity<RestResource<Article>> create(@RequestBody Article document) {
     return super.create(document);
   }
