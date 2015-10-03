@@ -1,10 +1,7 @@
-package org.jrestful.web.security.auth;
+package org.jrestful.web.security.auth.user;
 
 import java.io.Serializable;
 
-import org.jrestful.web.security.auth.user.AuthUser;
-import org.jrestful.web.security.auth.user.AuthUserService;
-import org.jrestful.web.security.auth.user.UserIdConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
