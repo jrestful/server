@@ -41,6 +41,7 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
     this.name = name;
   }
 
+  @JsonIgnore
   @Override
   public final String getEmail() {
     return email;
