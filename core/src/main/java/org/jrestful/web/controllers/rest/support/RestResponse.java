@@ -165,6 +165,18 @@ public enum RestResponse {
     return PARTIAL_CONTENT.build(body);
   }
 
+  public static <T> ResponseEntity<T> multiStatus(T body) {
+    return MULTI_STATUS.build(body);
+  }
+
+  public static <T> ResponseEntity<T> alreadyReported(T body) {
+    return ALREADY_REPORTED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> imUsed(T body) {
+    return IM_USED.build(body);
+  }
+
   public static <T> ResponseEntity<T> badRequest(T body) {
     return BAD_REQUEST.build(body);
   }
@@ -295,6 +307,18 @@ public enum RestResponse {
 
   public static <T> ResponseEntity<T> partialContent() {
     return PARTIAL_CONTENT.build();
+  }
+
+  public static <T> ResponseEntity<T> multiStatus() {
+    return MULTI_STATUS.build();
+  }
+
+  public static <T> ResponseEntity<T> alreadyReported() {
+    return ALREADY_REPORTED.build();
+  }
+
+  public static <T> ResponseEntity<T> imUsed() {
+    return IM_USED.build();
   }
 
   public static <T> ResponseEntity<T> badRequest() {
