@@ -149,6 +149,10 @@ public enum RestResponse {
     return ACCEPTED.build(body);
   }
 
+  public static <T> ResponseEntity<T> nonAuthoritativeInformation(T body) {
+    return NON_AUTHORITATIVE_INFORMATION.build(body);
+  }
+
   public static <T> ResponseEntity<T> noContent(T body) {
     return NO_CONTENT.build(body);
   }
@@ -157,8 +161,44 @@ public enum RestResponse {
     return RESET_CONTENT.build(body);
   }
 
+  public static <T> ResponseEntity<T> partialContent(T body) {
+    return PARTIAL_CONTENT.build(body);
+  }
+
+  public static <T> ResponseEntity<T> badRequest(T body) {
+    return BAD_REQUEST.build(body);
+  }
+
+  public static <T> ResponseEntity<T> unauthorized(T body) {
+    return UNAUTHORIZED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> paymentRequired(T body) {
+    return PAYMENT_REQUIRED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> forbidden(T body) {
+    return FORBIDDEN.build(body);
+  }
+
   public static <T> ResponseEntity<T> notFound(T body) {
     return NOT_FOUND.build(body);
+  }
+
+  public static <T> ResponseEntity<T> methodNotAllowed(T body) {
+    return METHOD_NOT_ALLOWED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> notAcceptable(T body) {
+    return NOT_ACCEPTABLE.build(body);
+  }
+
+  public static <T> ResponseEntity<T> proxyAuthenticationRequired(T body) {
+    return PROXY_AUTHENTICATION_REQUIRED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> requestTimeout(T body) {
+    return REQUEST_TIMEOUT.build(body);
   }
 
   public static <T> ResponseEntity<T> conflict(T body) {
@@ -167,6 +207,66 @@ public enum RestResponse {
 
   public static <T> ResponseEntity<T> gone(T body) {
     return GONE.build(body);
+  }
+
+  public static <T> ResponseEntity<T> lengthRequired(T body) {
+    return LENGTH_REQUIRED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> preconditionFailed(T body) {
+    return PRECONDITION_FAILED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> payloadTooLarge(T body) {
+    return PAYLOAD_TOO_LARGE.build(body);
+  }
+
+  public static <T> ResponseEntity<T> uriTooLong(T body) {
+    return URI_TOO_LONG.build(body);
+  }
+
+  public static <T> ResponseEntity<T> unsupportedMediaType(T body) {
+    return UNSUPPORTED_MEDIA_TYPE.build(body);
+  }
+
+  public static <T> ResponseEntity<T> requestedRangeNotSatisfiable(T body) {
+    return REQUESTED_RANGE_NOT_SATISFIABLE.build(body);
+  }
+
+  public static <T> ResponseEntity<T> expectationFailed(T body) {
+    return EXPECTATION_FAILED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> iAmATeapot(T body) {
+    return I_AM_A_TEAPOT.build(body);
+  }
+
+  public static <T> ResponseEntity<T> unprocessableEntity(T body) {
+    return UNPROCESSABLE_ENTITY.build(body);
+  }
+
+  public static <T> ResponseEntity<T> locked(T body) {
+    return LOCKED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> failedDependency(T body) {
+    return FAILED_DEPENDENCY.build(body);
+  }
+
+  public static <T> ResponseEntity<T> upgradeRequired(T body) {
+    return UPGRADE_REQUIRED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> preconditionRequired(T body) {
+    return PRECONDITION_REQUIRED.build(body);
+  }
+
+  public static <T> ResponseEntity<T> tooManyRequests(T body) {
+    return TOO_MANY_REQUESTS.build(body);
+  }
+
+  public static <T> ResponseEntity<T> requestHeaderFieldsTooLarge(T body) {
+    return REQUEST_HEADER_FIELDS_TOO_LARGE.build(body);
   }
 
   public static <T> ResponseEntity<T> ok() {
@@ -181,6 +281,10 @@ public enum RestResponse {
     return ACCEPTED.build();
   }
 
+  public static <T> ResponseEntity<T> nonAuthoritativeInformation() {
+    return NON_AUTHORITATIVE_INFORMATION.build();
+  }
+
   public static <T> ResponseEntity<T> noContent() {
     return NO_CONTENT.build();
   }
@@ -189,8 +293,44 @@ public enum RestResponse {
     return RESET_CONTENT.build();
   }
 
+  public static <T> ResponseEntity<T> partialContent() {
+    return PARTIAL_CONTENT.build();
+  }
+
+  public static <T> ResponseEntity<T> badRequest() {
+    return BAD_REQUEST.build();
+  }
+
+  public static <T> ResponseEntity<T> unauthorized() {
+    return UNAUTHORIZED.build();
+  }
+
+  public static <T> ResponseEntity<T> paymentRequired() {
+    return PAYMENT_REQUIRED.build();
+  }
+
+  public static <T> ResponseEntity<T> forbidden() {
+    return FORBIDDEN.build();
+  }
+
   public static <T> ResponseEntity<T> notFound() {
     return NOT_FOUND.build();
+  }
+
+  public static <T> ResponseEntity<T> methodNotAllowed() {
+    return METHOD_NOT_ALLOWED.build();
+  }
+
+  public static <T> ResponseEntity<T> notAcceptable() {
+    return NOT_ACCEPTABLE.build();
+  }
+
+  public static <T> ResponseEntity<T> proxyAuthenticationRequired() {
+    return PROXY_AUTHENTICATION_REQUIRED.build();
+  }
+
+  public static <T> ResponseEntity<T> requestTimeout() {
+    return REQUEST_TIMEOUT.build();
   }
 
   public static <T> ResponseEntity<T> conflict() {
@@ -199,6 +339,66 @@ public enum RestResponse {
 
   public static <T> ResponseEntity<T> gone() {
     return GONE.build();
+  }
+
+  public static <T> ResponseEntity<T> lengthRequired() {
+    return LENGTH_REQUIRED.build();
+  }
+
+  public static <T> ResponseEntity<T> preconditionFailed() {
+    return PRECONDITION_FAILED.build();
+  }
+
+  public static <T> ResponseEntity<T> payloadTooLarge() {
+    return PAYLOAD_TOO_LARGE.build();
+  }
+
+  public static <T> ResponseEntity<T> uriTooLong() {
+    return URI_TOO_LONG.build();
+  }
+
+  public static <T> ResponseEntity<T> unsupportedMediaType() {
+    return UNSUPPORTED_MEDIA_TYPE.build();
+  }
+
+  public static <T> ResponseEntity<T> requestedRangeNotSatisfiable() {
+    return REQUESTED_RANGE_NOT_SATISFIABLE.build();
+  }
+
+  public static <T> ResponseEntity<T> expectationFailed() {
+    return EXPECTATION_FAILED.build();
+  }
+
+  public static <T> ResponseEntity<T> iAmATeapot() {
+    return I_AM_A_TEAPOT.build();
+  }
+
+  public static <T> ResponseEntity<T> unprocessableEntity() {
+    return UNPROCESSABLE_ENTITY.build();
+  }
+
+  public static <T> ResponseEntity<T> locked() {
+    return LOCKED.build();
+  }
+
+  public static <T> ResponseEntity<T> failedDependency() {
+    return FAILED_DEPENDENCY.build();
+  }
+
+  public static <T> ResponseEntity<T> upgradeRequired() {
+    return UPGRADE_REQUIRED.build();
+  }
+
+  public static <T> ResponseEntity<T> preconditionRequired() {
+    return PRECONDITION_REQUIRED.build();
+  }
+
+  public static <T> ResponseEntity<T> tooManyRequests() {
+    return TOO_MANY_REQUESTS.build();
+  }
+
+  public static <T> ResponseEntity<T> requestHeaderFieldsTooLarge() {
+    return REQUEST_HEADER_FIELDS_TOO_LARGE.build();
   }
 
 }
