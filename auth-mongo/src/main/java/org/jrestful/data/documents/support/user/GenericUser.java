@@ -3,7 +3,7 @@ package org.jrestful.data.documents.support.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.web.security.auth.user.AuthUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

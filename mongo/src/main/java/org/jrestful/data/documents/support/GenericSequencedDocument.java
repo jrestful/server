@@ -1,6 +1,5 @@
-package org.jrestful.data.documents.support.sequence;
+package org.jrestful.data.documents.support;
 
-import org.jrestful.data.documents.support.GenericDocument;
 
 /**
  * Generic abstract class for a sequenced document.

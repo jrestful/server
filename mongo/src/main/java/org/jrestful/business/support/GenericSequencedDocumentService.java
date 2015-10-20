@@ -1,6 +1,6 @@
 package org.jrestful.business.support;
 
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 
 /**
  * Generic interface for a sequenced document service.

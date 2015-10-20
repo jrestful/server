@@ -1,7 +1,7 @@
 package org.jrestful.business.support.sequence;
 
 import org.jrestful.business.support.GenericDocumentServiceImpl;
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.data.documents.support.sequence.Sequence;
 import org.jrestful.data.repositories.support.sequence.SequenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package org.jrestful.business.support;
 import java.util.List;
 
 import org.jrestful.business.support.sequence.SequenceService;
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.data.documents.support.sequence.Sequence;
 import org.jrestful.data.repositories.support.GenericSequencedDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;

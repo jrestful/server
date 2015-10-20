@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,6 +80,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     }
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<RestResource<D>> create(@RequestBody D document) {
     document = service.insert(document);
@@ -87,6 +89,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     return created(resource);
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D document) {
     document = service.save(document);
@@ -95,6 +98,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     return ok(resource);
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> delete(@PathVariable String id) {
     service.delete(id);

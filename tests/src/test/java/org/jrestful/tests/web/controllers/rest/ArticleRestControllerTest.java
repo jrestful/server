@@ -137,6 +137,7 @@ public class ArticleRestControllerTest extends TestHelper {
         put("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
@@ -158,6 +159,7 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         put("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
@@ -204,7 +206,8 @@ public class ArticleRestControllerTest extends TestHelper {
 
     // delete article1
     resultActions = mockMvc.perform( //
-        delete("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article1.getId() }));
+        delete("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article1.getId() }) //
+            .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
@@ -232,7 +235,8 @@ public class ArticleRestControllerTest extends TestHelper {
     // delete article2 by sequence
     resultActions = mockMvc.perform( //
         delete("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article2.getSequence() }) //
-            .param("by", "sequence"));
+            .param("by", "sequence") //
+            .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));

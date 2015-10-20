@@ -7,10 +7,11 @@ import static org.jrestful.web.hateoas.support.LinkBuilder.link;
 import static org.jrestful.web.hateoas.support.LinkBuilder.to;
 
 import org.jrestful.business.support.GenericSequencedDocumentService;
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.web.hateoas.RestResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
     }
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{sequence}", method = RequestMethod.PUT, params = "by=sequence", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<RestResource<D>> updateBySequence(@PathVariable long sequence, @RequestBody D document) {
     document = service.save(document);
@@ -49,6 +51,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
     return ok(resource);
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{sequence}", method = RequestMethod.DELETE, params = "by=sequence")
   public ResponseEntity<?> deleteBySequence(@PathVariable long sequence) {
     service.deleteBySequence(sequence);

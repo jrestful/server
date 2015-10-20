@@ -1,6 +1,6 @@
 package org.jrestful.tests.components.article;
 
-import org.jrestful.data.documents.support.sequence.GenericSequencedDocument;
+import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "articles")
