@@ -55,6 +55,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
   @RequestMapping(value = "/{sequence}", method = RequestMethod.DELETE, params = "by=sequence")
   public ResponseEntity<?> deleteBySequence(@PathVariable long sequence) {
     service.deleteBySequence(sequence);
+    // TODO should not return noContent()
     return noContent();
   }
 

@@ -102,6 +102,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> delete(@PathVariable String id) {
     service.delete(id);
+    // TODO should not return noContent()
     return noContent();
   }
 
