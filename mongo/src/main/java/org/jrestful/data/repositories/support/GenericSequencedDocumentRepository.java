@@ -14,7 +14,6 @@ public interface GenericSequencedDocumentRepository<D extends GenericSequencedDo
 
   D findOneBySequence(long sequence);
 
-  // TODO wait for spring-data-mongodb 1.7.3.RELEASE so that void can be used
   int deleteBySequence(long sequence);
 
 }
