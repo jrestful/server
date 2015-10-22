@@ -2,6 +2,7 @@ package org.jrestful.business.support;
 
 import java.util.List;
 
+import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.data.repositories.support.GenericDocumentRepository;
 import org.springframework.data.domain.Page;
@@ -12,9 +13,9 @@ import org.springframework.data.domain.Sort;
  * Generic abstract class for a document service.
  * 
  * @param <R>
- *            The repository of the document type to manage.
+ *          The repository of the document type to manage.
  * @param <D>
- *            The document type to manage.
+ *          The document type to manage.
  */
 public abstract class GenericDocumentServiceImpl<R extends GenericDocumentRepository<D>, D extends GenericDocument> extends GenericServiceImpl
     implements GenericDocumentService<D> {
@@ -98,6 +99,11 @@ public abstract class GenericDocumentServiceImpl<R extends GenericDocumentReposi
   @Override
   public D save(D document) {
     return repository.save(document);
+  }
+
+  @Override
+  public void copy(D fromPayload, D toDocument) throws HttpStatusException {
+    // no-op, intended to be overridden
   }
 
 }

@@ -2,7 +2,7 @@ package org.jrestful.business.support;
 
 import java.util.List;
 
-import org.jrestful.business.support.GenericService;
+import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,7 @@ import org.springframework.data.domain.Sort;
  * Generic interface for a document service.
  * 
  * @param <D>
- *            The document type to manage.
+ *          The document type to manage.
  */
 public interface GenericDocumentService<D extends GenericDocument> extends GenericService {
 
@@ -45,5 +45,7 @@ public interface GenericDocumentService<D extends GenericDocument> extends Gener
   List<D> save(Iterable<D> documents);
 
   D save(D document);
+
+  void copy(D fromPayload, D toDocument) throws HttpStatusException;
 
 }

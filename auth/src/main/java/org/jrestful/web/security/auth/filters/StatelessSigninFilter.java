@@ -8,11 +8,11 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jrestful.business.support.AuthUserService;
+import org.jrestful.data.documents.support.AuthUser;
 import org.jrestful.util.JsonUtils;
+import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.security.auth.token.TokenService;
-import org.jrestful.web.security.auth.user.AuthUser;
-import org.jrestful.web.security.auth.user.AuthUserService;
-import org.jrestful.web.security.auth.user.EmailPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable> extends AbstractAuthenticationProcessingFilter {
@@ -44,17 +45,22 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
-    if (input == null) {
-      throw new MalformedRequestException();
+    if (!RequestMethod.PUT.equals(RequestMethod.valueOf(request.getMethod()))) {
+      throw new MalformedRequestException("Wrong request method, expecting PUT but was " + request.getMethod());
+    } else {
+      EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
+      if (input == null) {
+        throw new MalformedRequestException("Email and/or password not found in request");
+      } else {
+        U user = userService.findOneByEmail(input.getEmail());
+        K id = user == null ? null : user.getId();
+        String password = input.getPassword();
+        Collection<? extends GrantedAuthority> authorities = user == null ? null : user.getAuthorities();
+        AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id, password, authorities);
+        authentication.setDetails(user);
+        return getAuthenticationManager().authenticate(authentication);
+      }
     }
-    U user = userService.findOneByEmail(input.getEmail());
-    K id = user == null ? null : user.getId();
-    String password = input.getPassword();
-    Collection<? extends GrantedAuthority> authorities = user == null ? null : user.getAuthorities();
-    AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id, password, authorities);
-    authentication.setDetails(user);
-    return getAuthenticationManager().authenticate(authentication);
   }
 
   @Override
@@ -70,8 +76,8 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
 
     private static final long serialVersionUID = 1L;
 
-    public MalformedRequestException() {
-      super("Email and/or password not found in request");
+    public MalformedRequestException(String message) {
+      super(message);
     }
 
   }

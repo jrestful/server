@@ -16,7 +16,7 @@ public abstract class GenericDocument implements Persistable<String> {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @JsonIgnore // getter is available
+  @JsonIgnore
   private String id;
 
   @Override

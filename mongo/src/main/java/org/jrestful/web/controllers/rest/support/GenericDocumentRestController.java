@@ -10,6 +10,7 @@ import static org.jrestful.web.hateoas.support.LinkBuilder.to;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.web.hateoas.PagedRestResources;
@@ -91,19 +92,33 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D document) {
-    document = service.save(document);
-    RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
-    addAdditionalLinks(resource);
-    return ok(resource);
+  public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D payload) {
+    D document = service.findOne(id);
+    if (document == null) {
+      return notFound();
+    } else {
+      try {
+        service.copy(payload, document);
+        document = service.save(document);
+        RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
+        addAdditionalLinks(resource);
+        return ok(resource);
+      } catch (HttpStatusException e) {
+        return e.build();
+      }
+    }
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> delete(@PathVariable String id) {
-    service.delete(id);
-    // TODO should not return noContent()
-    return noContent();
+    D document = service.findOne(id);
+    if (document == null) {
+      return notFound();
+    } else {
+      service.delete(document);
+      return noContent();
+    }
   }
 
   protected void addAdditionalLinks(RestResource<D> resource) {

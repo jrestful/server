@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,8 +17,8 @@ import java.util.Arrays;
 import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.util.JsonUtils.ObjectMapperDecorator;
+import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.hateoas.RestResource;
-import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -200,18 +201,27 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
-    Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
     // enable user
     user.setEnabled(true);
     user = userService.save(user);
 
-    // login
+    // try to login but 401 (PUT expected)
     resultActions = mockMvc.perform( //
         post("/api-" + apiVersion + "/signIn") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(emailPassword).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+
+    // login
+    resultActions = mockMvc.perform( //
+        put("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);

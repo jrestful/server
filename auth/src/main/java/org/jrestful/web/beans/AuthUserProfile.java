@@ -1,8 +1,10 @@
-package org.jrestful.web.security.auth.user;
+package org.jrestful.web.beans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jrestful.data.documents.support.AuthUser;
 
 public class AuthUserProfile<U extends AuthUser<K>, K extends Serializable> {
 

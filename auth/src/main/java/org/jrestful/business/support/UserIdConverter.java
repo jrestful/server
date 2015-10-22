@@ -1,4 +1,4 @@
-package org.jrestful.web.security.auth.user;
+package org.jrestful.business.support;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package org.jrestful.web.security.auth.user;
+package org.jrestful.data.documents.support;
 
 import java.io.Serializable;
 import java.util.List;

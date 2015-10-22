@@ -1,6 +1,6 @@
 package org.jrestful.tests.components.user;
 
-import org.jrestful.web.security.auth.user.AuthUserProfile;
+import org.jrestful.web.beans.AuthUserProfile;
 
 public class UserProfile extends AuthUserProfile<User, String> {
 

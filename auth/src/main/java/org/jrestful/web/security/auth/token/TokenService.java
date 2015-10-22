@@ -8,10 +8,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jrestful.business.support.AuthUserService;
+import org.jrestful.business.support.UserIdConverter;
+import org.jrestful.data.documents.support.AuthUser;
 import org.jrestful.util.DateUtils;
-import org.jrestful.web.security.auth.user.AuthUser;
-import org.jrestful.web.security.auth.user.AuthUserService;
-import org.jrestful.web.security.auth.user.UserIdConverter;
 import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

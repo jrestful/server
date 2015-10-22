@@ -6,6 +6,7 @@ import static org.jrestful.web.controllers.rest.support.RestResponse.ok;
 import static org.jrestful.web.hateoas.support.LinkBuilder.link;
 import static org.jrestful.web.hateoas.support.LinkBuilder.to;
 
+import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.support.GenericSequencedDocumentService;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.web.hateoas.RestResource;
@@ -44,19 +45,33 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{sequence}", method = RequestMethod.PUT, params = "by=sequence", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> updateBySequence(@PathVariable long sequence, @RequestBody D document) {
-    document = service.save(document);
-    RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
-    addAdditionalLinks(resource);
-    return ok(resource);
+  public ResponseEntity<RestResource<D>> updateBySequence(@PathVariable long sequence, @RequestBody D payload) {
+    D document = service.findOneBySequence(sequence);
+    if (document == null) {
+      return notFound();
+    } else {
+      try {
+        service.copy(payload, document);
+        document = service.save(document);
+        RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
+        addAdditionalLinks(resource);
+        return ok(resource);
+      } catch (HttpStatusException e) {
+        return e.build();
+      }
+    }
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{sequence}", method = RequestMethod.DELETE, params = "by=sequence")
   public ResponseEntity<?> deleteBySequence(@PathVariable long sequence) {
-    service.deleteBySequence(sequence);
-    // TODO should not return noContent()
-    return noContent();
+    D document = service.findOneBySequence(sequence);
+    if (document == null) {
+      return notFound();
+    } else {
+      service.delete(document);
+      return noContent();
+    }
   }
 
 }

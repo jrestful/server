@@ -1,5 +1,6 @@
-package org.jrestful.web.security.auth.user;
+package org.jrestful.business;
 
+import org.jrestful.business.support.UserIdConverter;
 import org.springframework.stereotype.Component;
 
 @Component

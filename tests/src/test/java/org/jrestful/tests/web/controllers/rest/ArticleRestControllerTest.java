@@ -13,8 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.jrestful.tests.components.article.Article;
 import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
+import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.hateoas.RestResource;
-import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // login
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
@@ -132,6 +132,17 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
+    // update article1 by sequence but 422 (title is missing)
+    article1.setTitle(null);
+    resultActions = mockMvc.perform( //
+        put("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
+            .param("by", "sequence") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
+            .content(JsonUtils.toJson(article1).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
     // update article1 by sequence
     article1.setTitle("article1updated");
     resultActions = mockMvc.perform( //
@@ -154,6 +165,16 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.title", is(article1.getTitle()))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
+
+    // update article2 but 422 (title is missing)
+    article2.setTitle(null);
+    resultActions = mockMvc.perform( //
+        put("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .header(authHeader, authToken) //
+            .content(JsonUtils.toJson(article2).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
     // update article2
     article2.setTitle("article2updated");

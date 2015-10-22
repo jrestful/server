@@ -3,8 +3,8 @@ package org.jrestful.data.documents.support.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jrestful.data.documents.support.AuthUser;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
-import org.jrestful.web.security.auth.user.AuthUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -23,7 +23,7 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
 
   private String password;
 
-  @JsonIgnore // getter is available
+  @JsonIgnore
   private List<String> roles = new ArrayList<>();
 
   private boolean enabled;

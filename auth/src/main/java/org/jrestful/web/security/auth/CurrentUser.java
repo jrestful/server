@@ -1,5 +1,6 @@
-package org.jrestful.web.security.auth.user;
+package org.jrestful.web.security.auth;
 
+import org.jrestful.data.documents.support.AuthUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
