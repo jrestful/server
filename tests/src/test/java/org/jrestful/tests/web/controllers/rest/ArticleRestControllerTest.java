@@ -52,7 +52,8 @@ public class ArticleRestControllerTest extends TestHelper {
         post("/api-" + apiVersion + "/rest/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article1).asString()));
-    Assert.assertEquals(HttpStatus.FORBIDDEN.value(), resultActions.andReturn().getResponse().getStatus());
+    resultActions //
+        .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
 
     // create user
     User user = new User();
@@ -66,7 +67,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // login
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin") //
+        post("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);

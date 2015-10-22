@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Generic abstract class for a document.
@@ -15,6 +16,7 @@ public abstract class GenericDocument implements Persistable<String> {
   private static final long serialVersionUID = 1L;
 
   @Id
+  @JsonIgnore // getter is available
   private String id;
 
   @Override
@@ -35,18 +37,20 @@ public abstract class GenericDocument implements Persistable<String> {
     return Arrays.hashCode(new Object[] { id });
   }
 
+  @JsonProperty
   @Override
-  public final String getId() {
+  public String getId() {
     return id;
   }
 
-  public final void setId(String id) {
+  @JsonIgnore
+  public void setId(String id) {
     this.id = id;
   }
 
   @JsonIgnore
   @Override
-  public final boolean isNew() {
+  public boolean isNew() {
     return id == null;
   }
 

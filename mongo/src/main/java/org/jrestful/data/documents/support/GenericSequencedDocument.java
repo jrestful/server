@@ -1,5 +1,8 @@
 package org.jrestful.data.documents.support;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * Generic abstract class for a sequenced document.
@@ -8,13 +11,16 @@ public abstract class GenericSequencedDocument extends GenericDocument {
 
   private static final long serialVersionUID = 1L;
 
+  @JsonIgnore // getter is available
   private Long sequence;
 
-  public final Long getSequence() {
+  @JsonProperty
+  public Long getSequence() {
     return sequence;
   }
 
-  public final void setSequence(Long sequence) {
+  @JsonIgnore
+  public void setSequence(Long sequence) {
     this.sequence = sequence;
   }
 

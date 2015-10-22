@@ -20,12 +20,12 @@ public abstract class GenericSequencedDocumentRepositoryImpl<D extends GenericSe
   }
 
   @Override
-  public final D findOneBySequence(long sequence) {
+  public D findOneBySequence(long sequence) {
     return mongoOperations.findOne(query(where("sequence").is(sequence)), documentClass);
   }
 
   @Override
-  public final int deleteBySequence(long sequence) {
+  public int deleteBySequence(long sequence) {
     return mongoOperations.remove(query(where("sequence").is(sequence)), documentClass).getN();
   }
 

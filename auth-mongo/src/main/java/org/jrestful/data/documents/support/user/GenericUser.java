@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -22,6 +23,7 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
 
   private String password;
 
+  @JsonIgnore // getter is available
   private List<String> roles = new ArrayList<>();
 
   private boolean enabled;
@@ -47,6 +49,7 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
     return email;
   }
 
+  @JsonProperty
   public void setEmail(String email) {
     this.email = email;
   }
@@ -57,15 +60,18 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
     return password;
   }
 
+  @JsonProperty
   public void setPassword(String password) {
     this.password = password;
   }
 
+  @JsonProperty
   @Override
   public List<String> getRoles() {
     return roles;
   }
 
+  @JsonIgnore
   public void setRoles(List<String> roles) {
     this.roles = roles;
   }
@@ -112,13 +118,13 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
 
   @JsonIgnore
   @Override
-  public final String getUsername() {
+  public String getUsername() {
     return getId();
   }
 
   @JsonIgnore
   @Override
-  public final List<GrantedAuthority> getAuthorities() {
+  public List<GrantedAuthority> getAuthorities() {
     return Lists.transform(getRoles(), new Function<String, GrantedAuthority>() {
 
       @Override
@@ -131,19 +137,19 @@ public abstract class GenericUser extends GenericSequencedDocument implements Au
 
   @JsonIgnore
   @Override
-  public final boolean isAccountNonExpired() {
+  public boolean isAccountNonExpired() {
     return !isAccountExpired();
   }
 
   @JsonIgnore
   @Override
-  public final boolean isAccountNonLocked() {
+  public boolean isAccountNonLocked() {
     return !isAccountLocked();
   }
 
   @JsonIgnore
   @Override
-  public final boolean isCredentialsNonExpired() {
+  public boolean isCredentialsNonExpired() {
     return !isPasswordExpired();
   }
 

@@ -36,7 +36,7 @@ public class StatelessSigninFilter<U extends AuthUser<K>, K extends Serializable
   @Autowired
   public StatelessSigninFilter(AuthUserService<U, K> userService, TokenService<U, K> tokenService,
       @Value("#{appProps['app.apiVersion']}") String apiVersion, AuthenticationManager authenticationManager) {
-    super(new AntPathRequestMatcher("/api-" + apiVersion + "/signin"));
+    super(new AntPathRequestMatcher("/api-" + apiVersion + "/signIn"));
     setAuthenticationManager(authenticationManager);
     this.userService = userService;
     this.tokenService = tokenService;

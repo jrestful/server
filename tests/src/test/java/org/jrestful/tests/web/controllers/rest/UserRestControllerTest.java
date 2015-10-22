@@ -1,7 +1,9 @@
 package org.jrestful.tests.web.controllers.rest;
 
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -9,8 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+
 import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
+import org.jrestful.util.JsonUtils.ObjectMapperDecorator;
 import org.jrestful.web.hateoas.RestResource;
 import org.jrestful.web.security.auth.user.EmailPassword;
 import org.junit.Assert;
@@ -24,7 +29,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UserRestControllerTest extends TestHelper {
 
@@ -42,32 +48,159 @@ public class UserRestControllerTest extends TestHelper {
   @Test
   public void testRest() throws Exception {
 
+    ObjectMapperDecorator disableAnnotations = new ObjectMapperDecorator() {
+
+      @Override
+      public void decorate(ObjectMapper objectMapper) {
+        objectMapper.disable(MapperFeature.USE_ANNOTATIONS);
+      }
+
+    };
+
     ResultActions resultActions;
 
     // try to login but 401 (malformed request)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin"));
-    Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
+        post("/api-" + apiVersion + "/signIn"));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin") //
+        post("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
-    Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
-    // create user
+    // create user but 422 (name is missing)
     User user = new User();
     user.setEmail("john.doe@jrestful.org");
-    user.setPassword(passwordEncoder.encode("jrestful"));
-    user.setRoles(Lists.newArrayList("ROLE_ADMIN"));
+    user.setPassword("jrestful");
     user.setCity("Springfield");
-    user = userService.insert(user);
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user but 422 (email is missing)
+    user = new User();
+    user.setName("John Doe");
+    user.setPassword("jrestful");
+    user.setCity("Springfield");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user but 422 (password is missing)
+    user = new User();
+    user.setName("John Doe");
+    user.setEmail("john.doe@jrestful.org");
+    user.setCity("Springfield");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user but 422 (city is missing)
+    user = new User();
+    user.setName("John Doe");
+    user.setEmail("john.doe@jrestful.org");
+    user.setPassword("jrestful");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user but 422 (email is invalid)
+    user = new User();
+    user.setName("John Doe");
+    user.setEmail("#");
+    user.setPassword("jrestful");
+    user.setCity("Springfield");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user
+    user = new User();
+    user.setId("#");
+    user.setSequence(-1l);
+    user.setName("John Doe");
+    user.setEmail("john.doe@jrestful.org");
+    user.setPassword("jrestful");
+    user.setCity("Springfield");
+    user.setRoles(Arrays.asList("#"));
+    user.setAccountExpired(true);
+    user.setAccountLocked(true);
+    user.setEnabled(true);
+    user.setPasswordExpired(true);
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+
+    // check that read-only values have not been written
+    user = userService.findOneByEmail("john.doe@jrestful.org");
+    Assert.assertNotNull(user);
+    Assert.assertNotEquals("#", user.getId());
+    Assert.assertNotEquals(new Long(-1), user.getSequence());
+    Assert.assertNotEquals(true, user.isAccountExpired());
+    Assert.assertNotEquals(true, user.isAccountLocked());
+    Assert.assertNotEquals(true, user.isEnabled());
+    Assert.assertNotEquals(true, user.isPasswordExpired());
+
+    // check user creation response
+    resultActions //
+        .andExpect(status().is(HttpStatus.CREATED.value())) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
+        .andExpect(jsonPath("$.id", is(user.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(user.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.name", is(user.getName()))) //
+        .andExpect(jsonPath("$.city", is(user.getCity()))) //
+        .andExpect(jsonPath("$.roles", is(Arrays.asList("ROLE_USER")))) //
+        .andExpect(jsonPath("$", not(hasProperty("authorities")))) //
+        .andExpect(jsonPath("$", not(hasProperty("email")))) //
+        .andExpect(jsonPath("$", not(hasProperty("username")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountLocked")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountNonExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountNonLocked")))) //
+        .andExpect(jsonPath("$", not(hasProperty("credentialsNonExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("enabled")))) //
+        .andExpect(jsonPath("$", not(hasProperty("passwordExpired")))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
+
+    // create user but 409 (email already exists)
+    User dupe = new User();
+    dupe.setName("John Doe");
+    dupe.setEmail("john.doe@jrestful.org");
+    dupe.setPassword("jrestful");
+    dupe.setCity("Springfield");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signUp") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(dupe, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.CONFLICT.value()));
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin") //
+        post("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), resultActions.andReturn().getResponse().getStatus());
@@ -78,7 +211,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // login
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin") //
+        post("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
@@ -86,7 +219,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // check profile (without token)
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/users/profile"));
+        get("/api-" + apiVersion + "/profile"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -97,11 +230,11 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.city", nullValue())) //
         .andExpect(jsonPath("$.roles", hasSize(0))) //
         .andExpect(jsonPath("$.anonymous", is(true))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/users/profile")));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
 
     // check profile (with token)
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/users/profile") //
+        get("/api-" + apiVersion + "/profile") //
             .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
@@ -112,9 +245,9 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.email", is(user.getEmail()))) //
         .andExpect(jsonPath("$.city", is(user.getCity()))) //
         .andExpect(jsonPath("$.roles", hasSize(1))) //
-        .andExpect(jsonPath("$.roles[0]", is("ROLE_ADMIN"))) //
+        .andExpect(jsonPath("$.roles[0]", is("ROLE_USER"))) //
         .andExpect(jsonPath("$.anonymous", is(false))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/users/profile")));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
 
   }
 

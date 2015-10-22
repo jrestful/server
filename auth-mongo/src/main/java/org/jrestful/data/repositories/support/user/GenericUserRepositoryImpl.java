@@ -15,7 +15,7 @@ public abstract class GenericUserRepositoryImpl<U extends GenericUser> extends G
   }
 
   @Override
-  public final U findOneByEmail(String email) {
+  public U findOneByEmail(String email) {
     return mongoOperations.findOne(query(where("email").is(email)), documentClass);
   }
 
