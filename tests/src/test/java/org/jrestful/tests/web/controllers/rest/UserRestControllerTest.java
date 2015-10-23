@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,14 +65,14 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 401 (malformed request)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signIn"));
+        put("/api-" + apiVersion + "/signIn"));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -211,13 +214,14 @@ public class UserRestControllerTest extends TestHelper {
     user.setEnabled(true);
     user = userService.save(user);
 
-    // try to login but 401 (PUT expected)
+    // try to login but 405 (PUT expected)
     resultActions = mockMvc.perform( //
         post("/api-" + apiVersion + "/signIn") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value()))
+        .andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
 
     // login
     resultActions = mockMvc.perform( //
