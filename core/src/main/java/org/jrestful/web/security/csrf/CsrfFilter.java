@@ -31,9 +31,9 @@ import com.google.common.collect.Sets;
  */
 @Component
 @IfPropertiesDefined(value = { "csrf.headerName", "csrf.cookieName" }, propertiesBeanName = "secProps")
-public class StatelessCsrfFilter extends OncePerRequestFilter {
+public class CsrfFilter extends OncePerRequestFilter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(StatelessCsrfFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CsrfFilter.class);
 
   public static final class CsrfProtectionMethodMatcher implements RequestMatcher {
 
@@ -63,7 +63,7 @@ public class StatelessCsrfFilter extends OncePerRequestFilter {
   private final String cookieName;
 
   @Autowired
-  public StatelessCsrfFilter(@Value("#{secProps['csrf.headerName']}") String headerName, @Value("#{secProps['csrf.cookieName']}") String cookieName) {
+  public CsrfFilter(@Value("#{secProps['csrf.headerName']}") String headerName, @Value("#{secProps['csrf.cookieName']}") String cookieName) {
     this.headerName = headerName;
     this.cookieName = cookieName;
   }

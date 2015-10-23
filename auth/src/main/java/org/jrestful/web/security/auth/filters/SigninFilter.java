@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
-public class StatelessSigninFilter<U extends GenericAuthUser<K>, K extends Serializable> extends AbstractAuthenticationProcessingFilter {
+public class SigninFilter<U extends GenericAuthUser<K>, K extends Serializable> extends AbstractAuthenticationProcessingFilter {
 
   private class AuthenticationFailureHandlerImpl implements AuthenticationFailureHandler {
 
@@ -53,7 +53,7 @@ public class StatelessSigninFilter<U extends GenericAuthUser<K>, K extends Seria
   private final TokenService<U, K> tokenService;
 
   @Autowired
-  public StatelessSigninFilter(GenericAuthUserService<U, K> userService, TokenService<U, K> tokenService,
+  public SigninFilter(GenericAuthUserService<U, K> userService, TokenService<U, K> tokenService,
       @Value("#{appProps['app.apiVersion']}") String apiVersion, AuthenticationManager authenticationManager) {
     super(new AntPathRequestMatcher("/api-" + apiVersion + "/signIn"));
     setAuthenticationManager(authenticationManager);

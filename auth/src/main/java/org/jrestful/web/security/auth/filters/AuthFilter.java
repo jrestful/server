@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Component
-public class StatelessAuthFilter<U extends GenericAuthUser<K>, K extends Serializable> extends GenericFilterBean {
+public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> extends GenericFilterBean {
 
   private final TokenService<U, K> tokenService;
 
   @Autowired
-  public StatelessAuthFilter(TokenService<U, K> tokenService) {
+  public AuthFilter(TokenService<U, K> tokenService) {
     this.tokenService = tokenService;
   }
 

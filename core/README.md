@@ -240,7 +240,7 @@ A CSRF protection filter as available. To register it in your Spring Security co
 ```xml
 <http ...>
   ...
-  <custom-filter ref="statelessCsrfFilter" position="CSRF_FILTER" />
+  <custom-filter ref="csrfFilter" position="CSRF_FILTER" />
   ...
 </http>
 ```
