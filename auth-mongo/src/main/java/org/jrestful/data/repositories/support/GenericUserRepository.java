@@ -1,6 +1,6 @@
-package org.jrestful.data.repositories.support.user;
+package org.jrestful.data.repositories.support;
 
-import org.jrestful.data.documents.support.user.GenericUser;
+import org.jrestful.data.documents.support.GenericUser;
 import org.jrestful.data.repositories.support.GenericSequencedDocumentRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

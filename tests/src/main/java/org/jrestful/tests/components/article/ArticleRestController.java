@@ -1,8 +1,8 @@
 package org.jrestful.tests.components.article;
 
+import org.jrestful.web.beans.RestResource;
+import org.jrestful.web.beans.RestResources;
 import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController;
-import org.jrestful.web.hateoas.RestResource;
-import org.jrestful.web.hateoas.RestResources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

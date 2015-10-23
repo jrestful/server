@@ -1,4 +1,4 @@
-package org.jrestful.web.controllers.rest.support;
+package org.jrestful.web.beans;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

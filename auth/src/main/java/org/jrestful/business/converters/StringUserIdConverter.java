@@ -1,6 +1,5 @@
-package org.jrestful.business;
+package org.jrestful.business.converters;
 
-import org.jrestful.business.support.UserIdConverter;
 import org.springframework.stereotype.Component;
 
 @Component

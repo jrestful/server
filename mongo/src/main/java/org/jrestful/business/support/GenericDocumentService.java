@@ -45,7 +45,9 @@ public interface GenericDocumentService<D extends GenericDocument> extends Gener
   List<D> save(Iterable<D> documents);
 
   D save(D document);
+  
+  void validatePayload(D payload) throws HttpStatusException;
 
-  void copy(D fromPayload, D toDocument) throws HttpStatusException;
+  void copyPayload(D fromPayload, D toDocument);
 
 }

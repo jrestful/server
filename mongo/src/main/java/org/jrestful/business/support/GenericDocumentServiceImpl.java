@@ -102,7 +102,12 @@ public abstract class GenericDocumentServiceImpl<R extends GenericDocumentReposi
   }
 
   @Override
-  public void copy(D fromPayload, D toDocument) throws HttpStatusException {
+  public void validatePayload(D payload) throws HttpStatusException {
+    // no-op, intended to be overridden
+  }
+
+  @Override
+  public void copyPayload(D fromPayload, D toDocument) {
     // no-op, intended to be overridden
   }
 

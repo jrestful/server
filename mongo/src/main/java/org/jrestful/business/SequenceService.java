@@ -1,8 +1,8 @@
-package org.jrestful.business.support.sequence;
+package org.jrestful.business;
 
 import org.jrestful.business.support.GenericDocumentService;
+import org.jrestful.data.documents.Sequence;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
-import org.jrestful.data.documents.support.sequence.Sequence;
 
 /**
  * Manages auto-incremented sequences.

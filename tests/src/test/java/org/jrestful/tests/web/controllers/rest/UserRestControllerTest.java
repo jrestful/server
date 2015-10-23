@@ -18,7 +18,7 @@ import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.util.JsonUtils.ObjectMapperDecorator;
 import org.jrestful.web.beans.EmailPassword;
-import org.jrestful.web.hateoas.RestResource;
+import org.jrestful.web.beans.RestResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

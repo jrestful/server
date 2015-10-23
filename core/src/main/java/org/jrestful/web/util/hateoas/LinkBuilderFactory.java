@@ -1,4 +1,4 @@
-package org.jrestful.web.hateoas.support;
+package org.jrestful.web.util.hateoas;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;

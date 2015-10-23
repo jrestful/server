@@ -1,7 +1,7 @@
-package org.jrestful.data.repositories.support.sequence;
+package org.jrestful.data.repositories;
 
+import org.jrestful.data.documents.Sequence;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
-import org.jrestful.data.documents.support.sequence.Sequence;
 import org.jrestful.data.repositories.support.GenericDocumentRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 

@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jrestful.data.documents.support.AuthUser;
+import org.jrestful.data.documents.support.GenericAuthUser;
 
-public class AuthUserProfile<U extends AuthUser<K>, K extends Serializable> {
+public class AuthUserProfile<U extends GenericAuthUser<K>, K extends Serializable> {
 
   private K id;
 

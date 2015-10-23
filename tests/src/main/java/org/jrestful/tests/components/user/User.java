@@ -1,6 +1,6 @@
 package org.jrestful.tests.components.user;
 
-import org.jrestful.data.documents.support.user.GenericUser;
+import org.jrestful.data.documents.support.GenericUser;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")

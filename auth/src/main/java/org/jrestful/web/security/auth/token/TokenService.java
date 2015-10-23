@@ -8,9 +8,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jrestful.business.support.AuthUserService;
-import org.jrestful.business.support.UserIdConverter;
-import org.jrestful.data.documents.support.AuthUser;
+import org.jrestful.business.converters.UserIdConverter;
+import org.jrestful.business.support.GenericAuthUserService;
+import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.util.DateUtils;
 import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;
@@ -20,11 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenService<U extends AuthUser<K>, K extends Serializable> {
+public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
 
-  private final AuthUserService<U, K> userService;
+  private final GenericAuthUserService<U, K> userService;
 
   private final TokenMapper tokenMapper;
 
@@ -39,7 +39,7 @@ public class TokenService<U extends AuthUser<K>, K extends Serializable> {
   private final int tokenLifetime;
 
   @Autowired
-  public TokenService(AuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
+  public TokenService(GenericAuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
       @Value("#{secProps['auth.headerName']}") String headerName, @Value("#{secProps['auth.cookieName']}") String cookieName,
       @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie, @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
     this.userService = userService;

@@ -1,6 +1,6 @@
 package org.jrestful.web.security.auth;
 
-import org.jrestful.data.documents.support.AuthUser;
+import org.jrestful.data.documents.support.GenericAuthUser;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +17,7 @@ public class CurrentUser {
   }
 
   @SuppressWarnings("unchecked")
-  public static <U extends AuthUser<?>> U get(Class<U> type) {
+  public static <U extends GenericAuthUser<?>> U get(Class<U> type) {
     if (isAnonymous()) {
       return null;
     } else {
@@ -25,7 +25,7 @@ public class CurrentUser {
     }
   }
 
-  public static <U extends AuthUser<?>> U get() {
+  public static <U extends GenericAuthUser<?>> U get() {
     return get(null);
   }
 

@@ -1,4 +1,4 @@
-package org.jrestful.business.support.user;
+package org.jrestful.business.support;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jrestful.business.exceptions.EmailAlreadyExistsException;
 import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.exceptions.PayloadNotValidException;
-import org.jrestful.business.support.GenericSequencedDocumentServiceImpl;
-import org.jrestful.data.documents.support.user.GenericUser;
-import org.jrestful.data.repositories.support.user.GenericUserRepository;
+import org.jrestful.data.documents.support.GenericUser;
+import org.jrestful.data.repositories.support.GenericUserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
@@ -31,26 +30,30 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   }
 
   @Override
-  public U signUp(U user) throws HttpStatusException {
-    validate(user);
-    return insert(user);
+  public U signUp(U payload) throws HttpStatusException {
+    validatePayload(payload);
+    prepareForSignUp(payload);
+    return insert(payload);
+  }
+  
+  @Override
+  public void validatePayload(U payload) throws HttpStatusException {
+    if (StringUtils.isBlank(payload.getName())) {
+      throw new PayloadNotValidException();
+    } else if (StringUtils.isBlank(payload.getEmail())) {
+      throw new PayloadNotValidException();
+    } else if (!EMAIL_PATTERN.matcher(payload.getEmail()).matches()) {
+      throw new PayloadNotValidException();
+    } else if (StringUtils.isBlank(payload.getPassword())) {
+      throw new PayloadNotValidException();
+    } else if (findOneByEmail(payload.getEmail()) != null) {
+      throw new EmailAlreadyExistsException();
+    }
   }
 
-  protected void validate(U user) throws HttpStatusException {
-    if (StringUtils.isBlank(user.getName())) {
-      throw new PayloadNotValidException();
-    } else if (StringUtils.isBlank(user.getEmail())) {
-      throw new PayloadNotValidException();
-    } else if (!EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
-      throw new PayloadNotValidException();
-    } else if (StringUtils.isBlank(user.getPassword())) {
-      throw new PayloadNotValidException();
-    } else if (findOneByEmail(user.getEmail()) != null) {
-      throw new EmailAlreadyExistsException();
-    } else {
-      user.setRoles(new ArrayList<>(Arrays.asList("ROLE_USER")));
-      user.setPassword(passwordEncoder.encode(user.getPassword()));
-    }
+  protected void prepareForSignUp(U user) {
+    user.setRoles(new ArrayList<>(Arrays.asList("ROLE_USER")));
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
   }
 
 }

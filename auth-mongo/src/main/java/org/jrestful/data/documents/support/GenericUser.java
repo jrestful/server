@@ -1,9 +1,9 @@
-package org.jrestful.data.documents.support.user;
+package org.jrestful.data.documents.support;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jrestful.data.documents.support.AuthUser;
+import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public abstract class GenericUser extends GenericSequencedDocument implements AuthUser<String> {
+public abstract class GenericUser extends GenericSequencedDocument implements GenericAuthUser<String> {
 
   private static final long serialVersionUID = 1L;
 

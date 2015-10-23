@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-public interface AuthUser<K extends Serializable> extends UserDetails {
+public interface GenericAuthUser<K extends Serializable> extends UserDetails {
 
   K getId();
 

@@ -1,4 +1,4 @@
-package org.jrestful.web.hateoas.support;
+package org.jrestful.web.util.hateoas;
 
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;

@@ -1,15 +1,15 @@
 package org.jrestful.web.controllers.rest.support;
 
-import static org.jrestful.web.controllers.rest.support.RestResponse.noContent;
-import static org.jrestful.web.controllers.rest.support.RestResponse.notFound;
-import static org.jrestful.web.controllers.rest.support.RestResponse.ok;
-import static org.jrestful.web.hateoas.support.LinkBuilder.link;
-import static org.jrestful.web.hateoas.support.LinkBuilder.to;
+import static org.jrestful.web.beans.RestResponse.noContent;
+import static org.jrestful.web.beans.RestResponse.notFound;
+import static org.jrestful.web.beans.RestResponse.ok;
+import static org.jrestful.web.util.hateoas.LinkBuilder.link;
+import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 
 import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.support.GenericSequencedDocumentService;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
-import org.jrestful.web.hateoas.RestResource;
+import org.jrestful.web.beans.RestResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,7 +51,8 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
       return notFound();
     } else {
       try {
-        service.copy(payload, document);
+        service.validatePayload(payload);
+        service.copyPayload(payload, document);
         document = service.save(document);
         RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
         addAdditionalLinks(resource);

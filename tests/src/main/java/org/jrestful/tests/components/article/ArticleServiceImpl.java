@@ -19,14 +19,17 @@ public class ArticleServiceImpl extends GenericSequencedDocumentServiceImpl<Arti
   public Article findByTitle(String title) {
     return repository.findByTitle(title);
   }
+  
+  @Override
+  public void validatePayload(Article payload) throws HttpStatusException {
+    if (StringUtils.isBlank(payload.getTitle())) {
+      throw new PayloadNotValidException();
+    }
+  }
 
   @Override
-  public void copy(Article fromPayload, Article toDocument) throws HttpStatusException {
-    if (StringUtils.isBlank(fromPayload.getTitle())) {
-      throw new PayloadNotValidException();
-    } else {
-      toDocument.setTitle(fromPayload.getTitle());
-    }
+  public void copyPayload(Article fromPayload, Article toDocument) {
+    toDocument.setTitle(fromPayload.getTitle());
   }
 
 }

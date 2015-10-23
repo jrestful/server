@@ -9,7 +9,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jrestful.data.documents.support.AuthUser;
+import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.web.security.auth.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Component
-public class StatelessAuthFilter<U extends AuthUser<K>, K extends Serializable> extends GenericFilterBean {
+public class StatelessAuthFilter<U extends GenericAuthUser<K>, K extends Serializable> extends GenericFilterBean {
 
   private final TokenService<U, K> tokenService;
 

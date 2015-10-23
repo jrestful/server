@@ -1,4 +1,4 @@
-package org.jrestful.data.repositories.support.sequence;
+package org.jrestful.data.repositories;
 
 import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -6,8 +6,8 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jrestful.data.documents.Sequence;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
-import org.jrestful.data.documents.support.sequence.Sequence;
 import org.jrestful.data.repositories.support.GenericDocumentRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

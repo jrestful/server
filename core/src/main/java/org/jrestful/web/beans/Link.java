@@ -1,4 +1,4 @@
-package org.jrestful.web.hateoas;
+package org.jrestful.web.beans;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package org.jrestful.business.support;
+package org.jrestful.business.converters;
 
 import java.io.Serializable;
 
