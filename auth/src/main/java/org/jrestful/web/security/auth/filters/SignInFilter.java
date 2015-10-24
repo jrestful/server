@@ -35,19 +35,37 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Component
 public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> extends AbstractAuthenticationProcessingFilter {
 
+  private static class HttpStatusException extends AuthenticationException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final HttpStatus status;
+
+    public HttpStatusException(HttpStatus status, String message) {
+      super(message);
+      this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+      return status;
+    }
+
+  }
+
   private class AuthenticationFailureHandlerImpl implements AuthenticationFailureHandler {
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+        throws IOException, ServletException {
       if (exception instanceof HttpStatusException) {
         response.sendError(((HttpStatusException) exception).getStatus().value(), exception.getMessage());
       } else {
         response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
       }
     }
-    
+
   }
-  
+
   private final GenericAuthUserService<U, K> userService;
 
   private final TokenService<U, K> tokenService;
@@ -90,23 +108,6 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     U user = (U) authentication.getDetails();
     tokenService.write(user, response);
     SecurityContextHolder.getContext().setAuthentication(authentication);
-  }
-  
-  private static class HttpStatusException extends AuthenticationException {
-
-    private static final long serialVersionUID = 1L;
-
-    private final HttpStatus status;
-    
-    public HttpStatusException(HttpStatus status, String message) {
-      super(message);
-      this.status = status;
-    }
-    
-    public HttpStatus getStatus() {
-      return status;
-    }
-    
   }
 
 }
