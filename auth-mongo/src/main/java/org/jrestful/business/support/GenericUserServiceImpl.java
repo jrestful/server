@@ -17,7 +17,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@]+@[^@]+$");
 
-  private final PasswordEncoder passwordEncoder;
+  protected final PasswordEncoder passwordEncoder;
 
   public GenericUserServiceImpl(R repository, PasswordEncoder passwordEncoder) {
     super(repository);
@@ -35,7 +35,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     prepareForSignUp(payload);
     return insert(payload);
   }
-  
+
   @Override
   public void validatePayload(U payload) throws HttpStatusException {
     if (StringUtils.isBlank(payload.getName())) {
