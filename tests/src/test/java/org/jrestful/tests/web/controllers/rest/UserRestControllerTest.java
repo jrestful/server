@@ -143,10 +143,10 @@ public class UserRestControllerTest extends TestHelper {
     user = new User();
     user.setId("#");
     user.setSequence(-1l);
-    user.setName("John Doe");
-    user.setEmail("john.doe@jrestful.org");
-    user.setPassword("jrestful");
-    user.setCity("Springfield");
+    user.setName("  John Doe  ");
+    user.setEmail("  john.doe@jrestful.org  ");
+    user.setPassword("  jrestful  ");
+    user.setCity("  Springfield  ");
     user.setRoles(Arrays.asList("#"));
     user.setAccountExpired(true);
     user.setAccountLocked(true);
@@ -158,17 +158,21 @@ public class UserRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
 
-    // check that read-only values have not been written
+    // check the database values
     user = userService.findOneByEmail("john.doe@jrestful.org");
     Assert.assertNotNull(user);
     Assert.assertNotEquals("#", user.getId());
     Assert.assertNotEquals(new Long(-1), user.getSequence());
+    Assert.assertEquals("John Doe", user.getName());
+    Assert.assertEquals("john.doe@jrestful.org", user.getEmail());
+    Assert.assertEquals("Springfield", user.getCity());
+    Assert.assertEquals(Arrays.asList("ROLE_USER"), user.getRoles());
     Assert.assertNotEquals(true, user.isAccountExpired());
     Assert.assertNotEquals(true, user.isAccountLocked());
     Assert.assertNotEquals(true, user.isEnabled());
     Assert.assertNotEquals(true, user.isPasswordExpired());
 
-    // check user creation response
+    // check user creation HTTP response
     resultActions //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
@@ -220,8 +224,7 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value()))
-        .andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
+        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value())).andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
 
     // login
     resultActions = mockMvc.perform( //

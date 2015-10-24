@@ -9,9 +9,18 @@ public class HttpStatusException extends Exception {
 
   private final HttpStatus status;
 
-  public HttpStatusException(HttpStatus status) {
-    super(status.toString());
+  public HttpStatusException(HttpStatus status, String message) {
+    super(message);
     this.status = status;
+  }
+
+  public HttpStatusException(HttpStatus status, String message, Throwable cause) {
+    super(message, cause);
+    this.status = status;
+  }
+
+  public HttpStatus getStatus() {
+    return status;
   }
 
   public <T> ResponseEntity<T> build() {

@@ -5,17 +5,16 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jrestful.business.exceptions.EmailAlreadyExistsException;
 import org.jrestful.business.exceptions.HttpStatusException;
-import org.jrestful.business.exceptions.PayloadNotValidException;
 import org.jrestful.data.documents.support.GenericUser;
 import org.jrestful.data.repositories.support.GenericUserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
     GenericSequencedDocumentServiceImpl<R, U> implements GenericUserService<U> {
 
-  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@]+@[^@]+$");
+  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+$");
 
   protected final PasswordEncoder passwordEncoder;
 
@@ -38,16 +37,19 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public void validatePayload(U payload) throws HttpStatusException {
-    if (StringUtils.isBlank(payload.getName())) {
-      throw new PayloadNotValidException();
-    } else if (StringUtils.isBlank(payload.getEmail())) {
-      throw new PayloadNotValidException();
+    payload.setName(StringUtils.trim(payload.getName()));
+    payload.setEmail(StringUtils.trim(payload.getEmail()));
+    payload.setPassword(StringUtils.trim(payload.getPassword()));
+    if (StringUtils.isEmpty(payload.getName())) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User name cannot be empty");
+    } else if (StringUtils.isEmpty(payload.getEmail())) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email cannot be empty");
     } else if (!EMAIL_PATTERN.matcher(payload.getEmail()).matches()) {
-      throw new PayloadNotValidException();
-    } else if (StringUtils.isBlank(payload.getPassword())) {
-      throw new PayloadNotValidException();
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email is invalid");
+    } else if (StringUtils.isEmpty(payload.getPassword())) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User password cannot be empty");
     } else if (findOneByEmail(payload.getEmail()) != null) {
-      throw new EmailAlreadyExistsException();
+      throw new HttpStatusException(HttpStatus.CONFLICT, "User email already exists");
     }
   }
 

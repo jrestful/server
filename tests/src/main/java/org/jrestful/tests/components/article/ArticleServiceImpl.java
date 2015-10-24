@@ -2,9 +2,9 @@ package org.jrestful.tests.components.article;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jrestful.business.exceptions.HttpStatusException;
-import org.jrestful.business.exceptions.PayloadNotValidException;
 import org.jrestful.business.support.GenericSequencedDocumentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,11 +19,12 @@ public class ArticleServiceImpl extends GenericSequencedDocumentServiceImpl<Arti
   public Article findByTitle(String title) {
     return repository.findByTitle(title);
   }
-  
+
   @Override
   public void validatePayload(Article payload) throws HttpStatusException {
-    if (StringUtils.isBlank(payload.getTitle())) {
-      throw new PayloadNotValidException();
+    payload.setTitle(StringUtils.trim(payload.getTitle()));
+    if (StringUtils.isEmpty(payload.getTitle())) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Article title cannot be empty");
     }
   }
 
