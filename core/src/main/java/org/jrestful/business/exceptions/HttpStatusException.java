@@ -23,7 +23,7 @@ public class HttpStatusException extends Exception {
     return status;
   }
 
-  public <T> ResponseEntity<T> build() {
+  public <T> ResponseEntity<T> toResponseEntity() {
     return new ResponseEntity<>(status);
   }
 

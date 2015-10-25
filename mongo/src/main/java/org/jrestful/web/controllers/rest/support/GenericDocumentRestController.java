@@ -105,7 +105,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
         addAdditionalLinks(resource);
         return ok(resource);
       } catch (HttpStatusException e) {
-        return e.build();
+        return e.toResponseEntity();
       }
     }
   }

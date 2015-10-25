@@ -41,7 +41,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
       user = service.signUp(user);
       return created(new RestResource<>(user, link(to(getClass()).profile())));
     } catch (HttpStatusException e) {
-      return e.build();
+      return e.toResponseEntity();
     }
   }
 

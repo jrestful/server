@@ -58,7 +58,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
         addAdditionalLinks(resource);
         return ok(resource);
       } catch (HttpStatusException e) {
-        return e.build();
+        return e.toResponseEntity();
       }
     }
   }
