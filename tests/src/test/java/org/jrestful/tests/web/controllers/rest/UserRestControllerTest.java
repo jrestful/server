@@ -65,14 +65,14 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 401 (malformed request)
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signIn"));
+        put("/api-" + apiVersion + "/signin"));
     resultActions //
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -84,7 +84,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -96,7 +96,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -108,7 +108,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEmail("john.doe@jrestful.org");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -120,7 +120,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEmail("john.doe@jrestful.org");
     user.setPassword("jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -133,7 +133,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -153,7 +153,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEnabled(true);
     user.setPasswordExpired(true);
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
@@ -200,7 +200,7 @@ public class UserRestControllerTest extends TestHelper {
     dupe.setPassword("jrestful");
     dupe.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signUp") //
+        post("/api-" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(dupe, disableAnnotations).asString()));
     resultActions //
@@ -208,7 +208,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -220,7 +220,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 405 (PUT expected)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signIn") //
+        post("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -228,7 +228,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // login
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signIn") //
+        put("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
