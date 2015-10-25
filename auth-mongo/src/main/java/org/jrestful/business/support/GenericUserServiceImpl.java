@@ -45,6 +45,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     } else if (StringUtils.isEmpty(payload.getEmail())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email cannot be empty");
     } else if (!EMAIL_PATTERN.matcher(payload.getEmail()).matches()) {
+      // TODO [pixwin] handle yopmail, etc.
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email is invalid");
     } else if (StringUtils.isEmpty(payload.getPassword())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User password cannot be empty");
