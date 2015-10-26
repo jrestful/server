@@ -39,7 +39,6 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   public void validatePayload(U payload) throws HttpStatusException {
     payload.setName(StringUtils.trim(payload.getName()));
     payload.setEmail(StringUtils.trim(payload.getEmail()));
-    payload.setPassword(StringUtils.trim(payload.getPassword()));
     if (StringUtils.isEmpty(payload.getName())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User name cannot be empty");
     } else if (StringUtils.isEmpty(payload.getEmail())) {
