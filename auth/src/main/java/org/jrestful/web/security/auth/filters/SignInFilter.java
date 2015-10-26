@@ -20,7 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -57,8 +61,17 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException, ServletException {
+      // TODO [pixwin] find specific behavior for all the possible following causes exception
       if (exception instanceof HttpStatusException) {
         response.sendError(((HttpStatusException) exception).getStatus().value(), exception.getMessage());
+      } else if (exception.getCause() instanceof DisabledException) {
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+      } else if (exception.getCause() instanceof AccountExpiredException) {
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+      } else if (exception.getCause() instanceof CredentialsExpiredException) {
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+      } else if (exception.getCause() instanceof LockedException) {
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
       } else {
         response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
       }

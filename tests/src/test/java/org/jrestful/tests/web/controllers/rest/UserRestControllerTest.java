@@ -70,7 +70,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
     // try to login but 401 (user does not exist)
-    EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
+    EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "  jrestful  ");
     resultActions = mockMvc.perform( //
         put("/api-" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
