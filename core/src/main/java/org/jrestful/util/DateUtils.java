@@ -13,7 +13,7 @@ import java.util.TimeZone;
  */
 public final class DateUtils {
 
-  private interface PredefinedDateFormat {
+  public interface PredefinedDateFormat {
 
     String format(Date date);
 
