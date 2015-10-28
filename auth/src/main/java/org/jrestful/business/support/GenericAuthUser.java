@@ -1,4 +1,4 @@
-package org.jrestful.data.documents.support;
+package org.jrestful.business.support;
 
 import java.io.Serializable;
 import java.util.List;

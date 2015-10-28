@@ -3,8 +3,8 @@ package org.jrestful.web.security.auth;
 import java.io.Serializable;
 
 import org.jrestful.business.converters.UserIdConverter;
+import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
-import org.jrestful.data.documents.support.GenericAuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;

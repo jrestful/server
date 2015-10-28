@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.business.converters.UserIdConverter;
+import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
-import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.util.DateUtils;
 import org.jrestful.web.util.HttpUtils;
 import org.slf4j.Logger;

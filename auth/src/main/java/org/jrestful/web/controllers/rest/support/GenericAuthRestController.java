@@ -8,8 +8,8 @@ import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 import java.io.Serializable;
 
 import org.jrestful.business.exceptions.HttpStatusException;
+import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
-import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.web.beans.AuthUserProfile;
 import org.jrestful.web.beans.RestResource;
 import org.jrestful.web.security.auth.CurrentUser;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jrestful.data.documents.support.GenericAuthUser;
+import org.jrestful.business.support.GenericAuthUser;
 
 public class AuthUserProfile<U extends GenericAuthUser<K>, K extends Serializable> {
 

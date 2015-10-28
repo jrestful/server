@@ -9,8 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
-import org.jrestful.data.documents.support.GenericAuthUser;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.security.auth.token.TokenService;
