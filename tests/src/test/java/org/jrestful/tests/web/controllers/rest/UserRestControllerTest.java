@@ -24,12 +24,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -39,9 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserRestControllerTest extends TestHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserRestControllerTest.class);
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
 
   @Value("#{appProps['app.apiVersion']}")
   private String apiVersion;
@@ -130,6 +125,19 @@ public class UserRestControllerTest extends TestHelper {
     user = new User();
     user.setName("John Doe");
     user.setEmail("#");
+    user.setPassword("jrestful");
+    user.setCity("Springfield");
+    resultActions = mockMvc.perform( //
+        post("/api-" + apiVersion + "/signup") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(user, disableAnnotations).asString()));
+    resultActions //
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+    // create user but 422 (email is DEA)
+    user = new User();
+    user.setName("John Doe");
+    user.setEmail("john.doe@yopmail.com");
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //

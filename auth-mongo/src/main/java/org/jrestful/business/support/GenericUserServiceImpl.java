@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.data.documents.support.GenericUser;
 import org.jrestful.data.repositories.support.GenericUserRepository;
+import org.jrestful.util.EmailUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -43,8 +44,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User name cannot be empty");
     } else if (StringUtils.isEmpty(payload.getEmail())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email cannot be empty");
-    } else if (!EMAIL_PATTERN.matcher(payload.getEmail()).matches()) {
-      // TODO [pixwin] handle yopmail, etc.
+    } else if (!EmailUtils.seemsValid(payload.getEmail())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email is invalid");
     } else if (StringUtils.isEmpty(payload.getPassword())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User password cannot be empty");

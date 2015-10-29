@@ -249,6 +249,7 @@ A CSRF protection filter as available. To register it in your Spring Security co
 
  - `org.jrestful.util.Base64Utils`: base 64 encoding and decoding.
  - `org.jrestful.util.DateUtils`: operations on dates.
- - `org.jrestful.util.Json64Utils`: JSON serialization and deserialization.
+ - `org.jrestful.util.EmailUtils`: operations on emails.
+ - `org.jrestful.util.JsonUtils`: JSON serialization and deserialization.
  - `org.jrestful.util.UrlUtils`: operations on URLs.
  - `org.jrestful.util.web.HttpUtils`: operations on HTTP requests and responses.
