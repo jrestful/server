@@ -123,13 +123,13 @@ mongo.writeFsync=true
  - `list(int pageIndex, int pageSize)`, mapped on `GET /`, returning status 200 (OK)
  - `get(String id)`, mapped on `GET /{id}`, returning status 200 (OK) or 404 (NOT FOUND)
  - `create(D document)`, mapped on `POST /`, returning status 201 (CREATED)
- - `update(String id, D document)`, mapped on `PUT /{id}`, returning status 200 (OK)
- - `delete(String id)`, mapped on `DELETE /{id}`, returning status 204 (NO CONTENT)
+ - `update(String id, D document)`, mapped on `PUT /{id}`, returning status 200 (OK) or 404 (NOT FOUND)
+ - `delete(String id)`, mapped on `DELETE /{id}`, returning status 204 (NO CONTENT) or 404 (NOT FOUND)
 
 `GenericSequencedDocumentRestController` defines 3 methods:
 
  - `getBySequence(Long sequence)`, mapped on `GET /{sequence}` with param `by=sequence`, returning status 200 (OK) or 404 (NOT FOUND)
- - `updateBySequence(Long sequence, D document)`, mapped on `PUT /{sequence}` with param `by=sequence`, returning status 200 (OK)
- - `deleteBySequence(Long sequence)`, mapped on `DELETE /{sequence}` with param `by=sequence`, returning status 204 (NO CONTENT)
+ - `updateBySequence(Long sequence, D document)`, mapped on `PUT /{sequence}` with param `by=sequence`, returning status 200 (OK) or 404 (NOT FOUND)
+ - `deleteBySequence(Long sequence)`, mapped on `DELETE /{sequence}` with param `by=sequence`, returning status 204 (NO CONTENT) or 404 (NOT FOUND)
 
-Be careful: override the predefined methods if your need authorizations.
+`update*` and `delete*` methods are annotated with `@PreAuthorize("hasRole('ROLE_ADMIN')")`, which means that status 403 will be returned if current user has not the role `ROLE_ADMIN`.
