@@ -3,6 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:security="http://www.springframework.org/schema/security"
   xmlns:task="http://www.springframework.org/schema/task"
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:p="http://www.springframework.org/schema/p"
@@ -10,6 +11,7 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
     http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
   
@@ -46,6 +48,8 @@
     </mvc:interceptor>
     
   </mvc:interceptors>
+  
+  <security:global-method-security pre-post-annotations="enabled" />
   
   <task:annotation-driven />
 
