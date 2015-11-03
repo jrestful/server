@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 public final class EmailUtils {
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+$");
-  
+
   private static final Set<String> DISPOSABLE_EMAIL_ADDRESSES;
   static {
-    Set<String> disposableEmailAddresses = new HashSet<String>();
+    Set<String> disposableEmailAddresses = new HashSet<>();
     disposableEmailAddresses.add("0815.ru");
     disposableEmailAddresses.add("0815.ru0clickemail.com");
     disposableEmailAddresses.add("0815.ry");
@@ -1278,7 +1278,7 @@ public final class EmailUtils {
     disposableEmailAddresses.add("zomg.info");
     DISPOSABLE_EMAIL_ADDRESSES = Collections.unmodifiableSet(disposableEmailAddresses);
   }
-  
+
   public static boolean seemsValid(String email) {
     return email != null //
         && EMAIL_PATTERN.matcher(email).matches() //

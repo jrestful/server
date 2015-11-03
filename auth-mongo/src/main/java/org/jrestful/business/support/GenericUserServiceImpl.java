@@ -2,7 +2,6 @@ package org.jrestful.business.support;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jrestful.business.exceptions.HttpStatusException;
@@ -14,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
     GenericSequencedDocumentServiceImpl<R, U> implements GenericUserService<U> {
-
-  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+$");
 
   protected final PasswordEncoder passwordEncoder;
 
