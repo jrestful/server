@@ -37,7 +37,7 @@ public class Prerenderer {
 
   private static final int IN_MILLIS = 1000;
 
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset CHARSET = Charset.forName("UTF-8");
 
   private final File prerenderedDir;
 
@@ -56,7 +56,7 @@ public class Prerenderer {
         htmlBytes = Files.toByteArray(prerenderedFile);
         LOGGER.debug("URL " + baseUrl + prerenderUri + " formerly fetched, returning " + prerenderedFile);
       } else {
-        htmlBytes = fetch(baseUrl + prerenderUri).getBytes(UTF_8);
+        htmlBytes = fetch(baseUrl + prerenderUri).getBytes(CHARSET);
         Files.write(htmlBytes, prerenderedFile);
         LOGGER.debug("URL " + baseUrl + prerenderUri + " successfully fetched, returning " + prerenderedFile);
       }

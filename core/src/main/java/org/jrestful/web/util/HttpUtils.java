@@ -13,15 +13,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 public final class HttpUtils {
 
-  private static final String UTF_8 = "UTF-8";
+  private static final String ENCODING = "UTF-8";
 
   public static String readCookie(HttpServletRequest request, String cookieName) {
     Cookie[] cookies = request.getCookies();
     if (cookies != null) {
       try {
         for (Cookie cookie : cookies) {
-          if (cookieName.equals(URLDecoder.decode(cookie.getName(), UTF_8))) {
-            return URLDecoder.decode(cookie.getValue(), UTF_8);
+          if (cookieName.equals(URLDecoder.decode(cookie.getName(), ENCODING))) {
+            return URLDecoder.decode(cookie.getValue(), ENCODING);
           }
         }
       } catch (UnsupportedEncodingException ignore) {
@@ -33,8 +33,8 @@ public final class HttpUtils {
 
   public static Cookie writeCookie(HttpServletResponse response, String name, String value) {
     try {
-      name = URLEncoder.encode(name, UTF_8);
-      value = URLEncoder.encode(value, UTF_8);
+      name = URLEncoder.encode(name, ENCODING);
+      value = URLEncoder.encode(value, ENCODING);
     } catch (UnsupportedEncodingException ignore) {
       // cannot happen
     }

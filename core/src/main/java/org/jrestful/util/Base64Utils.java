@@ -9,7 +9,7 @@ import org.springframework.security.crypto.codec.Base64;
  */
 public final class Base64Utils {
 
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset CHARSET = Charset.forName("UTF-8");
 
   public abstract static class Base64Processor {
 
@@ -22,7 +22,7 @@ public final class Base64Utils {
     public abstract byte[] asBytes();
 
     public String asString() {
-      return new String(asBytes(), UTF_8);
+      return new String(asBytes(), CHARSET);
     }
 
   }
@@ -54,7 +54,7 @@ public final class Base64Utils {
   }
 
   public static Base64Processor encode(String string) {
-    return encode(string.getBytes(UTF_8));
+    return encode(string.getBytes(CHARSET));
   }
 
   public static Base64Processor encode(byte[] bytes) {
@@ -62,7 +62,7 @@ public final class Base64Utils {
   }
 
   public static Base64Processor decode(String string) {
-    return decode(string.getBytes(UTF_8));
+    return decode(string.getBytes(CHARSET));
   }
 
   public static Base64Processor decode(byte[] bytes) {

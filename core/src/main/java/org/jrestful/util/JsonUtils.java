@@ -17,7 +17,7 @@ public final class JsonUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtils.class);
 
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset CHARSET = Charset.forName("UTF-8");
   
   public interface ObjectMapperDecorator {
     
@@ -47,7 +47,7 @@ public final class JsonUtils {
 
     public byte[] asBytes() {
       try {
-        return newObjectMapper(decorator).writeValueAsString(object).getBytes(UTF_8);
+        return newObjectMapper(decorator).writeValueAsString(object).getBytes(CHARSET);
       } catch (JsonProcessingException e) {
         LOGGER.debug("An error occurred while serializing an object", e);
         return null;
@@ -96,7 +96,7 @@ public final class JsonUtils {
 
   public static <T> T fromJson(byte[] json, ObjectMapperDecorator decorator, Class<T> type) {
     try {
-      return newObjectMapper(decorator).readValue(new String(json, UTF_8), type);
+      return newObjectMapper(decorator).readValue(new String(json, CHARSET), type);
     } catch (IOException e) {
       LOGGER.debug("An error occurred while deserializing an object", e);
       return null;
