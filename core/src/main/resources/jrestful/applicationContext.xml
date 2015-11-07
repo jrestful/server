@@ -12,11 +12,35 @@
 
   <util:properties id="appProps" location="${jrestfulAppProps}" />
   <util:properties id="secProps" location="${jrestfulSecProps:void}" ignore-resource-not-found="true" />
+  <util:properties id="emailProps" location="${jrestfulEmailProps:void}" ignore-resource-not-found="true" />
 
   <context:component-scan base-package="org.jrestful">
     <context:exclude-filter type="regex" expression="org\.jrestful\.web\.controllers\..*" />
   </context:component-scan>
   
   <task:annotation-driven />
+  
+  <bean class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <property name="velocityProperties">
+      <value>
+        resource.loader=class
+        class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+      </value>
+    </property>
+  </bean>
+  
+  <bean class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="protocol" value="#{emailProps['email.protocol'] ?: 'smtp'}" />
+    <property name="host" value="#{emailProps['email.host']}" />
+    <property name="port" value="#{emailProps['email.port'] ?: -1}" />
+    <property name="username" value="#{emailProps['email.username']}" />
+    <property name="password" value="#{emailProps['email.password']}" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">#{emailProps['email.smtpAuth'] ?: false}</prop>
+        <prop key="mail.smtp.starttls.enable">#{emailProps['email.smtpStarttlsEnable'] ?: false}</prop>
+      </props>
+    </property>
+  </bean>
 
 </beans>

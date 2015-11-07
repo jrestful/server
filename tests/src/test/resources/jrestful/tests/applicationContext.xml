@@ -19,6 +19,7 @@
 
   <util:properties id="appProps" location="classpath:jrestful/tests/application.properties" />
   <util:properties id="secProps" location="classpath:jrestful/tests/security.properties" ignore-resource-not-found="true" />
+  <util:properties id="emailProps" location="classpath:jrestful/tests/email.properties" ignore-resource-not-found="true" />
 
   <context:property-placeholder properties-ref="appProps" />
 
@@ -42,6 +43,29 @@
       </bean>
     </mvc:message-converters>
   </mvc:annotation-driven>
+  
+  <bean class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <property name="velocityProperties">
+      <value>
+        resource.loader=class
+        class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+      </value>
+    </property>
+  </bean>
+  
+  <bean class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="protocol" value="#{emailProps['email.protocol'] ?: 'smtp'}" />
+    <property name="host" value="#{emailProps['email.host']}" />
+    <property name="port" value="#{emailProps['email.port'] ?: -1}" />
+    <property name="username" value="#{emailProps['email.username']}" />
+    <property name="password" value="#{emailProps['email.password']}" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">#{emailProps['email.smtpAuth'] ?: false}</prop>
+        <prop key="mail.smtp.starttls.enable">#{emailProps['email.smtpStarttlsEnable'] ?: false}</prop>
+      </props>
+    </property>
+  </bean>
   
   <!-- mongo -->
 
