@@ -5,6 +5,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -15,12 +19,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
+import javax.mail.internet.MimeMessage;
+
 import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.util.JsonUtils.ObjectMapperDecorator;
 import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.beans.RestResource;
-import org.junit.Assert;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.subethamail.wiser.Wiser;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,11 +46,19 @@ public class UserRestControllerTest extends TestHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserRestControllerTest.class);
 
+  private final Wiser smtpServer = new Wiser();
+
   @Value("#{appProps['app.apiVersion']}")
   private String apiVersion;
 
   @Value("#{secProps['auth.headerName']}")
   private String authHeader;
+
+  @Override
+  public void before() {
+    super.before();
+    smtpServer.start();
+  }
 
   @Test
   public void testRest() throws Exception {
@@ -56,6 +72,8 @@ public class UserRestControllerTest extends TestHelper {
 
     };
 
+    MimeMessage message;
+    Document messageContent;
     ResultActions resultActions;
 
     // try to login but 401 (malformed request)
@@ -168,17 +186,17 @@ public class UserRestControllerTest extends TestHelper {
 
     // check the database values
     user = userService.findOneByEmail("john.doe@jrestful.org");
-    Assert.assertNotNull(user);
-    Assert.assertNotEquals("#", user.getId());
-    Assert.assertNotEquals(new Long(-1), user.getSequence());
-    Assert.assertEquals("John Doe", user.getName());
-    Assert.assertEquals("john.doe@jrestful.org", user.getEmail());
-    Assert.assertEquals("Springfield", user.getCity());
-    Assert.assertEquals(Arrays.asList("ROLE_USER"), user.getRoles());
-    Assert.assertNotEquals(true, user.isAccountExpired());
-    Assert.assertNotEquals(true, user.isAccountLocked());
-    Assert.assertNotEquals(true, user.isEnabled());
-    Assert.assertNotEquals(true, user.isPasswordExpired());
+    assertNotNull(user);
+    assertNotEquals("#", user.getId());
+    assertNotEquals(new Long(-1), user.getSequence());
+    assertEquals("John Doe", user.getName());
+    assertEquals("john.doe@jrestful.org", user.getEmail());
+    assertEquals("Springfield", user.getCity());
+    assertEquals(Arrays.asList("ROLE_USER"), user.getRoles());
+    assertNotEquals(true, user.isAccountExpired());
+    assertNotEquals(true, user.isAccountLocked());
+    assertNotEquals(true, user.isEnabled());
+    assertNotEquals(true, user.isPasswordExpired());
 
     // check user creation HTTP response
     resultActions //
@@ -200,6 +218,17 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$", not(hasProperty("enabled")))) //
         .andExpect(jsonPath("$", not(hasProperty("passwordExpired")))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
+
+    // check the email
+    assertEquals(1, smtpServer.getMessages().size());
+    message = smtpServer.getMessages().get(0).getMimeMessage();
+    assertEquals("jrestful <tests@jrestful.org>", message.getFrom()[0].toString());
+    assertEquals("john.doe@jrestful.org", message.getAllRecipients()[0].toString());
+    assertEquals("[jrestful] Testing confirmation email", message.getSubject());
+    messageContent = Jsoup.parse(message.getContent().toString());
+    assertEquals(user.getName(), messageContent.getElementById("username").text());
+    String emailConfirmationToken = messageContent.getElementById("token").text();
+    assertTrue(emailConfirmationToken.matches("^\\d{6}$"));
 
     // create user but 409 (email already exists)
     User dupe = new User();
@@ -240,7 +269,7 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
-    Assert.assertNotNull(authToken);
+    assertNotNull(authToken);
 
     // check profile (without token)
     resultActions = mockMvc.perform( //
@@ -274,6 +303,12 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.anonymous", is(false))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
 
+  }
+
+  @Override
+  public void after() {
+    super.after();
+    smtpServer.stop();
   }
 
 }

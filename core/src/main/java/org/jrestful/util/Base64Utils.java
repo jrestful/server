@@ -15,7 +15,7 @@ public final class Base64Utils {
 
     protected final byte[] bytes;
 
-    protected Base64Processor(byte[] bytes) {
+    public Base64Processor(byte[] bytes) {
       this.bytes = bytes;
     }
 

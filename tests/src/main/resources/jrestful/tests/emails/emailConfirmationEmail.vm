@@ -1,0 +1,6 @@
+<html>
+  <body>
+    <h1>Hi <span id="username">${user.name}</span>!</h1>
+    <p>Here is your token: <span id="token">${token}</span></p>
+  </body>
+</html>

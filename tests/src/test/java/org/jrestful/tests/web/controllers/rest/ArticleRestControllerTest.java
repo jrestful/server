@@ -2,6 +2,9 @@ package org.jrestful.tests.web.controllers.rest;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,7 +18,6 @@ import org.jrestful.tests.components.user.User;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.beans.RestResource;
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +73,7 @@ public class ArticleRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
-    Assert.assertNotNull(authToken);
+    assertNotNull(authToken);
 
     // create article1
     article1 = new Article("article1");
@@ -82,8 +84,8 @@ public class ArticleRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
-    Assert.assertNotNull(article1);
-    Assert.assertEquals("article1", article1.getTitle());
+    assertNotNull(article1);
+    assertEquals("article1", article1.getTitle());
 
     // get article1 by sequence
     resultActions = mockMvc.perform( //
@@ -108,8 +110,8 @@ public class ArticleRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
-    Assert.assertNotNull(article2);
-    Assert.assertEquals("article2", article2.getTitle());
+    assertNotNull(article2);
+    assertEquals("article2", article2.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
@@ -153,10 +155,10 @@ public class ArticleRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
-    Assert.assertNull(article1);
+    assertNull(article1);
     article1 = articleService.findByTitle("article1updated");
-    Assert.assertNotNull(article1);
-    Assert.assertEquals("article1updated", article1.getTitle());
+    assertNotNull(article1);
+    assertEquals("article1updated", article1.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
@@ -185,10 +187,10 @@ public class ArticleRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
-    Assert.assertNull(article2);
+    assertNull(article2);
     article2 = articleService.findByTitle("article2updated");
-    Assert.assertNotNull(article2);
-    Assert.assertEquals("article2updated", article2.getTitle());
+    assertNotNull(article2);
+    assertEquals("article2updated", article2.getTitle());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
@@ -234,7 +236,7 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
     article1 = articleService.findByTitle("article1updated");
-    Assert.assertNull(article1);
+    assertNull(article1);
 
     // list articles
     resultActions = mockMvc.perform( //
@@ -263,13 +265,13 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
     article2 = articleService.findByTitle("article2updated");
-    Assert.assertNull(article2);
+    assertNull(article2);
 
     // generate articles
     for (int i = 1; i <= 10; i++) {
       articleService.insert(new Article("generated" + i));
     }
-    Assert.assertEquals(10, articleService.count());
+    assertEquals(10, articleService.count());
 
     // list articles
     resultActions = mockMvc.perform( //
