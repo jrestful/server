@@ -43,7 +43,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<PagedRestResources<D>> list(@RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "25") int pageSize) {
+  public ResponseEntity<?> list(@RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "25") int pageSize) {
     Pageable pageRequest = new PageRequest(pageIndex, pageSize);
     Page<D> page = service.findAll(pageRequest);
     List<RestResource<D>> documentResources = new ArrayList<>();
@@ -70,7 +70,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-  public ResponseEntity<RestResource<D>> get(@PathVariable String id) {
+  public ResponseEntity<?> get(@PathVariable String id) {
     D document = service.findOne(id);
     if (document == null) {
       return notFound();
@@ -83,7 +83,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> create(@RequestBody D document) {
+  public ResponseEntity<?> create(@RequestBody D document) {
     document = service.insert(document);
     RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
     addAdditionalLinks(resource);
@@ -92,7 +92,7 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> update(@PathVariable String id, @RequestBody D payload) {
+  public ResponseEntity<?> update(@PathVariable String id, @RequestBody D payload) {
     D document = service.findOne(id);
     if (document == null) {
       return notFound();

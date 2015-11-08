@@ -29,14 +29,14 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   }
 
   @RequestMapping(value = "/profile", method = RequestMethod.GET)
-  public ResponseEntity<RestResource<AuthUserProfile<U, K>>> profile() {
+  public ResponseEntity<?> profile() {
     AuthUserProfile<U, K> userProfile = createUserProfile(CurrentUser.<U> get());
     RestResource<AuthUserProfile<U, K>> resource = new RestResource<>(userProfile, link(to(getClass()).profile()));
     return ok(resource);
   }
 
   @RequestMapping(value = "/signup", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<U>> signUp(@RequestBody U user) {
+  public ResponseEntity<?> signUp(@RequestBody U user) {
     try {
       user = service.signUp(user);
       return created(new RestResource<>(user, link(to(getClass()).profile())));

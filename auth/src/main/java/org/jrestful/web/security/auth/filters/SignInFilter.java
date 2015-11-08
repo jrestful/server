@@ -45,6 +45,10 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
 
     private final HttpStatus status;
 
+    public HttpStatusException(HttpStatus status) {
+      this(status, status.toString());
+    }
+
     public HttpStatusException(HttpStatus status, String message) {
       super(message);
       this.status = status;
@@ -61,20 +65,25 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException, ServletException {
-      // TODO [pixwin] find specific behavior for all the possible following causes exception
       if (exception instanceof HttpStatusException) {
-        response.sendError(((HttpStatusException) exception).getStatus().value(), exception.getMessage());
+        sendError(response, ((HttpStatusException) exception).getStatus(), exception.getMessage());
       } else if (exception.getCause() instanceof DisabledException) {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        sendError(response, HttpStatus.UNAUTHORIZED, "DISABLED");
       } else if (exception.getCause() instanceof AccountExpiredException) {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        sendError(response, HttpStatus.UNAUTHORIZED, "ACCOUNT_EXPIRED");
       } else if (exception.getCause() instanceof CredentialsExpiredException) {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        sendError(response, HttpStatus.UNAUTHORIZED, "CREDENTIALS_EXPIRED");
       } else if (exception.getCause() instanceof LockedException) {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        sendError(response, HttpStatus.UNAUTHORIZED, "LOCKED");
       } else {
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage());
+        sendError(response, HttpStatus.UNAUTHORIZED, "AUTHENTICATION_FAILED");
       }
+    }
+
+    private void sendError(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+      response.setStatus(status.value());
+      response.getOutputStream().print(message);
+      response.flushBuffer();
     }
 
   }
@@ -97,11 +106,11 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (!RequestMethod.PUT.equals(RequestMethod.valueOf(request.getMethod()))) {
       HttpUtils.writeHeader(response, HttpHeaders.ALLOW, RequestMethod.PUT.toString());
-      throw new HttpStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Wrong request method, expecting PUT but was " + request.getMethod());
+      throw new HttpStatusException(HttpStatus.METHOD_NOT_ALLOWED);
     } else {
       EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
       if (input == null) {
-        throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email and/or password not found in request");
+        throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
       } else {
         U user = userService.findOneByEmail(input.getEmail());
         K id = user == null ? null : user.getId();

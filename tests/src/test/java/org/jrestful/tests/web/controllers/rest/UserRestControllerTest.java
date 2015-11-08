@@ -76,7 +76,7 @@ public class UserRestControllerTest extends TestHelper {
     Document messageContent;
     ResultActions resultActions;
 
-    // try to login but 401 (malformed request)
+    // try to login but 422 (unprocessable entity)
     resultActions = mockMvc.perform( //
         put("/api-" + apiVersion + "/signin"));
     resultActions //
@@ -101,7 +101,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_USERNAME"));
 
     // create user but 422 (email is missing)
     user = new User();
@@ -113,7 +114,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_EMAIL"));
 
     // create user but 422 (password is missing)
     user = new User();
@@ -125,7 +127,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_PASSWORD"));
 
     // create user but 422 (city is missing)
     user = new User();
@@ -137,7 +140,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_CITY"));
 
     // create user but 422 (email is invalid)
     user = new User();
@@ -150,7 +154,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("INVALID_EMAIL"));
 
     // create user but 422 (email is DEA)
     user = new User();
@@ -163,7 +168,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("INVALID_EMAIL"));
 
     // create user
     user = new User();
@@ -241,7 +247,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(dupe, disableAnnotations).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.CONFLICT.value()));
+        .andExpect(status().is(HttpStatus.CONFLICT.value())) //
+        .andExpect(content().string("EMAIL_ALREADY_EXISTS"));
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
@@ -249,7 +256,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value())) //
+        .andExpect(content().string("DISABLED"));
 
     // enable user
     user.setEnabled(true);
@@ -261,7 +269,8 @@ public class UserRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value())).andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
+        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value())) //
+        .andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
 
     // login
     resultActions = mockMvc.perform( //

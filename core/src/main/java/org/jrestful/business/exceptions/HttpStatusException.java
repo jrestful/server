@@ -9,13 +9,12 @@ public class HttpStatusException extends Exception {
 
   private final HttpStatus status;
 
-  public HttpStatusException(HttpStatus status, String message) {
-    super(message);
-    this.status = status;
+  public HttpStatusException(HttpStatus status) {
+    this(status, status.toString());
   }
 
-  public HttpStatusException(HttpStatus status, String message, Throwable cause) {
-    super(message, cause);
+  public HttpStatusException(HttpStatus status, String message) {
+    super(message);
     this.status = status;
   }
 
@@ -23,8 +22,8 @@ public class HttpStatusException extends Exception {
     return status;
   }
 
-  public <T> ResponseEntity<T> toResponseEntity() {
-    return new ResponseEntity<>(status);
+  public ResponseEntity<?> toResponseEntity() {
+    return new ResponseEntity<>(getMessage(), status);
   }
 
 }

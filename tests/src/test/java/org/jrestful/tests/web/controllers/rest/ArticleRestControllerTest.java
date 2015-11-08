@@ -143,7 +143,8 @@ public class ArticleRestControllerTest extends TestHelper {
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article1).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_TITLE"));
 
     // update article1 by sequence
     article1.setTitle("article1updated");
@@ -176,7 +177,8 @@ public class ArticleRestControllerTest extends TestHelper {
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_TITLE"));
 
     // update article2
     article2.setTitle("article2updated");

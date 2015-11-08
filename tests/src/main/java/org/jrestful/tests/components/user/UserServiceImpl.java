@@ -25,7 +25,7 @@ public class UserServiceImpl extends GenericUserServiceImpl<UserRepository, User
     super.validateSignUp(payload);
     payload.setCity(StringUtils.trim(payload.getCity()));
     if (StringUtils.isEmpty(payload.getCity())) {
-      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User city cannot be empty");
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_CITY");
     }
   }
 

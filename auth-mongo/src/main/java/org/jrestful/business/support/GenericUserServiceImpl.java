@@ -92,15 +92,15 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     payload.setName(StringUtils.trim(payload.getName()));
     payload.setEmail(StringUtils.trim(payload.getEmail()));
     if (StringUtils.isEmpty(payload.getName())) {
-      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User name cannot be empty");
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_USERNAME");
     } else if (StringUtils.isEmpty(payload.getEmail())) {
-      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email cannot be empty");
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_EMAIL");
     } else if (!EmailUtils.seemsValid(payload.getEmail())) {
-      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User email is invalid");
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "INVALID_EMAIL");
     } else if (StringUtils.isEmpty(payload.getPassword())) {
-      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "User password cannot be empty");
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_PASSWORD");
     } else if (findOneByEmail(payload.getEmail()) != null) {
-      throw new HttpStatusException(HttpStatus.CONFLICT, "User email already exists");
+      throw new HttpStatusException(HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS");
     }
   }
 

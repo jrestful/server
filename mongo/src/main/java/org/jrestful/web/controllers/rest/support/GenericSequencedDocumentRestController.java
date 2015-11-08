@@ -32,7 +32,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
   }
 
   @RequestMapping(value = "/{sequence}", method = RequestMethod.GET, params = "by=sequence")
-  public ResponseEntity<RestResource<D>> getBySequence(@PathVariable long sequence) {
+  public ResponseEntity<?> getBySequence(@PathVariable long sequence) {
     D document = service.findOneBySequence(sequence);
     if (document == null) {
       return notFound();
@@ -45,7 +45,7 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @RequestMapping(value = "/{sequence}", method = RequestMethod.PUT, params = "by=sequence", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<RestResource<D>> updateBySequence(@PathVariable long sequence, @RequestBody D payload) {
+  public ResponseEntity<?> updateBySequence(@PathVariable long sequence, @RequestBody D payload) {
     D document = service.findOneBySequence(sequence);
     if (document == null) {
       return notFound();
