@@ -38,11 +38,6 @@
   <mvc:interceptors>
   
     <mvc:interceptor>
-      <mvc:mapping path="/api/v#{appProps['app.apiVersion']}/**" />
-      <ref bean="corsInterceptor" />
-    </mvc:interceptor>
-  
-    <mvc:interceptor>
       <mvc:mapping path="/**" />
       <mvc:exclude-mapping path="/static-#{appProps['app.version']}/**" />
       <ref bean="urlInterceptor" />

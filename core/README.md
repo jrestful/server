@@ -245,6 +245,15 @@ A CSRF protection filter as available. To register it in your Spring Security co
 </http>
 ```
 
+If needed, CORS parameterization must be enabled via an interceptor in the servlet context:
+
+```xml
+<mvc:interceptor>
+  <mvc:mapping path="/api/v#{appProps['app.apiVersion']}/**" />
+  <ref bean="corsInterceptor" />
+</mvc:interceptor>
+```
+
 ### Utilities
 
  - `org.jrestful.util.Base64Utils`: base 64 encoding and decoding.
