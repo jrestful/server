@@ -155,10 +155,10 @@ csrf.cookieName=MYWEBSITE-CSRF-TOKEN
 
 #### The CORS parameters (optional)
 
- - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
-  - `cors.allowMethods` (defaulted to `GET, POST, PUT, DELETE`): The `Access-Control-Allow-Methods` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
-  - `cors.allowHeaders` (optional): The `Access-Control-Allow-Headers` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
-  - `cors.maxAge` (optional): The `Access-Control-Max-Age` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
+ - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/**`.
+  - `cors.allowMethods` (defaulted to `GET, POST, PUT, DELETE`): The `Access-Control-Allow-Methods` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/**`.
+  - `cors.allowHeaders` (optional): The `Access-Control-Allow-Headers` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/**`.
+  - `cors.maxAge` (optional): The `Access-Control-Max-Age` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/**`.
 
 If not provided, no header will be added.
 
@@ -192,7 +192,7 @@ import static org.jrestful.web.hateoas.support.LinkBuilder.*;
 ...
 
 @RestController
-@RequestMapping(value = "/api/v${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api/v${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericRestController {
   
   ...
