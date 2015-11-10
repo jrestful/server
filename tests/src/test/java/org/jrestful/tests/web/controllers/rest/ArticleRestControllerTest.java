@@ -69,7 +69,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // login
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        put("/api/v" + apiVersion + "/signin") //
+        put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);

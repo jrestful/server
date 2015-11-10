@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/v${app.apiVersion}", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api/v${app.apiVersion}/auth", produces = RestResource.HAL_MEDIA_TYPE)
 public class AuthRestController extends GenericAuthRestController<UserService, User, String> {
 
   @Autowired

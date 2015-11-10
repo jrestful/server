@@ -93,7 +93,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
   @Autowired
   public SignInFilter(GenericAuthUserService<U, K> userService, TokenService<U, K> tokenService,
       @Value("#{appProps['app.apiVersion']}") String apiVersion, AuthenticationManager authenticationManager) {
-    super(new AntPathRequestMatcher("/api/v" + apiVersion + "/signin", RequestMethod.PUT.toString()));
+    super(new AntPathRequestMatcher("/api/v" + apiVersion + "/auth", RequestMethod.PUT.toString()));
     setAuthenticationManager(authenticationManager);
     setAuthenticationFailureHandler(new AuthenticationFailureHandlerImpl());
     this.userService = userService;
