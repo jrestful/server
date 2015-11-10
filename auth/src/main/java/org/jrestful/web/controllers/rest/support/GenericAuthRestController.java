@@ -31,11 +31,10 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     this.service = service;
   }
 
-  // TODO rename to getProfile (client-side as well)
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<?> profile() {
+  public ResponseEntity<?> getProfile() {
     AuthUserProfile<U, K> userProfile = createUserProfile(CurrentUser.<U> get());
-    RestResource<AuthUserProfile<U, K>> resource = new RestResource<>(userProfile, link(to(getClass()).profile()));
+    RestResource<AuthUserProfile<U, K>> resource = new RestResource<>(userProfile, link(to(getClass()).getProfile()));
     return ok(resource);
   }
 
@@ -43,7 +42,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   public ResponseEntity<?> signUp(@RequestBody U user) {
     try {
       user = service.signUp(user);
-      return created(new RestResource<>(user, link(to(getClass()).profile())));
+      return created(new RestResource<>(user, link(to(getClass()).getProfile())));
     } catch (HttpStatusException e) {
       return e.toResponseEntity();
     }
