@@ -1,6 +1,7 @@
 package org.jrestful.web.controllers.rest.support;
 
 import static org.jrestful.web.beans.RestResponse.created;
+import static org.jrestful.web.beans.RestResponse.noContent;
 import static org.jrestful.web.beans.RestResponse.ok;
 import static org.jrestful.web.util.hateoas.LinkBuilder.link;
 import static org.jrestful.web.util.hateoas.LinkBuilder.to;
@@ -18,7 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+// TODO customize 403
 public abstract class GenericAuthRestController<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
     GenericRestController {
 
@@ -28,6 +31,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     this.service = service;
   }
 
+  // TODO rename to getProfile (client-side as well)
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<?> profile() {
     AuthUserProfile<U, K> userProfile = createUserProfile(CurrentUser.<U> get());
@@ -40,6 +44,16 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     try {
       user = service.signUp(user);
       return created(new RestResource<>(user, link(to(getClass()).profile())));
+    } catch (HttpStatusException e) {
+      return e.toResponseEntity();
+    }
+  }
+
+  @RequestMapping(method = RequestMethod.PATCH)
+  public ResponseEntity<?> confirm(@RequestParam String token) {
+    try {
+      service.confirm(token);
+      return noContent();
     } catch (HttpStatusException e) {
       return e.toResponseEntity();
     }

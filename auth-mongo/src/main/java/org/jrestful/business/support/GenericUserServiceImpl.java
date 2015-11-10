@@ -20,14 +20,28 @@ import org.jrestful.util.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+// TODO delete associated tokens when deleting a user
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
     GenericSequencedDocumentServiceImpl<R, U> implements GenericUserService<U> {
+
+  private interface TokenEmailPreparator {
+
+    String prepare(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
+
+  }
+
+  private static class NoEmailException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+  }
 
   private static final String ENCODING = "UTF-8";
 
@@ -57,33 +71,54 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     return repository.findOneByEmail(email);
   }
 
+  private void sendTokenEmail(final U user, final UserToken userToken, final TokenEmailPreparator preparator) {
+    MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
+
+      @Override
+      public void prepare(MimeMessage mimeMessage) throws Exception {
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+        if (emailFrom != null) {
+          message.setFrom(emailFrom);
+        }
+        message.setTo(user.getEmail());
+        Map<String, Object> model = new HashMap<>();
+        model.put("user", user);
+        model.put("token", userToken.getToken());
+        String templateLocation = preparator.prepare(message, model);
+        if (templateLocation == null) {
+          throw new NoEmailException();
+        } else {
+          String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
+          message.setText(text, true);
+        }
+      }
+
+    };
+    try {
+      mailSender.send(mimeMessagePreparator);
+    } catch (MailPreparationException e) {
+      if (!(e.getCause() instanceof NoEmailException)) {
+        throw e;
+      }
+    }
+  }
+
   @Override
   public U signUp(U payload) throws HttpStatusException {
     validateSignUp(payload);
     prepareSignUp(payload);
-    final U user = insert(payload);
-    if (user != null) {
-      final UserToken token = userTokenService.createAndSave(user, UserToken.Type.EMAIL_CONFIRMATION, RandomUtils.NUMBERS,
+    U user = insert(payload);
+    if (user != null && !user.isEnabled()) {
+      UserToken userToken = userTokenService.createAndSave(user, UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, RandomUtils.NUMBERS,
           EMAIL_CONFIRMATION_TOKEN_LENGTH);
-      MimeMessagePreparator preparator = new MimeMessagePreparator() {
+      sendTokenEmail(user, userToken, new TokenEmailPreparator() {
 
         @Override
-        public void prepare(MimeMessage mimeMessage) throws Exception {
-          MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-          if (emailFrom != null) {
-            message.setFrom(emailFrom);
-          }
-          message.setTo(user.getEmail());
-          Map<String, Object> model = new HashMap<>();
-          model.put("user", user);
-          model.put("token", token.getToken());
-          String templateLocation = prepareSignUpEmailConfirmationEmail(message, model);
-          String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
-          message.setText(text, true);
+        public String prepare(MimeMessageHelper message, Map<String, Object> model) throws MessagingException {
+          return prepareSignUpEmailConfirmationEmail(message, model);
         }
 
-      };
-      mailSender.send(preparator);
+      });
     }
     return user;
   }
@@ -110,5 +145,32 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   }
 
   protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
+
+  @Override
+  public void confirm(String token) throws HttpStatusException {
+    UserToken userToken = userTokenService.findOneByToken(token);
+    if (userToken == null) {
+      throw new HttpStatusException(HttpStatus.NOT_FOUND);
+    } else {
+      switch (userToken.getType()) {
+
+      case SIGN_UP_EMAIL_CONFIRMATION:
+        U user = findOne(userToken.getUserId());
+        if (user == null) {
+          throw new HttpStatusException(HttpStatus.GONE);
+        } else if (user.isEnabled()) {
+          throw new HttpStatusException(HttpStatus.CONFLICT);
+        } else {
+          user.setEnabled(true);
+          save(user);
+        }
+        userTokenService.delete(userToken);
+        break;
+
+      default:
+        throw new IllegalStateException("User token type " + userToken.getType() + " not managed");
+      }
+    }
+  }
 
 }

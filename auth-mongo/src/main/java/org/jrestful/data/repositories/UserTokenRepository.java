@@ -7,4 +7,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface UserTokenRepository extends GenericDocumentRepository<UserToken> {
 
+  UserToken findOneByToken(String token);
+
 }

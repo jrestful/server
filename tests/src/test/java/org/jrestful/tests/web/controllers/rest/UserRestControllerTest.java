@@ -6,10 +6,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -58,7 +60,7 @@ public class UserRestControllerTest extends TestHelper {
   }
 
   @Test
-  public void testRest() throws Exception {
+  public void testSignUp() throws Exception {
 
     ObjectMapperDecorator disableAnnotations = new ObjectMapperDecorator() {
 
@@ -196,10 +198,10 @@ public class UserRestControllerTest extends TestHelper {
     assertEquals("john.doe@jrestful.org", user.getEmail());
     assertEquals("Springfield", user.getCity());
     assertEquals(Arrays.asList("ROLE_USER"), user.getRoles());
-    assertNotEquals(true, user.isAccountExpired());
-    assertNotEquals(true, user.isAccountLocked());
-    assertNotEquals(true, user.isEnabled());
-    assertNotEquals(true, user.isPasswordExpired());
+    assertFalse(user.isAccountExpired());
+    assertFalse(user.isAccountLocked());
+    assertFalse(user.isEnabled());
+    assertFalse(user.isPasswordExpired());
 
     // check user creation HTTP response
     resultActions //
@@ -230,8 +232,8 @@ public class UserRestControllerTest extends TestHelper {
     assertEquals("[jrestful] Testing confirmation email", message.getSubject());
     messageContent = Jsoup.parse(message.getContent().toString());
     assertEquals(user.getName(), messageContent.getElementById("username").text());
-    String emailConfirmationToken = messageContent.getElementById("token").text();
-    assertTrue(emailConfirmationToken.matches("^\\d{6}$"));
+    String signUpEmailConfirmationToken = messageContent.getElementById("token").text();
+    assertTrue(signUpEmailConfirmationToken.matches("^\\d{6}$"));
 
     // create user but 409 (email already exists)
     User dupe = new User();
@@ -257,8 +259,14 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(content().string("DISABLED"));
 
     // enable user
-    user.setEnabled(true);
-    user = userService.save(user);
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("token", signUpEmailConfirmationToken));
+    resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+
+    // check the database values
+    user = userService.findOneByEmail("john.doe@jrestful.org");
+    assertTrue(user.isEnabled());
 
     // login
     resultActions = mockMvc.perform( //

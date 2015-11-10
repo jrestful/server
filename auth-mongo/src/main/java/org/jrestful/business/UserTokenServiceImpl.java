@@ -19,6 +19,11 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
   }
 
   @Override
+  public UserToken findOneByToken(String token) {
+    return repository.findOneByToken(token);
+  }
+
+  @Override
   public <U extends GenericUser> UserToken createAndSave(U user, Type type, String alphabet, int length) {
     UserToken token = new UserToken();
     token.setUserId(user.getId());

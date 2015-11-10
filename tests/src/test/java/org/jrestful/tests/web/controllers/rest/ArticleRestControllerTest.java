@@ -44,7 +44,7 @@ public class ArticleRestControllerTest extends TestHelper {
   private String authHeader;
 
   @Test
-  public void testRest() throws Exception {
+  public void testCrud() throws Exception {
 
     ResultActions resultActions;
 

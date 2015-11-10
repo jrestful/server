@@ -11,7 +11,7 @@ public class UserToken extends GenericDocument {
 
   public enum Type {
 
-    EMAIL_CONFIRMATION;
+    SIGN_UP_EMAIL_CONFIRMATION;
 
   }
 

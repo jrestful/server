@@ -1,5 +1,8 @@
 package org.jrestful.data.repositories;
 
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
 import org.jrestful.data.documents.UserToken;
 import org.jrestful.data.repositories.support.GenericDocumentRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,11 @@ public class UserTokenRepositoryImpl extends GenericDocumentRepositoryImpl<UserT
   @Autowired
   public UserTokenRepositoryImpl(MongoOperations mongoOperations) {
     super(UserToken.class, mongoOperations);
+  }
+
+  @Override
+  public UserToken findOneByToken(String token) {
+    return mongoOperations.findOne(query(where("token").is(token)), documentClass);
   }
 
 }

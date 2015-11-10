@@ -297,6 +297,7 @@ public enum RestResponse {
     return NON_AUTHORITATIVE_INFORMATION.build();
   }
 
+  // TODO check the use of noContent, it may break the REST state machine
   public static <T> ResponseEntity<T> noContent() {
     return NO_CONTENT.build();
   }
