@@ -14,10 +14,8 @@ import org.jrestful.business.support.GenericAuthUserService;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.security.auth.token.TokenService;
-import org.jrestful.web.util.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -95,7 +93,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
   @Autowired
   public SignInFilter(GenericAuthUserService<U, K> userService, TokenService<U, K> tokenService,
       @Value("#{appProps['app.apiVersion']}") String apiVersion, AuthenticationManager authenticationManager) {
-    super(new AntPathRequestMatcher("/api-" + apiVersion + "/signin"));
+    super(new AntPathRequestMatcher("/api-" + apiVersion + "/signin", RequestMethod.PUT.toString()));
     setAuthenticationManager(authenticationManager);
     setAuthenticationFailureHandler(new AuthenticationFailureHandlerImpl());
     this.userService = userService;
@@ -104,22 +102,17 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if (!RequestMethod.PUT.equals(RequestMethod.valueOf(request.getMethod()))) {
-      HttpUtils.writeHeader(response, HttpHeaders.ALLOW, RequestMethod.PUT.toString());
-      throw new HttpStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+    EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
+    if (input == null) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
-      EmailPassword input = JsonUtils.fromJson(request.getInputStream(), EmailPassword.class);
-      if (input == null) {
-        throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-      } else {
-        U user = userService.findOneByEmail(input.getEmail());
-        K id = user == null ? null : user.getId();
-        String password = input.getPassword();
-        Collection<? extends GrantedAuthority> authorities = user == null ? null : user.getAuthorities();
-        AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id, password, authorities);
-        authentication.setDetails(user);
-        return getAuthenticationManager().authenticate(authentication);
-      }
+      U user = userService.findOneByEmail(input.getEmail());
+      K id = user == null ? null : user.getId();
+      String password = input.getPassword();
+      Collection<? extends GrantedAuthority> authorities = user == null ? null : user.getAuthorities();
+      AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id, password, authorities);
+      authentication.setDetails(user);
+      return getAuthenticationManager().authenticate(authentication);
     }
   }
 
