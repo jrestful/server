@@ -127,7 +127,7 @@ app.version=1.3.9
 
  - `app.apiVersion`: The API version.
 
-jrestful registers request interceptors that only match URL starting with `/api-${app.apiVersion}`.
+jrestful registers request interceptors that only match URL starting with `/api/v${app.apiVersion}`.
 
 #### Example
 
@@ -155,10 +155,10 @@ csrf.cookieName=MYWEBSITE-CSRF-TOKEN
 
 #### The CORS parameters (optional)
 
- - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
-  - `cors.allowMethods` (defaulted to `GET, POST, PUT, DELETE`): The `Access-Control-Allow-Methods` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
-  - `cors.allowHeaders` (optional): The `Access-Control-Allow-Headers` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
-  - `cors.maxAge` (optional): The `Access-Control-Max-Age` header to set on HTTP responses when requests match `/api-${app.apiVersion}/rest/**`.
+ - `cors.allowOrigin`: The `Access-Control-Allow-Origin` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
+  - `cors.allowMethods` (defaulted to `GET, POST, PUT, DELETE`): The `Access-Control-Allow-Methods` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
+  - `cors.allowHeaders` (optional): The `Access-Control-Allow-Headers` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
+  - `cors.maxAge` (optional): The `Access-Control-Max-Age` header to set on HTTP responses when requests match `/api/v${app.apiVersion}/rest/**`.
 
 If not provided, no header will be added.
 
@@ -192,7 +192,7 @@ import static org.jrestful.web.hateoas.support.LinkBuilder.*;
 ...
 
 @RestController
-@RequestMapping(value = "/api-${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api/v${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericRestController {
   
   ...

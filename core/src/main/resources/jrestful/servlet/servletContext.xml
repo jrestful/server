@@ -38,7 +38,7 @@
   <mvc:interceptors>
   
     <mvc:interceptor>
-      <mvc:mapping path="/api-#{appProps['app.apiVersion']}/rest/**" />
+      <mvc:mapping path="/api/v#{appProps['app.apiVersion']}/rest/**" />
       <ref bean="corsInterceptor" />
     </mvc:interceptor>
   

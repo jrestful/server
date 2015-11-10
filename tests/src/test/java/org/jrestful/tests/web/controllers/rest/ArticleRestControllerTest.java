@@ -51,7 +51,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // create article1 but 403 (role ROLE_ADMIN needed)
     Article article1 = new Article("article1");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/rest/articles") //
+        post("/api/v" + apiVersion + "/rest/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article1).asString()));
     resultActions //
@@ -69,7 +69,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // login
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "jrestful");
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signin") //
+        put("/api/v" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
@@ -78,7 +78,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // create article1
     article1 = new Article("article1");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/rest/articles") //
+        post("/api/v" + apiVersion + "/rest/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article1).asString()));
@@ -89,7 +89,7 @@ public class ArticleRestControllerTest extends TestHelper {
 
     // get article1 by sequence
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
+        get("/api/v" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
@@ -98,13 +98,13 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(article1.getSequence().intValue()))) //
         .andExpect(jsonPath("$.title", is(article1.getTitle()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // create article2
     Article article2 = new Article("article2");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/rest/articles") //
+        post("/api/v" + apiVersion + "/rest/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
@@ -118,12 +118,12 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
         .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // get article2
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }));
+        get("/api/v" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -131,13 +131,13 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
         .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // update article1 by sequence but 422 (title is missing)
     article1.setTitle(null);
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
+        put("/api/v" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
@@ -149,7 +149,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // update article1 by sequence
     article1.setTitle("article1updated");
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
+        put("/api/v" + apiVersion + "/rest/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
@@ -166,13 +166,13 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.id", is(article1.getId()))) //
         .andExpect(jsonPath("$.sequence", is(article1.getSequence().intValue()))) //
         .andExpect(jsonPath("$.title", is(article1.getTitle()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // update article2 but 422 (title is missing)
     article2.setTitle(null);
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
+        put("/api/v" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
@@ -183,7 +183,7 @@ public class ArticleRestControllerTest extends TestHelper {
     // update article2
     article2.setTitle("article2updated");
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
+        put("/api/v" + apiVersion + "/rest/articles/{id}", new Object[] { article2.getId() }) //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .header(authHeader, authToken) //
             .content(JsonUtils.toJson(article2).asString()));
@@ -199,12 +199,12 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.id", is(article2.getId()))) //
         .andExpect(jsonPath("$.sequence", is(article2.getSequence().intValue()))) //
         .andExpect(jsonPath("$.title", is(article2.getTitle()))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resource.href", is("http://resource.com")));
 
     // list articles
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/articles"));
+        get("/api/v" + apiVersion + "/rest/articles"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -217,22 +217,22 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$._embedded[0].id", is(article1.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(article1.getSequence().intValue()))) //
         .andExpect(jsonPath("$._embedded[0].title", is(article1.getTitle()))) //
-        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article1.getId()))) //
         .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
         .andExpect(jsonPath("$._embedded[1].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[1].sequence", is(article2.getSequence().intValue()))) //
         .andExpect(jsonPath("$._embedded[1].title", is(article2.getTitle()))) //
-        .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._embedded[1]._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._embedded[1]._links.resource.href", is("http://resource.com"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
         .andExpect(jsonPath("$._links.items", hasSize(2))) //
-        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article1.getId()))) //
-        .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article1.getId()))) //
+        .andExpect(jsonPath("$._links.items[1].href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
     // delete article1
     resultActions = mockMvc.perform( //
-        delete("/api-" + apiVersion + "/rest/articles/{id}", new Object[] { article1.getId() }) //
+        delete("/api/v" + apiVersion + "/rest/articles/{id}", new Object[] { article1.getId() }) //
             .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
@@ -242,7 +242,7 @@ public class ArticleRestControllerTest extends TestHelper {
 
     // list articles
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/articles"));
+        get("/api/v" + apiVersion + "/rest/articles"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -251,16 +251,16 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$._embedded[0].id", is(article2.getId()))) //
         .andExpect(jsonPath("$._embedded[0].sequence", is(article2.getSequence().intValue()))) //
         .andExpect(jsonPath("$._embedded[0].title", is(article2.getTitle()))) //
-        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._embedded[0]._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._embedded[0]._links.resource.href", is("http://resource.com"))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=0&pageSize=25"))) //
         .andExpect(jsonPath("$._links.items", hasSize(1))) //
-        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/api-" + apiVersion + "/rest/articles/" + article2.getId()))) //
+        .andExpect(jsonPath("$._links.items[0].href", is("http://localhost/api/v" + apiVersion + "/rest/articles/" + article2.getId()))) //
         .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
     // delete article2 by sequence
     resultActions = mockMvc.perform( //
-        delete("/api-" + apiVersion + "/rest/articles/{sequence}", new Object[] { article2.getSequence() }) //
+        delete("/api/v" + apiVersion + "/rest/articles/{sequence}", new Object[] { article2.getSequence() }) //
             .param("by", "sequence") //
             .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
@@ -277,7 +277,7 @@ public class ArticleRestControllerTest extends TestHelper {
 
     // list articles
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/rest/articles?pageIndex=2&pageSize=2"));
+        get("/api/v" + apiVersion + "/rest/articles?pageIndex=2&pageSize=2"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -287,11 +287,11 @@ public class ArticleRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.totalPages", is(5))) //
         .andExpect(jsonPath("$.totalItems", is(10))) //
         .andExpect(jsonPath("$._embedded", hasSize(2))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=2&pageSize=2"))) //
-        .andExpect(jsonPath("$._links.first.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=0&pageSize=2"))) //
-        .andExpect(jsonPath("$._links.previous.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=1&pageSize=2"))) //
-        .andExpect(jsonPath("$._links.next.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=3&pageSize=2"))) //
-        .andExpect(jsonPath("$._links.last.href", is("http://localhost/api-" + apiVersion + "/rest/articles?pageIndex=4&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=2&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.first.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=0&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.previous.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=1&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.next.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=3&pageSize=2"))) //
+        .andExpect(jsonPath("$._links.last.href", is("http://localhost/api/v" + apiVersion + "/rest/articles?pageIndex=4&pageSize=2"))) //
         .andExpect(jsonPath("$._links.resources.href", is("http://resources.com")));
 
   }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api-${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
+@RequestMapping(value = "/api/v${app.apiVersion}/rest/articles", produces = RestResource.HAL_MEDIA_TYPE)
 public class ArticleRestController extends GenericSequencedDocumentRestController<ArticleService, Article> {
 
   @Autowired

@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,11 +31,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.subethamail.wiser.Wiser;
 
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -78,14 +75,14 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 422 (unprocessable entity)
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signin"));
+        put("/api/v" + apiVersion + "/signin"));
     resultActions //
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
     // try to login but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "  jrestful  ");
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signin") //
+        put("/api/v" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -97,7 +94,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -110,7 +107,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -123,7 +120,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEmail("john.doe@jrestful.org");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -136,7 +133,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEmail("john.doe@jrestful.org");
     user.setPassword("jrestful");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -150,7 +147,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -164,7 +161,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setPassword("jrestful");
     user.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     resultActions //
@@ -185,7 +182,7 @@ public class UserRestControllerTest extends TestHelper {
     user.setEnabled(true);
     user.setPasswordExpired(true);
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(user, disableAnnotations).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
@@ -223,7 +220,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$", not(hasProperty("credentialsNonExpired")))) //
         .andExpect(jsonPath("$", not(hasProperty("enabled")))) //
         .andExpect(jsonPath("$", not(hasProperty("passwordExpired")))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/profile")));
 
     // check the email
     assertEquals(1, smtpServer.getMessages().size());
@@ -243,7 +240,7 @@ public class UserRestControllerTest extends TestHelper {
     dupe.setPassword("jrestful");
     dupe.setCity("Springfield");
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signup") //
+        post("/api/v" + apiVersion + "/signup") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(dupe, disableAnnotations).asString()));
     resultActions //
@@ -252,7 +249,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // try to login but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signin") //
+        put("/api/v" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
@@ -263,18 +260,17 @@ public class UserRestControllerTest extends TestHelper {
     user.setEnabled(true);
     user = userService.save(user);
 
-    // try to login but 405 (PUT expected)
+    // try to login but 404 (PUT expected)
     resultActions = mockMvc.perform( //
-        post("/api-" + apiVersion + "/signin") //
+        post("/api/v" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.METHOD_NOT_ALLOWED.value())) //
-        .andExpect(header().string(HttpHeaders.ALLOW, RequestMethod.PUT.toString()));
+        .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
     // login
     resultActions = mockMvc.perform( //
-        put("/api-" + apiVersion + "/signin") //
+        put("/api/v" + apiVersion + "/signin") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
     String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
@@ -282,7 +278,7 @@ public class UserRestControllerTest extends TestHelper {
 
     // check profile (without token)
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/profile"));
+        get("/api/v" + apiVersion + "/profile"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -293,11 +289,11 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.city", nullValue())) //
         .andExpect(jsonPath("$.roles", hasSize(0))) //
         .andExpect(jsonPath("$.anonymous", is(true))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/profile")));
 
     // check profile (with token)
     resultActions = mockMvc.perform( //
-        get("/api-" + apiVersion + "/profile") //
+        get("/api/v" + apiVersion + "/profile") //
             .header(authHeader, authToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
@@ -310,7 +306,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.roles", hasSize(1))) //
         .andExpect(jsonPath("$.roles[0]", is("ROLE_USER"))) //
         .andExpect(jsonPath("$.anonymous", is(false))) //
-        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api-" + apiVersion + "/profile")));
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/profile")));
 
   }
 
