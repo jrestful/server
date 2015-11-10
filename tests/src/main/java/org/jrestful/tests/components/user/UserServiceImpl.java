@@ -30,9 +30,9 @@ public class UserServiceImpl extends GenericUserServiceImpl<UserRepository, User
   }
 
   @Override
-  protected String prepareEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException {
+  protected String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException {
     message.setSubject("[jrestful] Testing confirmation email");
-    return "jrestful/tests/emails/emailConfirmationEmail.vm";
+    return "jrestful/tests/emails/signUpEmailConfirmation.vm";
   }
 
 }

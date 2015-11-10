@@ -77,7 +77,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
           Map<String, Object> model = new HashMap<>();
           model.put("user", user);
           model.put("token", token.getToken());
-          String templateLocation = prepareEmailConfirmationEmail(message, model);
+          String templateLocation = prepareSignUpEmailConfirmationEmail(message, model);
           String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
           message.setText(text, true);
         }
@@ -109,6 +109,6 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     user.setPassword(passwordEncoder.encode(user.getPassword()));
   }
 
-  protected abstract String prepareEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
+  protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
 
 }
