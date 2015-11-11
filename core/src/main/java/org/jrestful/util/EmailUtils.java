@@ -897,7 +897,6 @@ public final class EmailUtils {
     disposableEmailAddresses.add("rhyta.com");
     disposableEmailAddresses.add("rklips.com");
     disposableEmailAddresses.add("rmqkr.net");
-    disposableEmailAddresses.add("rocketmail.com");
     disposableEmailAddresses.add("royal.net");
     disposableEmailAddresses.add("rppkn.com");
     disposableEmailAddresses.add("rtrtr.com");
