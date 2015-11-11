@@ -41,9 +41,9 @@ import org.subethamail.wiser.Wiser;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class UserRestControllerTest extends TestHelper {
+public class AuthRestControllerTest extends TestHelper {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UserRestControllerTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestControllerTest.class);
 
   private final Wiser smtpServer = new Wiser();
 
@@ -75,13 +75,13 @@ public class UserRestControllerTest extends TestHelper {
     Document messageContent;
     ResultActions resultActions;
 
-    // try to login but 422 (unprocessable entity)
+    // try to sign in but 422 (unprocessable entity)
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/auth"));
     resultActions //
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
 
-    // try to login but 401 (user does not exist)
+    // try to sign in but 401 (user does not exist)
     EmailPassword emailPassword = new EmailPassword("john.doe@jrestful.org", "  jrestful  ");
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/auth") //
@@ -90,7 +90,7 @@ public class UserRestControllerTest extends TestHelper {
     resultActions //
         .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
-    // create user but 422 (name is missing)
+    // sign up but 422 (name is missing)
     User user = new User();
     user.setEmail("john.doe@jrestful.org");
     user.setPassword("jrestful");
@@ -103,7 +103,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_USERNAME"));
 
-    // create user but 422 (email is missing)
+    // sign up but 422 (email is missing)
     user = new User();
     user.setName("John Doe");
     user.setPassword("jrestful");
@@ -116,7 +116,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_EMAIL"));
 
-    // create user but 422 (password is missing)
+    // sign up but 422 (password is missing)
     user = new User();
     user.setName("John Doe");
     user.setEmail("john.doe@jrestful.org");
@@ -129,7 +129,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_PASSWORD"));
 
-    // create user but 422 (city is missing)
+    // sign up but 422 (city is missing)
     user = new User();
     user.setName("John Doe");
     user.setEmail("john.doe@jrestful.org");
@@ -142,7 +142,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_CITY"));
 
-    // create user but 422 (email is invalid)
+    // sign up but 422 (email is invalid)
     user = new User();
     user.setName("John Doe");
     user.setEmail("#");
@@ -156,7 +156,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("INVALID_EMAIL"));
 
-    // create user but 422 (email is DEA)
+    // sign up but 422 (email is DEA)
     user = new User();
     user.setName("John Doe");
     user.setEmail("john.doe@yopmail.com");
@@ -170,7 +170,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("INVALID_EMAIL"));
 
-    // create user
+    // sign up
     user = new User();
     user.setId("#");
     user.setSequence(-1l);
@@ -203,7 +203,7 @@ public class UserRestControllerTest extends TestHelper {
     assertFalse(user.isEnabled());
     assertFalse(user.isPasswordExpired());
 
-    // check user creation HTTP response
+    // check sign up HTTP response
     resultActions //
         .andExpect(status().is(HttpStatus.CREATED.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
@@ -235,7 +235,7 @@ public class UserRestControllerTest extends TestHelper {
     String signUpEmailConfirmationToken = messageContent.getElementById("token").text();
     assertTrue(signUpEmailConfirmationToken.matches("^\\d{6}$"));
 
-    // create user but 409 (email already exists)
+    // sign up but 409 (email already exists)
     User dupe = new User();
     dupe.setName("John Doe");
     dupe.setEmail("john.doe@jrestful.org");
@@ -249,7 +249,7 @@ public class UserRestControllerTest extends TestHelper {
         .andExpect(status().is(HttpStatus.CONFLICT.value())) //
         .andExpect(content().string("EMAIL_ALREADY_EXISTS"));
 
-    // try to login but 401 (user is not enabled)
+    // try to sign in but 401 (user is not enabled)
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
@@ -268,7 +268,7 @@ public class UserRestControllerTest extends TestHelper {
     user = userService.findOneByEmail("john.doe@jrestful.org");
     assertTrue(user.isEnabled());
 
-    // login
+    // sign in
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
