@@ -262,7 +262,24 @@ public class AuthRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("token", signUpEmailConfirmationToken));
-    resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+    resultActions.andExpect(status().is(HttpStatus.OK.value())) //
+        .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
+        .andExpect(jsonPath("$.id", is(user.getId()))) //
+        .andExpect(jsonPath("$.sequence", is(user.getSequence().intValue()))) //
+        .andExpect(jsonPath("$.name", is(user.getName()))) //
+        .andExpect(jsonPath("$.city", is(user.getCity()))) //
+        .andExpect(jsonPath("$.roles", is(Arrays.asList("ROLE_USER")))) //
+        .andExpect(jsonPath("$", not(hasProperty("authorities")))) //
+        .andExpect(jsonPath("$", not(hasProperty("email")))) //
+        .andExpect(jsonPath("$", not(hasProperty("username")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountLocked")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountNonExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("accountNonLocked")))) //
+        .andExpect(jsonPath("$", not(hasProperty("credentialsNonExpired")))) //
+        .andExpect(jsonPath("$", not(hasProperty("enabled")))) //
+        .andExpect(jsonPath("$", not(hasProperty("passwordExpired")))) //
+        .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/auth")));
 
     // check the database values
     user = userService.findOneByEmail("john.doe@jrestful.org");
