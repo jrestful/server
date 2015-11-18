@@ -147,7 +147,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
 
   @Override
-  public void confirm(String token) throws HttpStatusException {
+  public U confirm(String token) throws HttpStatusException {
     UserToken userToken = userTokenService.findOneByToken(token);
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
@@ -162,10 +162,10 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
           throw new HttpStatusException(HttpStatus.CONFLICT);
         } else {
           user.setEnabled(true);
-          save(user);
+          user = save(user);
         }
         userTokenService.delete(userToken);
-        break;
+        return user;
 
       default:
         throw new IllegalStateException("User token type " + userToken.getType() + " not managed");

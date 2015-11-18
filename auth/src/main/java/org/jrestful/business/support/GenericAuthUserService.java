@@ -12,6 +12,6 @@ public interface GenericAuthUserService<U extends GenericAuthUser<K>, K extends 
 
   U signUp(U user) throws HttpStatusException;
 
-  void confirm(String token) throws HttpStatusException;
+  U confirm(String token) throws HttpStatusException;
 
 }

@@ -51,8 +51,12 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   @RequestMapping(method = RequestMethod.PATCH)
   public ResponseEntity<?> confirm(@RequestParam String token) {
     try {
-      service.confirm(token);
-      return noContent();
+      U user = service.confirm(token);
+      if (user == null) {
+        return noContent();
+      } else {
+        return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
+      }
     } catch (HttpStatusException e) {
       return e.toResponseEntity();
     }
