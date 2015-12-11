@@ -233,6 +233,23 @@ Example with a request on `http://domain.tld/context/url?param=value`:
  - `UrlInterceptor.FULL_URL`: http://domain.tld/context/url?param=value
  - `UrlInterceptor.SHORT_URL`: /url
 
+You can also register `org.jrestful.web.util.GzipFilter` to gzip your responses. It extends `net.sf.ehcache.constructs.web.filter.GzipFilter` to allow you to exclude URLs from beging gzipped:
+
+```xml
+<filter>
+  <filter-name>gzipFilter</filter-name>
+  <filter-class>org.jrestful.web.util.GzipFilter</filter-class>
+  <init-param>
+    <param-name>varyHeader</param-name>
+    <param-value>true</param-value>
+  </init-param>
+  <init-param>
+    <param-name>excludes</param-name>
+    <param-value>^/donotgzip(/.*)?$</param-value>
+  </init-param>
+</filter>
+```
+
 ### For the security
 
 A CSRF protection filter as available. To register it in your Spring Security context:
