@@ -76,7 +76,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
       @Override
       public void prepare(MimeMessage mimeMessage) throws Exception {
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
         if (emailFrom != null) {
           message.setFrom(emailFrom);
         }
