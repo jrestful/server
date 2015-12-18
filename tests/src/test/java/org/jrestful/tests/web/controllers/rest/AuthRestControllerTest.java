@@ -50,12 +50,20 @@ public class AuthRestControllerTest extends TestHelper {
   @Value("#{appProps['app.apiVersion']}")
   private String apiVersion;
 
+  @Value("#{emailProps['email.host']}")
+  private String emailHost;
+  
+  @Value("#{emailProps['email.port']}")
+  private int emailPort;
+
   @Value("#{secProps['auth.headerName']}")
   private String authHeader;
 
   @Override
   public void before() {
     super.before();
+    smtpServer.setHostname(emailHost);
+    smtpServer.setPort(emailPort);
     smtpServer.start();
   }
 
