@@ -45,8 +45,6 @@
     
   </mvc:interceptors>
   
-  <security:global-method-security pre-post-annotations="enabled" />
-  
   <task:annotation-driven />
 
 </beans>
