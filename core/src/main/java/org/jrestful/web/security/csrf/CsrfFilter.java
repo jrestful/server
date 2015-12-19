@@ -73,12 +73,13 @@ public class CsrfFilter extends OncePerRequestFilter {
       IOException {
     boolean accessDenied = false;
     if (requireCsrfProtectionMatcher.matches(request)) {
+      LOGGER.debug("Checking CSRF tokens from request");
       String header = request.getHeader(headerName);
       String cookie = HttpUtils.readCookie(request, cookieName);
       accessDenied = header == null || !header.equals(cookie);
     }
     if (accessDenied) {
-      LOGGER.error("Missing or non-matching CSRF token for URL " + request.getRequestURL());
+      LOGGER.error("Missing or non-matching CSRF tokens for URL " + request.getRequestURL());
       accessDeniedHandler.handle(request, response, new AccessDeniedException("Missing or non-matching CSRF token"));
     } else {
       filterChain.doFilter(request, response);

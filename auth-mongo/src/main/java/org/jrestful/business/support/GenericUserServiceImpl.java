@@ -17,6 +17,8 @@ import org.jrestful.data.documents.support.GenericUser;
 import org.jrestful.data.repositories.support.GenericUserRepository;
 import org.jrestful.util.EmailUtils;
 import org.jrestful.util.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 // TODO delete associated tokens when deleting a user
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
     GenericSequencedDocumentServiceImpl<R, U> implements GenericUserService<U> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenericUserServiceImpl.class);
 
   private interface TokenEmailPreparator {
 
@@ -105,10 +109,12 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U signUp(U payload) throws HttpStatusException {
+    LOGGER.debug("New user tries to sign up");
     validateSignUp(payload);
     prepareSignUp(payload);
     U user = insert(payload);
     if (user != null && !user.isEnabled()) {
+      LOGGER.info("User " + user.getId() + " successfuly created, sending email to confirm the account");
       UserToken userToken = userTokenService.createAndSave(user, UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, RandomUtils.NUMBERS,
           EMAIL_CONFIRMATION_TOKEN_LENGTH);
       sendTokenEmail(user, userToken, new TokenEmailPreparator() {
@@ -119,6 +125,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         }
 
       });
+      LOGGER.debug("Confirmation email sent to user " + user.getId());
     }
     return user;
   }
@@ -155,6 +162,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
       switch (userToken.getType()) {
 
       case SIGN_UP_EMAIL_CONFIRMATION:
+        LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
         U user = findOne(userToken.getUserId());
         if (user == null) {
           throw new HttpStatusException(HttpStatus.GONE);
@@ -163,6 +171,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         } else {
           user.setEnabled(true);
           user = save(user);
+          LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
         }
         userTokenService.delete(userToken);
         return user;

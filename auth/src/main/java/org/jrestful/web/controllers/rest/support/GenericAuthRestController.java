@@ -14,6 +14,8 @@ import org.jrestful.business.support.GenericAuthUserService;
 import org.jrestful.web.beans.AuthUserProfile;
 import org.jrestful.web.beans.RestResource;
 import org.jrestful.web.security.auth.CurrentUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public abstract class GenericAuthRestController<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
     GenericRestController {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenericAuthRestController.class);
 
   protected final S service;
 
@@ -43,6 +47,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
       user = service.signUp(user);
       return created(new RestResource<>(user, link(to(getClass()).getProfile())));
     } catch (HttpStatusException e) {
+      LOGGER.error("An error occurred while signing up a user", e);
       return e.toResponseEntity();
     }
   }
@@ -57,6 +62,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
         return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
       }
     } catch (HttpStatusException e) {
+      LOGGER.error("An error occurred while confirming a token", e);
       return e.toResponseEntity();
     }
   }

@@ -14,6 +14,8 @@ import org.jrestful.business.support.GenericAuthUserService;
 import org.jrestful.util.JsonUtils;
 import org.jrestful.web.beans.EmailPassword;
 import org.jrestful.web.security.auth.token.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> extends AbstractAuthenticationProcessingFilter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SignInFilter.class);
 
   private static class HttpStatusException extends AuthenticationException {
 
@@ -63,6 +67,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException, ServletException {
+      LOGGER.error("Authentication failed", exception);
       if (exception instanceof HttpStatusException) {
         sendError(response, ((HttpStatusException) exception).getStatus(), exception.getMessage());
       } else if (exception.getCause() instanceof DisabledException) {
@@ -106,6 +111,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     if (input == null) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
+      LOGGER.debug("Trying to authenticate user " + input.getEmail());
       U user = userService.findOneByEmail(input.getEmail());
       K id = user == null ? null : user.getId();
       String password = input.getPassword();
@@ -123,6 +129,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     U user = (U) authentication.getDetails();
     tokenService.write(user, response);
     SecurityContextHolder.getContext().setAuthentication(authentication);
+    LOGGER.info("User " + user.getId() + " successfully signed in");
   }
 
 }

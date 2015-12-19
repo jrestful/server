@@ -41,6 +41,7 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
       initialize(collectionName);
       sequence = findNext(collectionName);
     }
+    LOGGER.debug("Next sequence for collection " + collectionName + ": " + sequence.getValue());
     return sequence;
   }
 

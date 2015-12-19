@@ -31,9 +31,4 @@ public class Token {
     return id != null && expirationDate != null && new Date().before(expirationDate);
   }
 
-  @Override
-  public String toString() {
-    return id.toString();
-  }
-
 }

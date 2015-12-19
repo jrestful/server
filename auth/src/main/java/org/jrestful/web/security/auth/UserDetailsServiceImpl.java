@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.jrestful.business.converters.UserIdConverter;
 import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 @Service("userDetailsService")
 public class UserDetailsServiceImpl<U extends GenericAuthUser<K>, K extends Serializable> implements UserDetailsService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
   private final GenericAuthUserService<U, K> userService;
 
@@ -37,6 +41,7 @@ public class UserDetailsServiceImpl<U extends GenericAuthUser<K>, K extends Seri
       throw new UsernameNotFoundException("No user found with id " + id);
     }
     detailsChecker.check(user);
+    LOGGER.debug("User " + id + " successfully loaded");
     return user;
   }
 

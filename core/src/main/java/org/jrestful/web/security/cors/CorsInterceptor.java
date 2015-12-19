@@ -3,6 +3,8 @@ package org.jrestful.web.security.cors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 @Component
 public class CorsInterceptor extends HandlerInterceptorAdapter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(CorsInterceptor.class);
 
   private final String allowOrigin;
 
@@ -35,6 +39,7 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     if (allowOrigin != null) {
+      LOGGER.debug("Adding CORS headers to response");
       response.setHeader("Access-Control-Allow-Origin", allowOrigin);
       response.setHeader("Access-Control-Allow-Methods", allowMethods);
       if (allowHeaders != null) {

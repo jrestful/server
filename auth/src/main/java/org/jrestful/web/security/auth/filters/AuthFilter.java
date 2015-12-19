@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.web.security.auth.token.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,8 @@ import org.springframework.web.filter.GenericFilterBean;
 
 @Component
 public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> extends GenericFilterBean {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(AuthFilter.class);
 
   private final TokenService<U, K> tokenService;
 
@@ -35,6 +39,7 @@ public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> ex
       AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getId(), user.getPassword(), user.getAuthorities());
       authentication.setDetails(user);
       SecurityContextHolder.getContext().setAuthentication(authentication);
+      LOGGER.debug("User " + user.getId() + " successfully authenticated");
     }
     chain.doFilter(request, response);
   }

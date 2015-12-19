@@ -31,7 +31,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
   private final UserIdConverter<K> userIdConverter;
 
   private final String cookieName;
-  
+
   private final boolean securedCookie;
 
   private final String headerName;
@@ -41,7 +41,8 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
   @Autowired
   public TokenService(GenericAuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
       @Value("#{secProps['auth.headerName']}") String headerName, @Value("#{secProps['auth.cookieName']}") String cookieName,
-      @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie, @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
+      @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie,
+      @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;
@@ -63,6 +64,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
     }
+    LOGGER.debug("New token added to response");
   }
 
   public U read(HttpServletRequest request) {
@@ -73,8 +75,11 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
     if (tokenString != null) {
       Token tokenObject = tokenMapper.deserialize(tokenString);
       if (tokenObject != null) {
-        LOGGER.debug("Authentication token found: " + tokenObject);
-        return userService.findOne(userIdConverter.convert(tokenObject.getId()));
+        U user = userService.findOne(userIdConverter.convert(tokenObject.getId()));
+        if (user != null) {
+          LOGGER.debug("Valid token found in request");
+        }
+        return user;
       }
     }
     return null;
