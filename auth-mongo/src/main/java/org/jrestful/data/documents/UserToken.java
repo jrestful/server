@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "userTokens")
+// TODO CompoundIndex
 public class UserToken extends GenericDocument {
 
   private static final long serialVersionUID = 1L;
