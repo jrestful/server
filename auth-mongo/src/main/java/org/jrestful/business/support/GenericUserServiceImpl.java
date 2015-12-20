@@ -196,9 +196,9 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   }
 
   @Override
-  public void delete(U document) {
-    userTokenService.deleteByUserId(document.getId());
-    super.delete(document);
+  public void delete(U user) {
+    userTokenService.deleteByUserId(user.getId());
+    super.delete(user);
   }
 
   @Override
