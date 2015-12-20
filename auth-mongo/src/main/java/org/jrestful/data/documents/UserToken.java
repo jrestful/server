@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "userTokens")
+@Document(collection = "usersTokens")
 @CompoundIndex(name = "unique_userId_type", def = "{'userId': 1, 'type': 1}", unique = true)
 public class UserToken extends GenericDocument {
 
