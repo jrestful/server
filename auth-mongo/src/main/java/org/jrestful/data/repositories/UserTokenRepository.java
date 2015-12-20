@@ -9,4 +9,6 @@ public interface UserTokenRepository extends GenericDocumentRepository<UserToken
 
   UserToken findOneByToken(String token);
 
+  int deleteByUserId(String userId);
+
 }

@@ -10,4 +10,6 @@ public interface UserTokenService extends GenericDocumentService<UserToken> {
 
   <U extends GenericUser> UserToken createAndSave(U user, UserToken.Type type, String alphabet, int length);
 
+  int deleteByUserId(String userId);
+
 }

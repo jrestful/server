@@ -29,7 +29,6 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
-// TODO delete associated tokens when deleting a user
 public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>, U extends GenericUser> extends
     GenericSequencedDocumentServiceImpl<R, U> implements GenericUserService<U> {
 
@@ -180,6 +179,41 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         throw new IllegalStateException("User token type " + userToken.getType() + " not managed");
       }
     }
+  }
+
+  @Override
+  public void delete(Iterable<U> users) {
+    for (U user : users) {
+      userTokenService.deleteByUserId(user.getId());
+    }
+    super.delete(users);
+  }
+
+  @Override
+  public void delete(String id) {
+    userTokenService.deleteByUserId(id);
+    super.delete(id);
+  }
+
+  @Override
+  public void delete(U document) {
+    userTokenService.deleteByUserId(document.getId());
+    super.delete(document);
+  }
+
+  @Override
+  public void deleteAll() {
+    userTokenService.deleteAll();
+    super.deleteAll();
+  }
+
+  @Override
+  public int deleteBySequence(long sequence) {
+    U user = findOneBySequence(sequence);
+    if (user != null) {
+      userTokenService.deleteByUserId(user.getId());
+    }
+    return super.deleteBySequence(sequence);
   }
 
 }

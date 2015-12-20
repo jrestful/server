@@ -42,4 +42,9 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
     }
   }
 
+  @Override
+  public int deleteByUserId(String userId) {
+    return repository.deleteByUserId(userId);
+  }
+
 }
