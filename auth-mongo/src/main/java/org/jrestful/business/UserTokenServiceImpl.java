@@ -38,7 +38,7 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
       try {
         return save(token);
       } catch (DuplicateKeyException e) {
-        if (e.getMessage().contains("db.userTokens.unique_token")) {
+        if (e.getMessage().contains("unique_token")) {
           // generate another token automatically
         } else {
           throw e;
