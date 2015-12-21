@@ -32,20 +32,26 @@ import org.jsoup.nodes.Document;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.subethamail.wiser.Wiser;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 
 public class AuthRestControllerTest extends TestHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestControllerTest.class);
 
   private final Wiser smtpServer = new Wiser();
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Value("#{appProps['app.apiVersion']}")
   private String apiVersion;
@@ -339,13 +345,41 @@ public class AuthRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.anonymous", is(false))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/auth")));
 
-    // making access token invalid
-    Thread.sleep(1000);
+    // create another user
+    User anotherUser = new User();
+    anotherUser.setEmail("another.user@jrestful.org");
+    anotherUser.setPassword(passwordEncoder.encode("jrestful"));
+    anotherUser.setRoles(Lists.newArrayList("ROLE_ADMIN"));
+    anotherUser.setCity("Springfield");
+    anotherUser.setEnabled(true);
+    anotherUser = userService.insert(anotherUser);
+
+    // login with another user
+    resultActions = mockMvc.perform( //
+        put("/api/v" + apiVersion + "/auth") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(new EmailPassword("another.user@jrestful.org", "jrestful")).asString()));
+    String anotherAccessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    String anotherRefreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(anotherAccessToken);
+    assertNotNull(anotherRefreshToken);
+
+    // making access tokens invalid
+    Thread.sleep(1100);
 
     // check profile with invalid access token
     resultActions = mockMvc.perform( //
         get("/api/v" + apiVersion + "/auth") //
             .header(accessTokenHeaderName, accessToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(true)));
+
+    // check profile with invalid access token but valid refresh token that belongs to another user
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, anotherRefreshToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(jsonPath("$.anonymous", is(true)));
@@ -381,8 +415,8 @@ public class AuthRestControllerTest extends TestHelper {
     resultActions //
         .andExpect(jsonPath("$.anonymous", is(true)));
     
-    // making refresh token valid
-    Thread.sleep(1000);
+    // making refresh tokens valid
+    Thread.sleep(1100);
 
     // check profile with invalid access token and valid new refresh token
     resultActions = mockMvc.perform( //

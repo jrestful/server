@@ -68,10 +68,6 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
   }
 
   public void write(U user, HttpServletResponse response) {
-    writeAccessToken(user, response);
-  }
-
-  private void writeAccessToken(U user, HttpServletResponse response) {
     Date accessTokenExpirationDate = DateUtils.addToNow(Calendar.SECOND, accessTokenLifetime);
     AccessToken accessTokenObject = new AccessToken(user.getId().toString(), accessTokenExpirationDate);
     String accessTokenString = tokenMapper.serialize(accessTokenObject);
@@ -92,7 +88,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
 
   private void writeRefreshToken(U user, Date accessTokenExpirationDate, HttpServletResponse response) {
     Date refreshTokenExpirationDate = refreshTokenLifetime == -1 ? null : DateUtils.add(accessTokenExpirationDate, Calendar.SECOND, refreshTokenLifetime);
-    RefreshToken refreshTokenObject = new RefreshToken(user.getId().toString(), accessTokenExpirationDate, refreshTokenExpirationDate);
+    RefreshToken refreshTokenObject = new RefreshToken(accessTokenExpirationDate, refreshTokenExpirationDate);
     String refreshTokenString = tokenMapper.serialize(refreshTokenObject);
     HttpUtils.writeHeader(response, refreshTokenHeaderName, refreshTokenString);
     LOGGER.debug("New refresh token added to response header " + refreshTokenHeaderName);
@@ -109,10 +105,6 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
   }
 
   public U read(HttpServletRequest request, HttpServletResponse response) {
-    return readAccessToken(request, response);
-  }
-  
-  private U readAccessToken(HttpServletRequest request, HttpServletResponse response) {
     U user = null;
     String accessTokenString = HttpUtils.readHeader(request, accessTokenHeaderName);
     if (accessTokenString == null && accessTokenCookieName != null) {
@@ -145,19 +137,15 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       RefreshToken refreshTokenObject = tokenMapper.deserialize(refreshTokenString, RefreshToken.class);
       if (refreshTokenObject != null) {
         if (refreshTokenObject.isValid()) {
-          if (refreshTokenObject.getUserId().equals(accessTokenObject.getUserId())) {
-            user = userService.findOneByRefreshToken(refreshTokenString);
-            if (user != null) {
-              if (refreshTokenObject.getUserId().equals(user.getId())) {
-                LOGGER.debug("Valid refresh token found in request");
-                write(user, response);
-              } else {
-                LOGGER.warn("Refresh token does not match with database entry: " + refreshTokenObject.getUserId() + " vs " + user.getId());
-                user = null;
-              }
+          user = userService.findOneByRefreshToken(refreshTokenString);
+          if (user != null) {
+            if (user.getId().equals(accessTokenObject.getUserId())) {
+              LOGGER.debug("Valid refresh token found in request");
+              write(user, response);
+            } else {
+              LOGGER.warn("Refresh token does not match with access token: " + user.getId() + " vs " + accessTokenObject.getUserId());
+              user = null;
             }
-          } else {
-            LOGGER.warn("Refresh token does not match with access token: " + refreshTokenObject.getUserId() + " vs " + accessTokenObject.getUserId());
           }
         } else {
           LOGGER.debug("Invalid refresh token found in request");

@@ -9,9 +9,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AccessToken extends Token {
 
+  private final String userId;
+
   @JsonCreator
   public AccessToken(@JsonProperty("userId") String userId, @JsonProperty("expirationDate") Date expirationDate) {
-    super(userId, expirationDate);
+    super(expirationDate);
+    this.userId = userId;
+  }
+
+  public String getUserId() {
+    return userId;
   }
 
   @Override

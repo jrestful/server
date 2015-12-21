@@ -6,17 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class Token {
 
-  protected final String userId;
-
   protected final Date expirationDate;
   
-  public Token(String userId, Date expirationDate) {
-    this.userId = userId;
+  public Token(Date expirationDate) {
     this.expirationDate = expirationDate;
-  }
-
-  public String getUserId() {
-    return userId;
   }
 
   public Date getExpirationDate() {
