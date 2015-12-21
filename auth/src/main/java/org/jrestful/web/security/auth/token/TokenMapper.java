@@ -43,26 +43,20 @@ public class TokenMapper {
 
   public String serialize(Token tokenObject) {
     byte[] tokenBytes = JsonUtils.toJson(tokenObject).asBytes();
-    byte[] hash = createHmac(tokenBytes);
-    StringBuilder builder = new StringBuilder();
-    builder.append(Base64Utils.encode(tokenBytes).asString());
-    builder.append(SEPARATOR);
-    builder.append(Base64Utils.encode(hash).asString());
-    return builder.toString();
+    return new StringBuilder() //
+        .append(Base64Utils.encode(tokenBytes).asString()) //
+        .append(SEPARATOR) //
+        .append(Base64Utils.encode(createHmac(tokenBytes)).asString()) //
+        .toString();
   }
 
-  public Token deserialize(String tokenString) {
+  public <T extends Token> T deserialize(String tokenString, Class<T> tokenType) {
     String[] parts = tokenString.split(Pattern.quote(SEPARATOR), -1);
     if (parts.length == 2 && parts[0].length() > 0 && parts[1].length() > 0) {
       try {
         byte[] tokenBytes = Base64Utils.decode(parts[0]).asBytes();
-        byte[] hash = Base64Utils.decode(parts[1]).asBytes();
-        boolean validHash = Arrays.equals(createHmac(tokenBytes), hash);
-        if (validHash) {
-          Token tokenObject = JsonUtils.fromJson(tokenBytes, Token.class);
-          if (tokenObject != null && tokenObject.isValid()) {
-            return tokenObject;
-          }
+        if (Arrays.equals(createHmac(tokenBytes), Base64Utils.decode(parts[1]).asBytes())) {
+          return JsonUtils.fromJson(tokenBytes, tokenType);
         }
       } catch (IllegalArgumentException e) {
         LOGGER.warn("Authentication tampering attempt");

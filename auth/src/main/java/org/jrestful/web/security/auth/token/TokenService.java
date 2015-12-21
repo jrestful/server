@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
+  
+  private static final int TEN_YEARS = 10 * 365 * 24 * 60 * 60;
 
   private final GenericAuthUserService<U, K> userService;
 
@@ -30,59 +32,139 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
 
   private final UserIdConverter<K> userIdConverter;
 
-  private final String cookieName;
+  private final String accessTokenHeaderName;
+
+  private final String accessTokenCookieName;
+
+  private final int accessTokenLifetime;
+
+  private final String refreshTokenHeaderName;
+
+  private final String refreshTokenCookieName;
+
+  private final int refreshTokenLifetime;
 
   private final boolean securedCookie;
 
-  private final String headerName;
-
-  private final int tokenLifetime;
-
   @Autowired
   public TokenService(GenericAuthUserService<U, K> userService, TokenMapper tokenMapper, UserIdConverter<K> userIdConverter,
-      @Value("#{secProps['auth.headerName']}") String headerName, @Value("#{secProps['auth.cookieName']}") String cookieName,
-      @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie,
-      @Value("#{secProps['auth.tokenLifetime'] ?: 86400}") int tokenLifetime) {
+      @Value("#{secProps['auth.accessTokenHeaderName']}") String accessTokenHeaderName,
+      @Value("#{secProps['auth.accessTokenCookieName']}") String accessTokenCookieName,
+      @Value("#{secProps['auth.accessTokenLifetime'] ?: 30 * 60}") int accessTokenLifetime,
+      @Value("#{secProps['auth.refreshTokenHeaderName']}") String refreshTokenHeaderName,
+      @Value("#{secProps['auth.refreshTokenCookieName']}") String refreshTokenCookieName,
+      @Value("#{secProps['auth.refreshTokenLifetime'] ?: 10 * 24 * 60 * 60}") int refreshTokenLifetime,
+      @Value("#{secProps['auth.securedCookie'] ?: true}") boolean securedCookie) {
     this.userService = userService;
     this.tokenMapper = tokenMapper;
     this.userIdConverter = userIdConverter;
-    this.headerName = headerName;
-    this.cookieName = cookieName;
+    this.accessTokenHeaderName = accessTokenHeaderName;
+    this.accessTokenCookieName = accessTokenCookieName;
+    this.accessTokenLifetime = accessTokenLifetime;
+    this.refreshTokenHeaderName = refreshTokenHeaderName;
+    this.refreshTokenCookieName = refreshTokenCookieName;
+    this.refreshTokenLifetime = refreshTokenLifetime;
     this.securedCookie = securedCookie;
-    this.tokenLifetime = tokenLifetime;
   }
 
   public void write(U user, HttpServletResponse response) {
-    Date expirationDate = DateUtils.addToNow(Calendar.SECOND, tokenLifetime);
-    Token tokenObject = new Token(user.getId().toString(), expirationDate);
-    String tokenString = tokenMapper.serialize(tokenObject);
-    HttpUtils.writeHeader(response, headerName, tokenString);
-    if (cookieName != null) {
-      Cookie cookie = HttpUtils.writeCookie(response, cookieName, tokenString);
-      cookie.setMaxAge(tokenLifetime);
+    writeAccessToken(user, response);
+  }
+
+  private void writeAccessToken(U user, HttpServletResponse response) {
+    Date accessTokenExpirationDate = DateUtils.addToNow(Calendar.SECOND, accessTokenLifetime);
+    AccessToken accessTokenObject = new AccessToken(user.getId().toString(), accessTokenExpirationDate);
+    String accessTokenString = tokenMapper.serialize(accessTokenObject);
+    HttpUtils.writeHeader(response, accessTokenHeaderName, accessTokenString);
+    LOGGER.debug("New access token added to response header " + accessTokenHeaderName);
+    if (accessTokenCookieName != null) {
+      Cookie cookie = HttpUtils.writeCookie(response, accessTokenCookieName, accessTokenString);
+      cookie.setMaxAge(accessTokenLifetime);
       cookie.setPath("/");
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
+      LOGGER.debug("New access token added to response cookie " + accessTokenCookieName);
     }
-    LOGGER.debug("New token added to response");
+    if (refreshTokenHeaderName != null) {
+      writeRefreshToken(user, accessTokenExpirationDate, response);
+    }
   }
 
-  public U read(HttpServletRequest request) {
-    String tokenString = HttpUtils.readHeader(request, headerName);
-    if (tokenString == null && cookieName != null) {
-      tokenString = HttpUtils.readCookie(request, cookieName);
+  private void writeRefreshToken(U user, Date accessTokenExpirationDate, HttpServletResponse response) {
+    Date refreshTokenExpirationDate = refreshTokenLifetime == -1 ? null : DateUtils.add(accessTokenExpirationDate, Calendar.SECOND, refreshTokenLifetime);
+    RefreshToken refreshTokenObject = new RefreshToken(user.getId().toString(), accessTokenExpirationDate, refreshTokenExpirationDate);
+    String refreshTokenString = tokenMapper.serialize(refreshTokenObject);
+    HttpUtils.writeHeader(response, refreshTokenHeaderName, refreshTokenString);
+    LOGGER.debug("New refresh token added to response header " + refreshTokenHeaderName);
+    if (refreshTokenCookieName != null) {
+      Cookie cookie = HttpUtils.writeCookie(response, refreshTokenCookieName, refreshTokenString);
+      cookie.setMaxAge(refreshTokenLifetime == -1 ? TEN_YEARS : accessTokenLifetime + refreshTokenLifetime);
+      cookie.setPath("/");
+      cookie.setHttpOnly(true);
+      cookie.setSecure(securedCookie);
+      LOGGER.debug("New refresh token added to response cookie " + refreshTokenCookieName);
     }
-    if (tokenString != null) {
-      Token tokenObject = tokenMapper.deserialize(tokenString);
-      if (tokenObject != null) {
-        U user = userService.findOne(userIdConverter.convert(tokenObject.getId()));
-        if (user != null) {
-          LOGGER.debug("Valid token found in request");
+    userService.persistRefreshToken(user.getId(), refreshTokenString);
+    LOGGER.debug("New refresh token persisted");
+  }
+
+  public U read(HttpServletRequest request, HttpServletResponse response) {
+    return readAccessToken(request, response);
+  }
+  
+  private U readAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    U user = null;
+    String accessTokenString = HttpUtils.readHeader(request, accessTokenHeaderName);
+    if (accessTokenString == null && accessTokenCookieName != null) {
+      accessTokenString = HttpUtils.readCookie(request, accessTokenCookieName);
+    }
+    if (accessTokenString != null) {
+      AccessToken accessTokenObject = tokenMapper.deserialize(accessTokenString, AccessToken.class);
+      if (accessTokenObject != null) {
+        if (accessTokenObject.isValid()) {
+          LOGGER.debug("Valid access token found in request");
+          user = userService.findOne(userIdConverter.convert(accessTokenObject.getUserId()));
+        } else {
+          LOGGER.debug("Invalid access token found in request");
+          if (refreshTokenHeaderName != null) {
+            user = readRefreshToken(accessTokenObject, request, response);
+          }
         }
-        return user;
       }
     }
-    return null;
+    return user;
+  }
+  
+  private U readRefreshToken(AccessToken accessTokenObject, HttpServletRequest request, HttpServletResponse response) {
+    U user = null;
+    String refreshTokenString = HttpUtils.readHeader(request, refreshTokenHeaderName);
+    if (refreshTokenString == null && refreshTokenCookieName != null) {
+      refreshTokenString = HttpUtils.readCookie(request, refreshTokenCookieName);
+    }
+    if (refreshTokenString != null) {
+      RefreshToken refreshTokenObject = tokenMapper.deserialize(refreshTokenString, RefreshToken.class);
+      if (refreshTokenObject != null) {
+        if (refreshTokenObject.isValid()) {
+          if (refreshTokenObject.getUserId().equals(accessTokenObject.getUserId())) {
+            user = userService.findOneByRefreshToken(refreshTokenString);
+            if (user != null) {
+              if (refreshTokenObject.getUserId().equals(user.getId())) {
+                LOGGER.debug("Valid refresh token found in request");
+                write(user, response);
+              } else {
+                LOGGER.warn("Refresh token does not match with database entry: " + refreshTokenObject.getUserId() + " vs " + user.getId());
+                user = null;
+              }
+            }
+          } else {
+            LOGGER.warn("Refresh token does not match with access token: " + refreshTokenObject.getUserId() + " vs " + accessTokenObject.getUserId());
+          }
+        } else {
+          LOGGER.debug("Invalid refresh token found in request");
+        }
+      }
+    }
+    return user;
   }
 
 }

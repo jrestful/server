@@ -73,6 +73,12 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   public U findOneByEmail(String email) {
     return repository.findOneByEmail(email);
   }
+  
+  @Override
+  public U findOneByRefreshToken(String refreshToken) {
+    UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.REFRESH_TOKEN, refreshToken);
+    return userToken != null ? findOne(userToken.getUserId()) : null;
+  }
 
   private void sendTokenEmail(final U user, final UserToken userToken, final TokenEmailPreparator preparator) {
     MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
@@ -176,9 +182,19 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         return user;
 
       default:
-        throw new IllegalStateException("User token type " + userToken.getType() + " not managed");
+        throw new IllegalStateException("User token type " + userToken.getType() + " not confirmable");
       }
     }
+  }
+  
+  @Override
+  public void persistRefreshToken(String userId, String refreshToken) {
+    userTokenService.deleteByUserIdAndType(userId, UserToken.Type.REFRESH_TOKEN);
+    UserToken userToken = new UserToken();
+    userToken.setUserId(userId);
+    userToken.setType(UserToken.Type.REFRESH_TOKEN);
+    userToken.setToken(refreshToken);
+    userTokenService.save(userToken);
   }
 
   @Override

@@ -28,6 +28,11 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
   }
 
   @Override
+  public UserToken findOneByTypeAndToken(Type type, String token) {
+    return repository.findOneByTypeAndToken(type, token);
+  }
+
+  @Override
   public <U extends GenericUser> UserToken createAndSave(U user, Type type, String alphabet, int length) {
     LOGGER.debug("Creating token " + type + " for user " + user.getId());
     UserToken token = new UserToken();
@@ -38,7 +43,7 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
       try {
         return save(token);
       } catch (DuplicateKeyException e) {
-        if (e.getMessage().contains("unique_token")) {
+        if (e.getMessage().contains("unique_type_token")) {
           // generate another token automatically
         } else {
           throw e;
@@ -50,6 +55,11 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
   @Override
   public int deleteByUserId(String userId) {
     return repository.deleteByUserId(userId);
+  }
+
+  @Override
+  public int deleteByUserIdAndType(String userId, Type type) {
+    return repository.deleteByUserIdAndType(userId, type);
   }
 
 }

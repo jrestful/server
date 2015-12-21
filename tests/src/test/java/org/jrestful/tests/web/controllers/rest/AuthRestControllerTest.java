@@ -56,8 +56,11 @@ public class AuthRestControllerTest extends TestHelper {
   @Value("#{emailProps['email.port']}")
   private int emailPort;
 
-  @Value("#{secProps['auth.headerName']}")
-  private String authHeader;
+  @Value("#{secProps['auth.accessTokenHeaderName']}")
+  private String accessTokenHeaderName;
+
+  @Value("#{secProps['auth.refreshTokenHeaderName']}")
+  private String refreshTokenHeaderName;
 
   @Override
   public void before() {
@@ -298,10 +301,12 @@ public class AuthRestControllerTest extends TestHelper {
         put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
-    String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
-    assertNotNull(authToken);
+    String accessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    String refreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(accessToken);
+    assertNotNull(refreshToken);
 
-    // check profile (without token)
+    // check profile without access token
     resultActions = mockMvc.perform( //
         get("/api/v" + apiVersion + "/auth"));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
@@ -316,10 +321,10 @@ public class AuthRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.anonymous", is(true))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/auth")));
 
-    // check profile (with token)
+    // check profile with access token only
     resultActions = mockMvc.perform( //
         get("/api/v" + apiVersion + "/auth") //
-            .header(authHeader, authToken));
+            .header(accessTokenHeaderName, accessToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.OK.value())) //
@@ -332,6 +337,72 @@ public class AuthRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.roles[0]", is("ROLE_USER"))) //
         .andExpect(jsonPath("$.anonymous", is(false))) //
         .andExpect(jsonPath("$._links.self.href", is("http://localhost/api/v" + apiVersion + "/auth")));
+
+    // making access token invalid
+    Thread.sleep(1000);
+
+    // check profile with invalid access token
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(true)));
+
+    // check profile with invalid access token but valid refresh token
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(false)));
+    String newAccessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    String newRefreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(newAccessToken);
+    assertNotNull(newRefreshToken);
+
+    // check profile with invalid access token and already used refresh token
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(true)));
+
+    // check profile with invalid access token and not yet valid new refresh token
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, newRefreshToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(true)));
+    
+    // making refresh token valid
+    Thread.sleep(1000);
+
+    // check profile with invalid access token and valid new refresh token
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, newRefreshToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(false)));
+    newAccessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    newRefreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(newAccessToken);
+    assertNotNull(newRefreshToken);
+
+    // check profile with new access token only
+    resultActions = mockMvc.perform( //
+        get("/api/v" + apiVersion + "/auth") //
+            .header(accessTokenHeaderName, newAccessToken));
+    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
+    resultActions //
+        .andExpect(jsonPath("$.anonymous", is(false)));
 
   }
 

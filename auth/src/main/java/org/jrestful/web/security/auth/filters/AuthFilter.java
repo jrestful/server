@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.web.security.auth.token.TokenService;
@@ -34,7 +35,7 @@ public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> ex
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    U user = tokenService.read((HttpServletRequest) request);
+    U user = tokenService.read((HttpServletRequest) request, (HttpServletResponse) response);
     if (user != null) {
       AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getId(), user.getPassword(), user.getAuthorities());
       authentication.setDetails(user);

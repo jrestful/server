@@ -40,8 +40,11 @@ public class ArticleRestControllerTest extends TestHelper {
   @Value("#{appProps['app.apiVersion']}")
   private String apiVersion;
 
-  @Value("#{secProps['auth.headerName']}")
-  private String authHeader;
+  @Value("#{secProps['auth.accessTokenHeaderName']}")
+  private String accessTokenHeaderName;
+
+  @Value("#{secProps['auth.refreshTokenHeaderName']}")
+  private String refreshTokenHeaderName;
 
   @Test
   public void testCrud() throws Exception {
@@ -72,15 +75,18 @@ public class ArticleRestControllerTest extends TestHelper {
         put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(emailPassword).asString()));
-    String authToken = resultActions.andReturn().getResponse().getHeader(authHeader);
-    assertNotNull(authToken);
+    String accessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    String refreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(accessToken);
+    assertNotNull(refreshToken);
 
     // create article1
     article1 = new Article("article1");
     resultActions = mockMvc.perform( //
         post("/api/v" + apiVersion + "/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
@@ -106,7 +112,8 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         post("/api/v" + apiVersion + "/articles") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
@@ -140,7 +147,8 @@ public class ArticleRestControllerTest extends TestHelper {
         put("/api/v" + apiVersion + "/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article1).asString()));
     resultActions //
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
@@ -152,7 +160,8 @@ public class ArticleRestControllerTest extends TestHelper {
         put("/api/v" + apiVersion + "/articles/{sequence}", new Object[] { article1.getSequence() }) //
             .param("by", "sequence") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article1).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article1 = articleService.findByTitle("article1");
@@ -174,7 +183,8 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/articles/{id}", new Object[] { article2.getId() }) //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article2).asString()));
     resultActions //
         .andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
@@ -185,7 +195,8 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         put("/api/v" + apiVersion + "/articles/{id}", new Object[] { article2.getId() }) //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
-            .header(authHeader, authToken) //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken) //
             .content(JsonUtils.toJson(article2).asString()));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     article2 = articleService.findByTitle("article2");
@@ -233,7 +244,8 @@ public class ArticleRestControllerTest extends TestHelper {
     // delete article1
     resultActions = mockMvc.perform( //
         delete("/api/v" + apiVersion + "/articles/{id}", new Object[] { article1.getId() }) //
-            .header(authHeader, authToken));
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
@@ -262,7 +274,8 @@ public class ArticleRestControllerTest extends TestHelper {
     resultActions = mockMvc.perform( //
         delete("/api/v" + apiVersion + "/articles/{sequence}", new Object[] { article2.getSequence() }) //
             .param("by", "sequence") //
-            .header(authHeader, authToken));
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
     LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     resultActions //
         .andExpect(status().is(HttpStatus.NO_CONTENT.value()));

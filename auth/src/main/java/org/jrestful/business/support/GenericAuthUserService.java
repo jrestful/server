@@ -10,8 +10,12 @@ public interface GenericAuthUserService<U extends GenericAuthUser<K>, K extends 
 
   U findOneByEmail(String email);
 
+  U findOneByRefreshToken(String refreshToken);
+
   U signUp(U user) throws HttpStatusException;
 
   U confirm(String token) throws HttpStatusException;
+
+  void persistRefreshToken(K userId, String refreshToken);
 
 }
