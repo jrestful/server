@@ -25,12 +25,12 @@ public class UserTokenRepositoryImpl extends GenericDocumentRepositoryImpl<UserT
 
   @Override
   public int deleteByUserId(String userId) {
-    return mongoOperations.findAllAndRemove(query(where("userId").is(userId)), documentClass).size();
+    return mongoOperations.remove(query(where("userId").is(userId)), documentClass).getN();
   }
 
   @Override
   public int deleteByUserIdAndType(String userId, Type type) {
-    return mongoOperations.findAllAndRemove(query(where("userId").is(userId).and("type").is(type)), documentClass).size();
+    return mongoOperations.remove(query(where("userId").is(userId).and("type").is(type)), documentClass).getN();
   }
 
 }
