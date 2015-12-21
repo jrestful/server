@@ -159,14 +159,12 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
 
   @Override
-  public U confirm(String token) throws HttpStatusException {
-    UserToken userToken = userTokenService.findOneByToken(token);
+  public U confirmSignUpEmail(String token) throws HttpStatusException {
+    UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else {
-      switch (userToken.getType()) {
-
-      case SIGN_UP_EMAIL_CONFIRMATION:
+      try {
         LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
         U user = findOne(userToken.getUserId());
         if (user == null) {
@@ -177,12 +175,10 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
           user.setEnabled(true);
           user = save(user);
           LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
+          return user;
         }
+      } finally {
         userTokenService.delete(userToken);
-        return user;
-
-      default:
-        throw new IllegalStateException("User token type " + userToken.getType() + " not confirmable");
       }
     }
   }

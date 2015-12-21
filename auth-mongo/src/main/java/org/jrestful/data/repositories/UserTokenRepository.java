@@ -8,9 +8,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface UserTokenRepository extends GenericDocumentRepository<UserToken> {
 
-  // TODO use findOneByTypeAndToken instead
-  UserToken findOneByToken(String token);
-
   UserToken findOneByTypeAndToken(Type type, String token);
 
   int deleteByUserId(String userId);

@@ -52,10 +52,10 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     }
   }
 
-  @RequestMapping(method = RequestMethod.PATCH)
-  public ResponseEntity<?> confirm(@RequestParam String token) {
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation")
+  public ResponseEntity<?> confirmSignUpEmail(@RequestParam String token) {
     try {
-      U user = service.confirm(token);
+      U user = service.confirmSignUpEmail(token);
       if (user == null) {
         return noContent();
       } else {

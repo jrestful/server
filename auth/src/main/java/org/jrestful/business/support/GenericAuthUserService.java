@@ -14,7 +14,7 @@ public interface GenericAuthUserService<U extends GenericAuthUser<K>, K extends 
 
   U signUp(U user) throws HttpStatusException;
 
-  U confirm(String token) throws HttpStatusException;
+  U confirmSignUpEmail(String token) throws HttpStatusException;
 
   void persistRefreshToken(K userId, String refreshToken);
 

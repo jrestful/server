@@ -272,6 +272,7 @@ public class AuthRestControllerTest extends TestHelper {
     // enable user
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "signUpEmailConfirmation") //
             .param("token", signUpEmailConfirmationToken));
     resultActions.andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
