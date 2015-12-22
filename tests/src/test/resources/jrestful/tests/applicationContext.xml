@@ -98,7 +98,7 @@
     </security:authentication-provider>
   </security:authentication-manager>
   
-  <security:http create-session="stateless" use-expressions="true" entry-point-ref="forbiddenEntryPoint">
+  <security:http create-session="stateless" use-expressions="true" entry-point-ref="authenticationExceptionResolver">
     <security:custom-filter ref="signInFilter" position="FORM_LOGIN_FILTER" />
     <security:custom-filter ref="authFilter" position="PRE_AUTH_FILTER" />
   </security:http>

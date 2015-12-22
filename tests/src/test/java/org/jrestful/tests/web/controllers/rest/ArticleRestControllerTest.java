@@ -58,7 +58,7 @@ public class ArticleRestControllerTest extends TestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(article1).asString()));
     resultActions //
-        .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
+        .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
     // create user
     User user = new User();
