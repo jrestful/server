@@ -1,1 +1,1 @@
-# auth
+# jrestful-auth

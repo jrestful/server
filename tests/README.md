@@ -1,3 +1,3 @@
-# tests
+# jrestful-tests
 
-Testing `jrestful` server, won't be deployed.
+Testing `jrestful-server`, won't be deployed.

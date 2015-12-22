@@ -1,1 +1,1 @@
-# auth-mongo
+# jrestful-auth-mongo

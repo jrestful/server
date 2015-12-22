@@ -1,10 +1,10 @@
-# mongo
+# jrestful-mongo
 
-`mongo` allows you to easily plug your application to a MongoDB database via Spring Data.
+`jrestful-mongo` allows you to easily plug your application to a MongoDB database via Spring Data.
 
 ## How to install it?
 
-**First, install the [`core` module](https://github.com/jrestful/server/tree/master/core).**
+**First, install the [`jrestful-core` module](https://github.com/jrestful/server/tree/master/core).**
 
 ### In your pom.xml
 
@@ -15,7 +15,7 @@ Add the dependency:
 
   <dependency>
     <groupId>org.jrestful</groupId>
-    <artifactId>mongo</artifactId>
+    <artifactId>jrestful-mongo</artifactId>
     <version>${jrestful.version}</version>
   </dependency>
 

@@ -1,10 +1,10 @@
-# seo
+# jrestful-seo
 
-`seo` improves your SEO by generating a sitemap via JAXB and prerendering pages for bots via PhantomJS and Selenium.
+`jrestful-seo` improves your SEO by generating a sitemap via JAXB and prerendering pages for bots via PhantomJS and Selenium.
 
 ## How to install it?
 
-**First, install the [`core` module](https://github.com/jrestful/server/tree/master/core).**
+**First, install the [`jrestful-core` module](https://github.com/jrestful/server/tree/master/core).**
 
 ### In your pom.xml
 
@@ -15,7 +15,7 @@ Add the dependency:
 
   <dependency>
     <groupId>org.jrestful</groupId>
-    <artifactId>seo</artifactId>
+    <artifactId>jrestful-seo</artifactId>
     <version>${jrestful.version}</version>
   </dependency>
 
