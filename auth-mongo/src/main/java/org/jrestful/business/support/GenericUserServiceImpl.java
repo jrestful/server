@@ -73,7 +73,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   public U findOneByEmail(String email) {
     return repository.findOneByEmail(email);
   }
-  
+
   @Override
   public U findOneByRefreshToken(String refreshToken) {
     UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.REFRESH_TOKEN, refreshToken);
@@ -113,7 +113,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   }
 
   @Override
-  public U signUp(U payload) throws HttpStatusException {
+  public U signUp(U payload) {
     LOGGER.debug("New user tries to sign up");
     validateSignUp(payload);
     prepareSignUp(payload);
@@ -135,7 +135,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     return user;
   }
 
-  protected void validateSignUp(U payload) throws HttpStatusException {
+  protected void validateSignUp(U payload) {
     payload.setName(StringUtils.trim(payload.getName()));
     payload.setEmail(StringUtils.trim(payload.getEmail()));
     if (StringUtils.isEmpty(payload.getName())) {
@@ -159,7 +159,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
 
   @Override
-  public U confirmSignUpEmail(String token) throws HttpStatusException {
+  public U confirmSignUpEmail(String token) {
     UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
@@ -182,7 +182,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
       }
     }
   }
-  
+
   @Override
   public void persistRefreshToken(String userId, String refreshToken) {
     userTokenService.deleteByUserIdAndType(userId, UserToken.Type.REFRESH_TOKEN);

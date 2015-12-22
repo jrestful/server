@@ -10,13 +10,11 @@ import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.support.GenericDocumentService;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.web.beans.PagedRestResources;
 import org.jrestful.web.beans.RestResource;
 import org.jrestful.web.beans.RestResources;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -98,17 +96,12 @@ public abstract class GenericDocumentRestController<S extends GenericDocumentSer
     if (document == null) {
       return notFound();
     } else {
-      try {
-        service.validatePayload(payload);
-        service.copyPayload(payload, document);
-        document = service.save(document);
-        RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
-        addAdditionalLinks(resource);
-        return ok(resource);
-      } catch (HttpStatusException e) {
-        LoggerFactory.getLogger(getClass()).error("An error occurred while updating document " + id, e);
-        return e.toResponseEntity();
-      }
+      service.validatePayload(payload);
+      service.copyPayload(payload, document);
+      document = service.save(document);
+      RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
+      addAdditionalLinks(resource);
+      return ok(resource);
     }
   }
 

@@ -21,7 +21,7 @@ public class ArticleServiceImpl extends GenericSequencedDocumentServiceImpl<Arti
   }
 
   @Override
-  public void validatePayload(Article payload) throws HttpStatusException {
+  public void validatePayload(Article payload) {
     payload.setTitle(StringUtils.trim(payload.getTitle()));
     if (StringUtils.isEmpty(payload.getTitle())) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_TITLE");

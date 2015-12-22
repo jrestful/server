@@ -6,11 +6,9 @@ import static org.jrestful.web.beans.RestResponse.ok;
 import static org.jrestful.web.util.hateoas.LinkBuilder.link;
 import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 
-import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.business.support.GenericSequencedDocumentService;
 import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.jrestful.web.beans.RestResource;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,17 +49,12 @@ public abstract class GenericSequencedDocumentRestController<S extends GenericSe
     if (document == null) {
       return notFound();
     } else {
-      try {
-        service.validatePayload(payload);
-        service.copyPayload(payload, document);
-        document = service.save(document);
-        RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
-        addAdditionalLinks(resource);
-        return ok(resource);
-      } catch (HttpStatusException e) {
-        LoggerFactory.getLogger(getClass()).error("An error occurred while updating document " + sequence, e);
-        return e.toResponseEntity();
-      }
+      service.validatePayload(payload);
+      service.copyPayload(payload, document);
+      document = service.save(document);
+      RestResource<D> resource = new RestResource<>(document, link(to(getClass()).get(document.getId())));
+      addAdditionalLinks(resource);
+      return ok(resource);
     }
   }
 

@@ -2,7 +2,6 @@ package org.jrestful.business.support;
 
 import java.util.List;
 
-import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.jrestful.data.repositories.support.GenericDocumentRepository;
 import org.springframework.data.domain.Page;
@@ -102,7 +101,7 @@ public abstract class GenericDocumentServiceImpl<R extends GenericDocumentReposi
   }
 
   @Override
-  public void validatePayload(D payload) throws HttpStatusException {
+  public void validatePayload(D payload) {
     // no-op, intended to be overridden
   }
 

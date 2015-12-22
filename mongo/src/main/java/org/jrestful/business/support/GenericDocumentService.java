@@ -2,7 +2,6 @@ package org.jrestful.business.support;
 
 import java.util.List;
 
-import org.jrestful.business.exceptions.HttpStatusException;
 import org.jrestful.data.documents.support.GenericDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +44,8 @@ public interface GenericDocumentService<D extends GenericDocument> extends Gener
   List<D> save(Iterable<D> documents);
 
   D save(D document);
-  
-  void validatePayload(D payload) throws HttpStatusException;
+
+  void validatePayload(D payload);
 
   void copyPayload(D fromPayload, D toDocument);
 

@@ -21,7 +21,7 @@ public class UserServiceImpl extends GenericUserServiceImpl<UserRepository, User
   }
 
   @Override
-  public void validateSignUp(User payload) throws HttpStatusException {
+  public void validateSignUp(User payload) {
     super.validateSignUp(payload);
     payload.setCity(StringUtils.trim(payload.getCity()));
     if (StringUtils.isEmpty(payload.getCity())) {
