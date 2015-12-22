@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +42,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     return ok(resource);
   }
 
+  @PreAuthorize("isAnonymous()")
   @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> signUp(@RequestBody U user) {
     try {
@@ -52,6 +54,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     }
   }
 
+  @PreAuthorize("isAnonymous()")
   @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation")
   public ResponseEntity<?> confirmSignUpEmail(@RequestParam String token) {
     try {
