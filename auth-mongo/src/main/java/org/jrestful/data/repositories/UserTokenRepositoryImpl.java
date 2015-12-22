@@ -19,8 +19,8 @@ public class UserTokenRepositoryImpl extends GenericDocumentRepositoryImpl<UserT
   }
 
   @Override
-  public UserToken findOneByTypeAndToken(Type type, String token) {
-    return mongoOperations.findOne(query(where("type").is(type).and("token").is(token)), documentClass);
+  public UserToken findOneByTypeAndTokenThenRemove(Type type, String token) {
+    return mongoOperations.findAndRemove(query(where("type").is(type).and("token").is(token)), documentClass);
   }
 
   @Override

@@ -23,8 +23,8 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
   }
 
   @Override
-  public UserToken findOneByTypeAndToken(Type type, String token) {
-    return repository.findOneByTypeAndToken(type, token);
+  public UserToken findOneByTypeAndTokenThenRemove(Type type, String token) {
+    return repository.findOneByTypeAndTokenThenRemove(type, token);
   }
 
   @Override

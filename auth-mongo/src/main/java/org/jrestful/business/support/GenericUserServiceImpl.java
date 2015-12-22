@@ -76,7 +76,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U findOneByRefreshToken(String refreshToken) {
-    UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.REFRESH_TOKEN, refreshToken);
+    UserToken userToken = userTokenService.findOneByTypeAndTokenThenRemove(UserToken.Type.REFRESH_TOKEN, refreshToken);
     return userToken != null ? findOne(userToken.getUserId()) : null;
   }
 
@@ -160,7 +160,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U confirmSignUpEmail(String token) {
-    UserToken userToken = userTokenService.findOneByTypeAndToken(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
+    UserToken userToken = userTokenService.findOneByTypeAndTokenThenRemove(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else {

@@ -7,7 +7,7 @@ import org.jrestful.data.documents.support.GenericUser;
 
 public interface UserTokenService extends GenericDocumentService<UserToken> {
 
-  UserToken findOneByTypeAndToken(Type type, String token);
+  UserToken findOneByTypeAndTokenThenRemove(Type type, String token);
 
   <U extends GenericUser> UserToken createAndSave(U user, UserToken.Type type, String alphabet, int length);
 

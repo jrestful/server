@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenService.class);
-  
+
   private static final int TEN_YEARS = 10 * 365 * 24 * 60 * 60;
 
   private final GenericAuthUserService<U, K> userService;
@@ -87,7 +87,8 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
   }
 
   private void writeRefreshToken(U user, Date accessTokenExpirationDate, HttpServletResponse response) {
-    Date refreshTokenExpirationDate = refreshTokenLifetime == -1 ? null : DateUtils.add(accessTokenExpirationDate, Calendar.SECOND, refreshTokenLifetime);
+    Date refreshTokenExpirationDate = refreshTokenLifetime == -1 ? null : DateUtils.add(accessTokenExpirationDate, Calendar.SECOND,
+        refreshTokenLifetime);
     RefreshToken refreshTokenObject = new RefreshToken(accessTokenExpirationDate, refreshTokenExpirationDate);
     String refreshTokenString = tokenMapper.serialize(refreshTokenObject);
     HttpUtils.writeHeader(response, refreshTokenHeaderName, refreshTokenString);
@@ -126,7 +127,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
     }
     return user;
   }
-  
+
   private U readRefreshToken(AccessToken accessTokenObject, HttpServletRequest request, HttpServletResponse response) {
     U user = null;
     String refreshTokenString = HttpUtils.readHeader(request, refreshTokenHeaderName);
@@ -146,6 +147,8 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
               LOGGER.warn("Refresh token does not match with access token: " + user.getId() + " vs " + accessTokenObject.getUserId());
               user = null;
             }
+          } else {
+            LOGGER.debug("Transient refresh token found in request");
           }
         } else {
           LOGGER.debug("Invalid refresh token found in request");
