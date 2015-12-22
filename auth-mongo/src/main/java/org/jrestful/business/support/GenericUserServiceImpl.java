@@ -164,21 +164,17 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else {
-      try {
-        LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
-        U user = findOne(userToken.getUserId());
-        if (user == null) {
-          throw new HttpStatusException(HttpStatus.GONE);
-        } else if (user.isEnabled()) {
-          throw new HttpStatusException(HttpStatus.CONFLICT);
-        } else {
-          user.setEnabled(true);
-          user = save(user);
-          LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
-          return user;
-        }
-      } finally {
-        userTokenService.delete(userToken);
+      LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
+      U user = findOne(userToken.getUserId());
+      if (user == null) {
+        throw new HttpStatusException(HttpStatus.GONE);
+      } else if (user.isEnabled()) {
+        throw new HttpStatusException(HttpStatus.CONFLICT);
+      } else {
+        user.setEnabled(true);
+        user = save(user);
+        LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
+        return user;
       }
     }
   }
