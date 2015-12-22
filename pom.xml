@@ -40,9 +40,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <github.global.server>github</github.global.server>
     <!-- main dependencies -->
-    <spring.version>4.1.7.RELEASE</spring.version>
-    <springSecurity.version>3.2.8.RELEASE</springSecurity.version>
-    <springData.version>1.8.0.RELEASE</springData.version>
+    <spring.version>4.1.9.RELEASE</spring.version>
+    <springSecurity.version>3.2.9.RELEASE</springSecurity.version>
+    <springData.version>1.8.2.RELEASE</springData.version>
     <mongo.version>2.13.3</mongo.version>
     <servlet.version>3.0.1</servlet.version>
   </properties>
