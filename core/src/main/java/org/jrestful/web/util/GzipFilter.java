@@ -30,7 +30,9 @@ public class GzipFilter extends net.sf.ehcache.constructs.web.filter.GzipFilter 
   @Override
   protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws Exception {
     if (isExcluded(request)) {
-      LOGGER.debug("URL " + request.getRequestURL() + " is excluded, writing without gzip compression");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("URL " + request.getRequestURL() + " is excluded, writing without gzip compression");
+      }
       chain.doFilter(request, response);
     } else {
       super.doFilter(request, response, chain);

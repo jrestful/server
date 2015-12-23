@@ -107,7 +107,9 @@ public class PrerenderInterceptor extends HandlerInterceptorAdapter {
     if (prerender && isPrerenderable(request) && isBot(request)) {
       String baseUrl = request.getAttribute(UrlInterceptor.BASE_URL).toString();
       String prerenderUri = request.getAttribute("prerenderUri").toString();
-      LOGGER.debug("A bot is requesting URL " + baseUrl + prerenderUri + ", prerendering needed");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("A bot is requesting URL " + baseUrl + prerenderUri + ", prerendering needed");
+      }
       try {
         Prerenderer prerenderer = new Prerenderer(prerenderedDir, driverService);
         prerenderer.prerender(baseUrl, prerenderUri, response);

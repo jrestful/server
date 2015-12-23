@@ -130,7 +130,9 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         }
 
       });
-      LOGGER.debug("Confirmation email sent to user " + user.getId());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Confirmation email sent to user " + user.getId());
+      }
     }
     return user;
   }
@@ -164,7 +166,9 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     if (userToken == null) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else {
-      LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
+      }
       U user = findOne(userToken.getUserId());
       if (user == null) {
         throw new HttpStatusException(HttpStatus.GONE);

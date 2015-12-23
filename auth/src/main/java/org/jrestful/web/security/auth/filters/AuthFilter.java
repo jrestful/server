@@ -40,7 +40,9 @@ public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> ex
       AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getId(), user.getPassword(), user.getAuthorities());
       authentication.setDetails(user);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      LOGGER.debug("User " + user.getId() + " successfully authenticated");
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("User " + user.getId() + " successfully authenticated");
+      }
     }
     chain.doFilter(request, response);
   }

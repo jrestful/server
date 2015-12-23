@@ -41,7 +41,9 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
       initialize(collectionName);
       sequence = findNext(collectionName);
     }
-    LOGGER.debug("Next sequence for collection " + collectionName + ": " + sequence.getValue());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Next sequence for collection " + collectionName + ": " + sequence.getValue());
+    }
     return sequence;
   }
 
@@ -69,7 +71,9 @@ public final class SequenceRepositoryImpl extends GenericDocumentRepositoryImpl<
     sequence.setValue(0l);
     try {
       insert(sequence);
-      LOGGER.debug("Sequence initialized for collection " + collectionName);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Sequence initialized for collection " + collectionName);
+      }
     } catch (DuplicateKeyException ignore) {
       // another thread initialized this collection sequence
     }

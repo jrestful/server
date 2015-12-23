@@ -29,7 +29,9 @@ public class UserTokenServiceImpl extends GenericDocumentServiceImpl<UserTokenRe
 
   @Override
   public <U extends GenericUser> UserToken createAndSave(U user, Type type, String alphabet, int length) {
-    LOGGER.debug("Creating token " + type + " for user " + user.getId());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Creating token " + type + " for user " + user.getId());
+    }
     UserToken token = new UserToken();
     token.setUserId(user.getId());
     token.setType(type);

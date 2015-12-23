@@ -22,8 +22,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 /**
- * Prerenders pages when bots are requesting them, so that they can see the
- * fully loaded content. Prerendered pages will be cached for one day.
+ * Prerenders pages when bots are requesting them, so that they can see the fully loaded content. Prerendered pages will be cached for one day.
  */
 public class Prerenderer {
 
@@ -54,11 +53,15 @@ public class Prerenderer {
       byte[] htmlBytes;
       if (isUpToDate(prerenderedFile)) {
         htmlBytes = Files.toByteArray(prerenderedFile);
-        LOGGER.debug("URL " + baseUrl + prerenderUri + " formerly fetched, returning " + prerenderedFile);
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("URL " + baseUrl + prerenderUri + " formerly fetched, returning " + prerenderedFile);
+        }
       } else {
         htmlBytes = fetch(baseUrl + prerenderUri).getBytes(CHARSET);
         Files.write(htmlBytes, prerenderedFile);
-        LOGGER.debug("URL " + baseUrl + prerenderUri + " successfully fetched, returning " + prerenderedFile);
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("URL " + baseUrl + prerenderUri + " successfully fetched, returning " + prerenderedFile);
+        }
       }
       try (InputStream htmlStream = new ByteArrayInputStream(htmlBytes)) {
         response.addHeader("Content-Type", "text/html;charset=UTF-8");

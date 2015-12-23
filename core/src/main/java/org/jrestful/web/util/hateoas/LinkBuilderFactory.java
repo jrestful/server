@@ -24,7 +24,9 @@ public class LinkBuilderFactory extends ControllerLinkBuilderFactory {
     if (!resolvedPaths.containsKey(method)) {
       String resolvedPath = resolver.resolveStringValue(builder.build().getPath());
       resolvedPaths.putIfAbsent(method, resolvedPath);
-      LOGGER.debug("Path " + resolvedPath + " resolved for method " + method);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Path " + resolvedPath + " resolved for method " + method);
+      }
     }
     builder.replacePath(resolvedPaths.get(method));
     return super.applyUriComponentsContributer(builder, invocation);

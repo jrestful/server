@@ -31,7 +31,8 @@ public class SitemapScheduledGenerator {
   private final File sitemap;
 
   @Autowired
-  public SitemapScheduledGenerator(@Value("#{appProps['app.url']}") String appUrl, SitemapBuilder sitemapBuilder, @Value("#{appProps['app.dir']}") String appDir) {
+  public SitemapScheduledGenerator(@Value("#{appProps['app.url']}") String appUrl, SitemapBuilder sitemapBuilder,
+      @Value("#{appProps['app.dir']}") String appDir) {
     this.appUrl = appUrl;
     this.sitemapBuilder = sitemapBuilder;
     sitemap = new File(appDir, "resources/sitemap.xml");
@@ -44,7 +45,9 @@ public class SitemapScheduledGenerator {
     try {
       UrlEntries urlEntries = sitemapBuilder.build(appUrl);
       SitemapGenerator.generate(urlEntries, sitemap);
-      LOGGER.debug("Sitemap successfully generated: " + sitemap);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Sitemap successfully generated: " + sitemap);
+      }
     } catch (JAXBException e) {
       LOGGER.error("An error occurred while generating a sitemap", e);
     }

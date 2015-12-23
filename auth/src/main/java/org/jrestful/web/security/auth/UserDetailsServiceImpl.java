@@ -41,7 +41,9 @@ public class UserDetailsServiceImpl<U extends GenericAuthUser<K>, K extends Seri
       throw new UsernameNotFoundException("No user found with id " + id);
     }
     detailsChecker.check(user);
-    LOGGER.debug("User " + id + " successfully loaded");
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("User " + id + " successfully loaded");
+    }
     return user;
   }
 

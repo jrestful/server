@@ -111,7 +111,9 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     if (input == null) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
-      LOGGER.debug("Trying to authenticate user " + input.getEmail());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Trying to authenticate user " + input.getEmail());
+      }
       U user = userService.findOneByEmail(input.getEmail());
       K id = user == null ? null : user.getId();
       String password = input.getPassword();

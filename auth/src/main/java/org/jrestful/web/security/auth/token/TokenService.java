@@ -72,14 +72,18 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
     AccessToken accessTokenObject = new AccessToken(user.getId().toString(), accessTokenExpirationDate);
     String accessTokenString = tokenMapper.serialize(accessTokenObject);
     HttpUtils.writeHeader(response, accessTokenHeaderName, accessTokenString);
-    LOGGER.debug("New access token added to response header " + accessTokenHeaderName);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("New access token added to response header " + accessTokenHeaderName);
+    }
     if (accessTokenCookieName != null) {
       Cookie cookie = HttpUtils.writeCookie(response, accessTokenCookieName, accessTokenString);
       cookie.setMaxAge(accessTokenLifetime);
       cookie.setPath("/");
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
-      LOGGER.debug("New access token added to response cookie " + accessTokenCookieName);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("New access token added to response cookie " + accessTokenCookieName);
+      }
     }
     if (refreshTokenHeaderName != null) {
       writeRefreshToken(user, accessTokenExpirationDate, response);
@@ -92,14 +96,18 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
     RefreshToken refreshTokenObject = new RefreshToken(accessTokenExpirationDate, refreshTokenExpirationDate);
     String refreshTokenString = tokenMapper.serialize(refreshTokenObject);
     HttpUtils.writeHeader(response, refreshTokenHeaderName, refreshTokenString);
-    LOGGER.debug("New refresh token added to response header " + refreshTokenHeaderName);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("New refresh token added to response header " + refreshTokenHeaderName);
+    }
     if (refreshTokenCookieName != null) {
       Cookie cookie = HttpUtils.writeCookie(response, refreshTokenCookieName, refreshTokenString);
       cookie.setMaxAge(refreshTokenLifetime == -1 ? TEN_YEARS : accessTokenLifetime + refreshTokenLifetime);
       cookie.setPath("/");
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
-      LOGGER.debug("New refresh token added to response cookie " + refreshTokenCookieName);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("New refresh token added to response cookie " + refreshTokenCookieName);
+      }
     }
     userService.persistRefreshToken(user.getId(), refreshTokenString);
     LOGGER.debug("New refresh token persisted");
