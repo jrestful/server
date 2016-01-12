@@ -119,7 +119,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     prepareSignUp(payload);
     U user = insert(payload);
     if (user != null && !user.isEnabled()) {
-      LOGGER.info("User " + user.getId() + " successfuly created, sending email to confirm the account");
+      LOGGER.info("User " + user.getEmail() + " successfuly created, sending email to confirm the account");
       UserToken userToken = userTokenService.createAndSave(user, UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, RandomUtils.NUMBERS,
           EMAIL_CONFIRMATION_TOKEN_LENGTH);
       sendTokenEmail(user, userToken, new TokenEmailPreparator() {
@@ -131,7 +131,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
       });
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Confirmation email sent to user " + user.getId());
+        LOGGER.debug("Confirmation email sent to user " + user.getEmail());
       }
     }
     return user;

@@ -131,7 +131,7 @@ public class SignInFilter<U extends GenericAuthUser<K>, K extends Serializable> 
     U user = (U) authentication.getDetails();
     tokenService.write(user, response);
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    LOGGER.info("User " + user.getId() + " successfully signed in");
+    LOGGER.info("User " + user.getEmail() + " successfully signed in");
   }
 
 }

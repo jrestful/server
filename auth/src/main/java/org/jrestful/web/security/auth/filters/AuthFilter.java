@@ -41,7 +41,7 @@ public class AuthFilter<U extends GenericAuthUser<K>, K extends Serializable> ex
       authentication.setDetails(user);
       SecurityContextHolder.getContext().setAuthentication(authentication);
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("User " + user.getId() + " successfully authenticated");
+        LOGGER.debug("User " + user.getEmail() + " successfully authenticated");
       }
     }
     chain.doFilter(request, response);

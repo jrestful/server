@@ -152,7 +152,8 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
               LOGGER.debug("Valid refresh token found in request");
               write(user, response);
             } else {
-              LOGGER.warn("Refresh token does not match with access token: " + user.getId() + " vs " + accessTokenObject.getUserId());
+              LOGGER.warn("Refresh token does not match with access token: " + user.getId() + " (" + user.getEmail() + ") vs "
+                  + accessTokenObject.getUserId());
               user = null;
             }
           } else {
