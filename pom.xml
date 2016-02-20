@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ! Copyright (c) jrestful.org, all rights reserved.
+ ! This code is licensed under the LGPL 3.0 license,
+ ! available at the root application directory.
+ ! -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.jrestful</groupId>
+  <artifactId>jrestful-server</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <developers>
+    <developer>
+      <id>sp00m</id>
+      <name>Christophe Maillard</name>
+      <email>christophe.maillard@rocketmail.com</email>
+    </developer>
+  </developers>
+  
+  <modules>
+    <module>core</module>
+    <module>mongo</module>
+    <module>auth</module>
+    <module>auth-mongo</module>
+    <module>seo</module>
+    <module>tests</module>
+  </modules>
+
+  <properties>
+    <!-- build -->
+    <jdk.version>1.7</jdk.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <github.global.server>github</github.global.server>
+    <!-- main dependencies -->
+    <spring.version>4.1.9.RELEASE</spring.version>
+    <springSecurity.version>3.2.9.RELEASE</springSecurity.version>
+    <springData.version>1.8.2.RELEASE</springData.version>
+    <mongo.version>2.13.3</mongo.version>
+    <servlet.version>3.0.1</servlet.version>
+  </properties>
+  
+  <distributionManagement>
+    <repository>
+      <id>local-mvn-repo</id>
+      <name>Temporary staging Maven repository</name>
+      <url>file://${project.build.directory}/mvn-repo</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <configuration>
+          <altDeploymentRepository>local-mvn-repo::default::file://${user.dir}/target/mvn-repo</altDeploymentRepository>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.12</version>
+        <configuration>
+          <message>Maven artifacts for ${project.version}</message>
+          <noJekyll>true</noJekyll>
+          <merge>true</merge>
+          <outputDirectory>${user.dir}/target/mvn-repo</outputDirectory>
+          <branch>refs/heads/mvn-repo</branch>
+          <includes>
+            <include>**/*</include>
+          </includes>
+          <repositoryName>server</repositoryName>
+          <repositoryOwner>jrestful</repositoryOwner>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>deploy</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

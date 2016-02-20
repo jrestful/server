@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:task="http://www.springframework.org/schema/task"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+    http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+  <util:properties id="appProps" location="classpath:jrestful/tests/application.properties" />
+  <util:properties id="secProps" location="classpath:jrestful/tests/security.properties" ignore-resource-not-found="true" />
+  <util:properties id="emailProps" location="classpath:jrestful/tests/email.properties" ignore-resource-not-found="true" />
+
+  <context:property-placeholder properties-ref="appProps" />
+
+  <!-- core -->
+
+  <context:component-scan base-package="org.jrestful" />
+  
+  <mvc:annotation-driven>
+    <mvc:message-converters>
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+      <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="objectMapper">
+          <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean"
+            p:defaultViewInclusion="false" p:failOnUnknownProperties="false">
+            <property name="featuresToDisable">
+              <array>
+                <util:constant static-field="com.fasterxml.jackson.databind.MapperFeature.USE_GETTERS_AS_SETTERS" />
+              </array>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+  
+  <bean class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <property name="velocityProperties">
+      <value>
+        resource.loader=class
+        class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+      </value>
+    </property>
+  </bean>
+  
+  <bean class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="protocol" value="#{emailProps['email.protocol'] ?: 'smtp'}" />
+    <property name="host" value="#{emailProps['email.host']}" />
+    <property name="port" value="#{emailProps['email.port'] ?: -1}" />
+    <property name="username" value="#{emailProps['email.username']}" />
+    <property name="password" value="#{emailProps['email.password']}" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">#{emailProps['email.smtpAuth'] ?: false}</prop>
+        <prop key="mail.smtp.starttls.enable">#{emailProps['email.smtpStarttlsEnable'] ?: false}</prop>
+      </props>
+    </property>
+  </bean>
+  
+  <!-- mongo -->
+
+  <bean name="fongo" class="com.github.fakemongo.Fongo">
+    <constructor-arg value="InMemoryMongo" />
+  </bean>
+  
+  <bean id="mongo" factory-bean="fongo" factory-method="getMongo" />
+  
+  <mongo:db-factory id="mongoDbFactory" mongo-ref="mongo" />
+  
+  <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+    <constructor-arg ref="mongoDbFactory"/>
+  </bean>
+  
+  <mongo:repositories base-package="org.jrestful.tests" />
+  
+  <!-- auth -->
+  
+  <security:global-method-security pre-post-annotations="enabled" />
+  
+  <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+    <constructor-arg name="strength" value="11" />
+  </bean>
+  
+  <security:authentication-manager alias="authenticationManager">
+    <security:authentication-provider user-service-ref="userDetailsService">
+      <security:password-encoder ref="passwordEncoder" />
+    </security:authentication-provider>
+  </security:authentication-manager>
+  
+  <security:http create-session="stateless" use-expressions="true" entry-point-ref="authenticationExceptionResolver">
+    <security:custom-filter ref="signInFilter" position="FORM_LOGIN_FILTER" />
+    <security:custom-filter ref="authFilter" position="PRE_AUTH_FILTER" />
+  </security:http>
+
+</beans>
