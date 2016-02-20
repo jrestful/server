@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ! Copyright (c) jrestful.org, all rights reserved.
+ ! This code is licensed under the LGPL 3.0 license,
+ ! available at the root application directory.
+ ! -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jrestful</groupId>
+    <artifactId>jrestful-server</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  
+  <artifactId>jrestful-mongo</artifactId>
+  <packaging>jar</packaging>
+
+  <developers>
+    <developer>
+      <id>sp00m</id>
+      <name>Christophe Maillard</name>
+      <email>christophe.maillard@rocketmail.com</email>
+    </developer>
+  </developers>
+
+  <dependencies>
+  
+    <!-- jrestful -->
+    <dependency>
+      <groupId>org.jrestful</groupId>
+      <artifactId>jrestful-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- database -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongo-java-driver</artifactId>
+      <version>${mongo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-mongodb</artifactId>
+      <version>${springData.version}</version>
+    </dependency>
+    
+    <!-- web -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlet.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>
