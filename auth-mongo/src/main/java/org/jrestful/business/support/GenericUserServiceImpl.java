@@ -50,6 +50,8 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   private static final int EMAIL_CONFIRMATION_TOKEN_LENGTH = 6;
 
+  private static final int NEW_PASSWORD_LENGTH = 12;
+
   @Autowired
   private UserTokenService userTokenService;
 
@@ -191,6 +193,37 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     userToken.setType(UserToken.Type.REFRESH_TOKEN);
     userToken.setToken(refreshToken);
     userTokenService.save(userToken);
+  }
+
+  @Override
+  public U generateTempPassword(String email) {
+    U user = findOneByEmail(email);
+    if (user == null) {
+      throw new HttpStatusException(HttpStatus.NOT_FOUND);
+    } else if (user.getTempPassword() != null) {
+      throw new HttpStatusException(HttpStatus.CONFLICT);
+    } else {
+      String tempPassword = RandomUtils.generateNumbersAndLetters(NEW_PASSWORD_LENGTH);
+      user.setTempPassword(passwordEncoder.encode(tempPassword));
+      save(user);
+      // TODO send email!
+      return user;
+    }
+  }
+
+  @Override
+  public void clearTempPassword(String userId) {
+    U user = findOne(userId);
+    user.setTempPassword(null);
+    save(user);
+  }
+
+  @Override
+  public void replacePasswordByTempPassword(String userId) {
+    U user = findOne(userId);
+    user.setPassword(user.getTempPassword());
+    user.setTempPassword(null);
+    save(user);
   }
 
   @Override

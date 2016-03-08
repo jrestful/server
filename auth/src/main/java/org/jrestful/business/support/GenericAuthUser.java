@@ -16,6 +16,10 @@ public interface GenericAuthUser<K extends Serializable> extends UserDetails {
   @Override
   String getPassword();
 
+  void setPassword(String password);
+
+  String getTempPassword();
+
   List<String> getRoles();
 
   boolean isAccountExpired();

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jrestful.business.support.GenericAuthUser;
-import org.jrestful.data.documents.support.GenericSequencedDocument;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -22,6 +21,8 @@ public abstract class GenericUser extends GenericSequencedDocument implements Ge
   private String email;
 
   private String password;
+
+  private String tempPassword;
 
   @JsonIgnore
   private List<String> roles = new ArrayList<>();
@@ -60,9 +61,20 @@ public abstract class GenericUser extends GenericSequencedDocument implements Ge
     return password;
   }
 
+  @Override
   @JsonProperty
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  @Override
+  @JsonIgnore
+  public String getTempPassword() {
+    return tempPassword;
+  }
+
+  public void setTempPassword(String tempPassword) {
+    this.tempPassword = tempPassword;
   }
 
   @JsonProperty

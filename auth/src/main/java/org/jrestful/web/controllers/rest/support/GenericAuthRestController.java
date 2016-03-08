@@ -1,7 +1,6 @@
 package org.jrestful.web.controllers.rest.support;
 
 import static org.jrestful.web.beans.RestResponse.created;
-import static org.jrestful.web.beans.RestResponse.noContent;
 import static org.jrestful.web.beans.RestResponse.ok;
 import static org.jrestful.web.util.hateoas.LinkBuilder.link;
 import static org.jrestful.web.util.hateoas.LinkBuilder.to;
@@ -48,11 +47,14 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation")
   public ResponseEntity<?> confirmSignUpEmail(@RequestParam String token) {
     U user = service.confirmSignUpEmail(token);
-    if (user == null) {
-      return noContent();
-    } else {
-      return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
-    }
+    return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
+  }
+
+  @PreAuthorize("isAnonymous()")
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=tempPasswordGeneration")
+  public ResponseEntity<?> generateTempPassword(@RequestParam String email) {
+    U user = service.generateTempPassword(email);
+    return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
   }
 
   protected AuthUserProfile<U, K> createUserProfile(U user) {
