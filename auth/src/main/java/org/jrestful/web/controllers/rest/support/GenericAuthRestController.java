@@ -57,6 +57,13 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
     return noContent();
   }
 
+  @PreAuthorize("isAuthenticated()")
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=passwordChange")
+  public ResponseEntity<?> changePassword(@RequestParam String currentPassword, @RequestParam String newPassword) {
+    service.changePassword(CurrentUser.<U> get().getId(), currentPassword, newPassword);
+    return noContent();
+  }
+
   protected AuthUserProfile<U, K> createUserProfile(U user) {
     return new AuthUserProfile<>(user);
   }

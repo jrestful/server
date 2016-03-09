@@ -511,7 +511,6 @@ public class AuthRestControllerTest extends TestHelper {
         put("/api/v" + apiVersion + "/auth") //
             .contentType(MediaType.APPLICATION_JSON_VALUE) //
             .content(JsonUtils.toJson(new EmailPassword("john.doe@jrestful.org", tempPassword)).asString()));
-    LOGGER.debug(resultActions.andReturn().getResponse().getContentAsString());
     String accessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
     String refreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
     assertNotNull(accessToken);
@@ -572,6 +571,102 @@ public class AuthRestControllerTest extends TestHelper {
             .content(JsonUtils.toJson(new EmailPassword("john.doe@jrestful.org", newTempPassword)).asString()));
     resultActions //
         .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+
+  }
+
+  @Test
+  public void testChangePassword() throws Exception {
+
+    ResultActions resultActions;
+
+    // create user
+    User user = new User();
+    user.setName("John Doe");
+    user.setEmail("john.doe@jrestful.org");
+    user.setPassword(passwordEncoder.encode("jrestful"));
+    user.setCity("Springfield");
+    user.setRoles(Arrays.asList("ROLE_USER"));
+    user.setAccountExpired(false);
+    user.setAccountLocked(false);
+    user.setEnabled(true);
+    user.setPasswordExpired(false);
+    userService.insert(user);
+
+    // sign in
+    resultActions = mockMvc.perform( //
+        put("/api/v" + apiVersion + "/auth") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(new EmailPassword("john.doe@jrestful.org", "jrestful")).asString()));
+    String accessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    String refreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(accessToken);
+    assertNotNull(refreshToken);
+
+    // change password but 401 (no token)
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "passwordChange") //
+            .param("currentPassword", "fake") //
+            .param("newPassword", "newpassword"));
+    resultActions.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+
+    // change password but 404 (current password does not match)
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "passwordChange") //
+            .param("currentPassword", "fake") //
+            .param("newPassword", "newpassword") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    resultActions.andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+
+    // change password but 422 (no new password, handled by ExceptionResolver)
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "passwordChange") //
+            .param("currentPassword", "jrestful") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    resultActions.andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_NEW_PASSWORD"));
+
+    // change password but 422 (empty new password)
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "passwordChange") //
+            .param("currentPassword", "jrestful") //
+            .param("newPassword", "") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    resultActions.andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
+        .andExpect(content().string("EMPTY_NEW_PASSWORD"));
+
+    // change password
+    resultActions = mockMvc.perform( //
+        patch("/api/v" + apiVersion + "/auth") //
+            .param("type", "passwordChange") //
+            .param("currentPassword", "jrestful") //
+            .param("newPassword", "newpassword") //
+            .header(accessTokenHeaderName, accessToken) //
+            .header(refreshTokenHeaderName, refreshToken));
+    resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+
+    // sign in with old password: 401
+    resultActions = mockMvc.perform( //
+        put("/api/v" + apiVersion + "/auth") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(new EmailPassword("john.doe@jrestful.org", "jrestful")).asString()));
+    resultActions.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
+
+    // sign in with new password
+    resultActions = mockMvc.perform( //
+        put("/api/v" + apiVersion + "/auth") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(new EmailPassword("john.doe@jrestful.org", "newpassword")).asString()));
+    accessToken = resultActions.andReturn().getResponse().getHeader(accessTokenHeaderName);
+    refreshToken = resultActions.andReturn().getResponse().getHeader(refreshTokenHeaderName);
+    assertNotNull(accessToken);
+    assertNotNull(refreshToken);
 
   }
 

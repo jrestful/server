@@ -1,5 +1,8 @@
 package org.jrestful.web.controllers.support;
 
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.business.exceptions.HttpStatusException;
@@ -11,6 +14,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -46,10 +50,13 @@ public class ExceptionResolver {
       LOGGER.warn("NoHandlerFoundException catched, returning " + HttpStatus.NOT_FOUND, e);
       response.setHeader("X-API-Version", apiVersion);
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else if (e instanceof MissingServletRequestParameterException) {
+      LOGGER.warn("MissingServletRequestParameterException catched, returning " + HttpStatus.UNPROCESSABLE_ENTITY, e);
+      String paramName = LOWER_CAMEL.to(UPPER_UNDERSCORE, ((MissingServletRequestParameterException) e).getParameterName());
+      return new ResponseEntity<>("EMPTY_" + paramName, HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
       LOGGER.error("Exception catched, returning " + HttpStatus.INTERNAL_SERVER_ERROR, e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
 }
