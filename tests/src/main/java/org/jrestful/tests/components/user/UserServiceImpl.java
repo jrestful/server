@@ -35,4 +35,10 @@ public class UserServiceImpl extends GenericUserServiceImpl<UserRepository, User
     return "jrestful/tests/emails/signUpEmailConfirmation.vm";
   }
 
+  @Override
+  protected String prepareTempPasswordEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException {
+    message.setSubject("[jrestful] Testing temp password email");
+    return "jrestful/tests/emails/tempPassword.vm";
+  }
+
 }

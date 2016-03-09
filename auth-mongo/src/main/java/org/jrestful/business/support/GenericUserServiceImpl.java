@@ -34,12 +34,6 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GenericUserServiceImpl.class);
 
-  private interface TokenEmailPreparator {
-
-    String prepare(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
-
-  }
-
   private static class NoEmailException extends Exception {
 
     private static final long serialVersionUID = 1L;
@@ -82,38 +76,6 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     return userToken != null ? findOne(userToken.getUserId()) : null;
   }
 
-  private void sendTokenEmail(final U user, final UserToken userToken, final TokenEmailPreparator preparator) {
-    MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
-
-      @Override
-      public void prepare(MimeMessage mimeMessage) throws Exception {
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
-        if (emailFrom != null) {
-          message.setFrom(emailFrom);
-        }
-        message.setTo(user.getEmail());
-        Map<String, Object> model = new HashMap<>();
-        model.put("user", user);
-        model.put("token", userToken.getToken());
-        String templateLocation = preparator.prepare(message, model);
-        if (templateLocation == null) {
-          throw new NoEmailException();
-        } else {
-          String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
-          message.setText(text, true);
-        }
-      }
-
-    };
-    try {
-      mailSender.send(mimeMessagePreparator);
-    } catch (MailPreparationException e) {
-      if (!(e.getCause() instanceof NoEmailException)) {
-        throw e;
-      }
-    }
-  }
-
   @Override
   public U signUp(U payload) {
     LOGGER.debug("New user tries to sign up");
@@ -124,14 +86,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
       LOGGER.info("User " + user.getEmail() + " successfuly created, sending email to confirm the account");
       UserToken userToken = userTokenService.createAndSave(user, UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, RandomUtils.NUMBERS,
           EMAIL_CONFIRMATION_TOKEN_LENGTH);
-      sendTokenEmail(user, userToken, new TokenEmailPreparator() {
-
-        @Override
-        public String prepare(MimeMessageHelper message, Map<String, Object> model) throws MessagingException {
-          return prepareSignUpEmailConfirmationEmail(message, model);
-        }
-
-      });
+      sendSignUpEmailConfirmationEmail(user, userToken);
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("Confirmation email sent to user " + user.getEmail());
       }
@@ -158,6 +113,38 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   protected void prepareSignUp(U user) {
     user.setRoles(new ArrayList<>(Arrays.asList("ROLE_USER")));
     user.setPassword(passwordEncoder.encode(user.getPassword()));
+  }
+
+  private void sendSignUpEmailConfirmationEmail(final U user, final UserToken userToken) {
+    MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
+
+      @Override
+      public void prepare(MimeMessage mimeMessage) throws Exception {
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
+        if (emailFrom != null) {
+          message.setFrom(emailFrom);
+        }
+        message.setTo(user.getEmail());
+        Map<String, Object> model = new HashMap<>();
+        model.put("user", user);
+        model.put("token", userToken.getToken());
+        String templateLocation = prepareSignUpEmailConfirmationEmail(message, model);
+        if (templateLocation == null) {
+          throw new NoEmailException();
+        } else {
+          String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
+          message.setText(text, true);
+        }
+      }
+
+    };
+    try {
+      mailSender.send(mimeMessagePreparator);
+    } catch (MailPreparationException e) {
+      if (!(e.getCause() instanceof NoEmailException)) {
+        throw e;
+      }
+    }
   }
 
   protected abstract String prepareSignUpEmailConfirmationEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
@@ -197,19 +184,57 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U generateTempPassword(String email) {
-    U user = findOneByEmail(email);
-    if (user == null) {
+    if (!EmailUtils.seemsValid(email)) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
-    } else if (user.getTempPassword() != null) {
-      throw new HttpStatusException(HttpStatus.CONFLICT);
     } else {
-      String tempPassword = RandomUtils.generateNumbersAndLetters(NEW_PASSWORD_LENGTH);
-      user.setTempPassword(passwordEncoder.encode(tempPassword));
-      save(user);
-      // TODO send email!
-      return user;
+      U user = findOneByEmail(email);
+      if (user == null) {
+        throw new HttpStatusException(HttpStatus.NOT_FOUND);
+      } else if (user.getTempPassword() != null) {
+        throw new HttpStatusException(HttpStatus.CONFLICT);
+      } else {
+        String tempPassword = RandomUtils.generateNumbersAndLetters(NEW_PASSWORD_LENGTH);
+        user.setTempPassword(passwordEncoder.encode(tempPassword));
+        save(user);
+        sendTempPasswordEmail(user, tempPassword);
+        return user;
+      }
     }
   }
+
+  private void sendTempPasswordEmail(final U user, final String tempPassword) {
+    MimeMessagePreparator mimeMessagePreparator = new MimeMessagePreparator() {
+
+      @Override
+      public void prepare(MimeMessage mimeMessage) throws Exception {
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
+        if (emailFrom != null) {
+          message.setFrom(emailFrom);
+        }
+        message.setTo(user.getEmail());
+        Map<String, Object> model = new HashMap<>();
+        model.put("user", user);
+        model.put("tempPassword", tempPassword);
+        String templateLocation = prepareTempPasswordEmail(message, model);
+        if (templateLocation == null) {
+          throw new NoEmailException();
+        } else {
+          String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateLocation, ENCODING, model);
+          message.setText(text, true);
+        }
+      }
+
+    };
+    try {
+      mailSender.send(mimeMessagePreparator);
+    } catch (MailPreparationException e) {
+      if (!(e.getCause() instanceof NoEmailException)) {
+        throw e;
+      }
+    }
+  }
+
+  protected abstract String prepareTempPasswordEmail(MimeMessageHelper message, Map<String, Object> model) throws MessagingException;
 
   @Override
   public void clearTempPassword(String userId) {

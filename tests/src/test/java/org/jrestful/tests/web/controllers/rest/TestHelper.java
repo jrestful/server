@@ -3,7 +3,6 @@ package org.jrestful.tests.web.controllers.rest;
 import org.jrestful.tests.components.article.ArticleService;
 import org.jrestful.tests.components.user.UserService;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 @ContextConfiguration({ "classpath*:jrestful/tests/applicationContext.xml" })
 @WebAppConfiguration
 public abstract class TestHelper {
-
-  private static boolean initialized = false;
 
   protected MockMvc mockMvc;
 
@@ -38,21 +35,13 @@ public abstract class TestHelper {
 
   @Before
   public void before() {
-    if (!initialized) {
-      mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
-      articleService.deleteAll();
-      userService.deleteAll();
-      initialized = true;
-    }
+    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilters(springSecurityFilterChain).build();
+    articleService.deleteAll();
+    userService.deleteAll();
   }
 
   @After
   public void after() {
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    initialized = false;
   }
 
 }
