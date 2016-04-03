@@ -197,6 +197,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
         user.setTempPassword(passwordEncoder.encode(tempPassword));
         save(user);
         sendTempPasswordEmail(user, tempPassword);
+        LOGGER.info("New temporary password sent to " + email);
         return user;
       }
     }
@@ -249,6 +250,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     user.setPassword(user.getTempPassword());
     user.setTempPassword(null);
     save(user);
+    LOGGER.info("Temporary password validated by " + user.getEmail());
   }
 
   @Override
@@ -261,6 +263,7 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
     } else {
       user.setPassword(passwordEncoder.encode(newPassword));
       save(user);
+      LOGGER.info("User " + user.getEmail() + " successfully changed their password");
     }
   }
 

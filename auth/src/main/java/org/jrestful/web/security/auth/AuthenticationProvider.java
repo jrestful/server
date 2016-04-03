@@ -39,6 +39,8 @@ public class AuthenticationProvider<U extends GenericAuthUser<K>, K extends Seri
       super.additionalAuthenticationChecks(userDetails, authentication);
       if (userDetails instanceof GenericAuthUser) {
         userService.clearTempPassword(((GenericAuthUser<K>) userDetails).getId());
+      } else if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("UserDetails implementation expected to be an instance of GenericAuthUser, but was an instance of " + userDetails.getClass().getName());
       }
 
     } catch (AuthenticationException e) {
@@ -61,6 +63,9 @@ public class AuthenticationProvider<U extends GenericAuthUser<K>, K extends Seri
           throw e;
         }
       } else {
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("UserDetails implementation expected to be an instance of GenericAuthUser, but was an instance of " + userDetails.getClass().getName());
+        }
         throw e;
       }
 

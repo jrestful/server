@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AccessToken extends Token {
@@ -22,9 +23,15 @@ public class AccessToken extends Token {
   }
 
   @Override
-  public boolean isValid(Date now) {
-    return StringUtils.isNotBlank(userId) //
-        && expirationDate != null && !expirationDate.before(now);
+  @JsonIgnore
+  public boolean isSyntacticallyValid() {
+    return StringUtils.isNotBlank(userId) && expirationDate != null;
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isNotExpired(Date now) {
+    return !expirationDate.before(now);
   }
 
 }
