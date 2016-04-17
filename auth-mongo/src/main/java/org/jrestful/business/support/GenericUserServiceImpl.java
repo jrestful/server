@@ -151,23 +151,27 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U confirmSignUpEmail(String token) {
-    UserToken userToken = userTokenService.findOneByTypeAndTokenThenRemove(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
-    if (userToken == null) {
-      throw new HttpStatusException(HttpStatus.NOT_FOUND);
+    if (StringUtils.isEmpty(token)) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_TOKEN");
     } else {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
-      }
-      U user = findOne(userToken.getUserId());
-      if (user == null) {
-        throw new HttpStatusException(HttpStatus.GONE);
-      } else if (user.isEnabled()) {
-        throw new HttpStatusException(HttpStatus.CONFLICT);
+      UserToken userToken = userTokenService.findOneByTypeAndTokenThenRemove(UserToken.Type.SIGN_UP_EMAIL_CONFIRMATION, token);
+      if (userToken == null) {
+        throw new HttpStatusException(HttpStatus.NOT_FOUND);
       } else {
-        user.setEnabled(true);
-        user = save(user);
-        LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
-        return user;
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Confirming user " + userToken.getUserId() + " account");
+        }
+        U user = findOne(userToken.getUserId());
+        if (user == null) {
+          throw new HttpStatusException(HttpStatus.GONE);
+        } else if (user.isEnabled()) {
+          throw new HttpStatusException(HttpStatus.CONFLICT);
+        } else {
+          user.setEnabled(true);
+          user = save(user);
+          LOGGER.info("User " + userToken.getUserId() + " account confirmed and enabled");
+          return user;
+        }
       }
     }
   }
@@ -184,7 +188,9 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
 
   @Override
   public U generateTempPassword(String email) {
-    if (!EmailUtils.seemsValid(email)) {
+    if (StringUtils.isEmpty(email)) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_EMAIL");
+    } else if (!EmailUtils.seemsValid(email)) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else {
       U user = findOneByEmail(email);

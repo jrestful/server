@@ -91,6 +91,7 @@ public class AuthRestControllerTest extends TestHelper {
   @Test
   public void testSignUp() throws Exception {
 
+    Map<String, String> payload = new HashMap<>();
     MimeMessage message;
     Document messageContent;
     ResultActions resultActions;
@@ -279,10 +280,13 @@ public class AuthRestControllerTest extends TestHelper {
         .andExpect(content().string("DISABLED"));
 
     // enable user
+    payload.clear();
+    payload.put("token", signUpEmailConfirmationToken);
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "signUpEmailConfirmation") //
-            .param("token", signUpEmailConfirmationToken));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.OK.value())) //
         .andExpect(content().contentType(RestResource.HAL_MEDIA_TYPE)) //
         .andExpect(jsonPath("$.id", is(user.getId()))) //

@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public abstract class GenericAuthRestController<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
     GenericRestController {
@@ -45,9 +44,9 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   }
 
   @PreAuthorize("isAnonymous()")
-  @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation")
-  public ResponseEntity<?> confirmSignUpEmail(@RequestParam String token) {
-    U user = service.confirmSignUpEmail(token);
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> confirmSignUpEmail(@RequestBody Map<String, String> payload) {
+    U user = service.confirmSignUpEmail(payload.get("token"));
     return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
   }
 
