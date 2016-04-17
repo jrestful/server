@@ -38,6 +38,13 @@ public class ExceptionResolver {
     return e.toResponseEntity();
   }
 
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<?> resolveMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+    LOGGER.warn("MissingServletRequestParameterException catched, returning " + HttpStatus.UNPROCESSABLE_ENTITY, e);
+    String paramName = LOWER_CAMEL.to(UPPER_UNDERSCORE, e.getParameterName());
+    return new ResponseEntity<>("EMPTY_" + paramName, HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> resolveException(Exception e, HttpServletResponse response) throws Exception {
     if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null) {
@@ -50,13 +57,10 @@ public class ExceptionResolver {
       LOGGER.warn("NoHandlerFoundException catched, returning " + HttpStatus.NOT_FOUND, e);
       response.setHeader("X-API-Version", apiVersion);
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } else if (e instanceof MissingServletRequestParameterException) {
-      LOGGER.warn("MissingServletRequestParameterException catched, returning " + HttpStatus.UNPROCESSABLE_ENTITY, e);
-      String paramName = LOWER_CAMEL.to(UPPER_UNDERSCORE, ((MissingServletRequestParameterException) e).getParameterName());
-      return new ResponseEntity<>("EMPTY_" + paramName, HttpStatus.UNPROCESSABLE_ENTITY);
     } else {
       LOGGER.error("Exception catched, returning " + HttpStatus.INTERNAL_SERVER_ERROR, e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
 }

@@ -7,6 +7,7 @@ import static org.jrestful.web.util.hateoas.LinkBuilder.link;
 import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
@@ -51,16 +52,16 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   }
 
   @PreAuthorize("isAnonymous()")
-  @RequestMapping(method = RequestMethod.PATCH, params = "type=tempPasswordGeneration")
-  public ResponseEntity<?> generateTempPassword(@RequestParam String email) {
-    service.generateTempPassword(email);
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=tempPasswordGeneration", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> generateTempPassword(@RequestBody Map<String, String> payload) {
+    service.generateTempPassword(payload.get("email"));
     return noContent();
   }
 
   @PreAuthorize("isAuthenticated()")
-  @RequestMapping(method = RequestMethod.PATCH, params = "type=passwordChange")
-  public ResponseEntity<?> changePassword(@RequestParam String currentPassword, @RequestParam String newPassword) {
-    service.changePassword(CurrentUser.<U> get().getId(), currentPassword, newPassword);
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=passwordChange", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
+    service.changePassword(CurrentUser.<U> get().getId(), payload.get("currentPassword"), payload.get("newPassword"));
     return noContent();
   }
 

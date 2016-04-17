@@ -256,7 +256,9 @@ public abstract class GenericUserServiceImpl<R extends GenericUserRepository<U>,
   @Override
   public void changePassword(String userId, String currentPassword, String newPassword) {
     U user = findOne(userId);
-    if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+    if (StringUtils.isEmpty(currentPassword)) {
+      throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_CURRENT_PASSWORD");
+    } else if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
       throw new HttpStatusException(HttpStatus.NOT_FOUND);
     } else if (StringUtils.isEmpty(newPassword)) {
       throw new HttpStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "EMPTY_NEW_PASSWORD");

@@ -20,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
 
@@ -366,7 +368,7 @@ public class AuthRestControllerTest extends TestHelper {
     assertNotNull(anotherRefreshToken);
 
     // making access tokens invalid
-    Thread.sleep(1100);
+    Thread.sleep(2100);
 
     // check profile with invalid access token
     resultActions = mockMvc.perform( //
@@ -417,7 +419,7 @@ public class AuthRestControllerTest extends TestHelper {
         .andExpect(jsonPath("$.anonymous", is(true)));
 
     // making refresh tokens valid
-    Thread.sleep(1100);
+    Thread.sleep(2100);
 
     // check profile with invalid access token and valid new refresh token
     resultActions = mockMvc.perform( //
@@ -445,6 +447,7 @@ public class AuthRestControllerTest extends TestHelper {
   @Test
   public void testForgottenPassword() throws Exception {
 
+    Map<String, String> payload = new HashMap<>();
     MimeMessage message;
     Document messageContent;
     ResultActions resultActions;
@@ -463,31 +466,43 @@ public class AuthRestControllerTest extends TestHelper {
     userService.insert(user);
 
     // ask for new password but 404 (email is invalid)
+    payload.clear();
+    payload.put("email", "fakeemail");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "tempPasswordGeneration") //
-            .param("email", "fakeemail"));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
     // ask for new password but 404 (email is valid but does not exist)
+    payload.clear();
+    payload.put("email", "fake@email");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "tempPasswordGeneration") //
-            .param("email", "fake@email"));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
     // ask for new password
+    payload.clear();
+    payload.put("email", user.getEmail());
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "tempPasswordGeneration") //
-            .param("email", user.getEmail()));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
 
     // ask for new password again but 409 (new password already asked)
+    payload.clear();
+    payload.put("email", user.getEmail());
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "tempPasswordGeneration") //
-            .param("email", user.getEmail()));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.CONFLICT.value()));
 
     // check the email
@@ -532,10 +547,13 @@ public class AuthRestControllerTest extends TestHelper {
     assertNotNull(refreshToken);
 
     // ask for new password
+    payload.clear();
+    payload.put("email", user.getEmail());
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "tempPasswordGeneration") //
-            .param("email", user.getEmail()));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
 
     // check the email
@@ -577,6 +595,7 @@ public class AuthRestControllerTest extends TestHelper {
   @Test
   public void testChangePassword() throws Exception {
 
+    Map<String, String> payload = new HashMap<>();
     ResultActions resultActions;
 
     // create user
@@ -603,50 +622,65 @@ public class AuthRestControllerTest extends TestHelper {
     assertNotNull(refreshToken);
 
     // change password but 401 (no token)
+    payload.clear();
+    payload.put("currentPassword", "fake");
+    payload.put("newPassword", "newpassword");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "passwordChange") //
-            .param("currentPassword", "fake") //
-            .param("newPassword", "newpassword"));
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString())); //
     resultActions.andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
 
     // change password but 404 (current password does not match)
+    payload.clear();
+    payload.put("currentPassword", "fake");
+    payload.put("newPassword", "newpassword");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "passwordChange") //
-            .param("currentPassword", "fake") //
-            .param("newPassword", "newpassword") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString()) //
             .header(accessTokenHeaderName, accessToken) //
             .header(refreshTokenHeaderName, refreshToken));
     resultActions.andExpect(status().is(HttpStatus.NOT_FOUND.value()));
 
-    // change password but 422 (no new password, handled by ExceptionResolver)
+    // change password but 422 (no new password)
+    payload.clear();
+    payload.put("currentPassword", "jrestful");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "passwordChange") //
-            .param("currentPassword", "jrestful") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString()) //
             .header(accessTokenHeaderName, accessToken) //
             .header(refreshTokenHeaderName, refreshToken));
     resultActions.andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_NEW_PASSWORD"));
 
     // change password but 422 (empty new password)
+    payload.clear();
+    payload.put("currentPassword", "jrestful");
+    payload.put("newPassword", "");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "passwordChange") //
-            .param("currentPassword", "jrestful") //
-            .param("newPassword", "") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString()) //
             .header(accessTokenHeaderName, accessToken) //
             .header(refreshTokenHeaderName, refreshToken));
     resultActions.andExpect(status().is(HttpStatus.UNPROCESSABLE_ENTITY.value())) //
         .andExpect(content().string("EMPTY_NEW_PASSWORD"));
 
     // change password
+    payload.clear();
+    payload.put("currentPassword", "jrestful");
+    payload.put("newPassword", "newpassword");
     resultActions = mockMvc.perform( //
         patch("/api/v" + apiVersion + "/auth") //
             .param("type", "passwordChange") //
-            .param("currentPassword", "jrestful") //
-            .param("newPassword", "newpassword") //
+            .contentType(MediaType.APPLICATION_JSON_VALUE) //
+            .content(JsonUtils.toJson(payload).asString()) //
             .header(accessTokenHeaderName, accessToken) //
             .header(refreshTokenHeaderName, refreshToken));
     resultActions.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
