@@ -3,6 +3,7 @@ package org.jrestful.web.security.auth.token;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RefreshToken extends Token {
@@ -20,9 +21,20 @@ public class RefreshToken extends Token {
   }
 
   @Override
-  public boolean isValid(Date now) {
-    return availabilityDate != null && !availabilityDate.after(now) //
-        && (expirationDate == null || !expirationDate.before(now));
+  @JsonIgnore
+  public boolean isSyntacticallyValid() {
+    return availabilityDate != null;
+  }
+
+  @JsonIgnore
+  public boolean isAvailable(Date now) {
+    return !availabilityDate.after(now);
+  }
+
+  @Override
+  @JsonIgnore
+  public boolean isNotExpired(Date now) {
+    return expirationDate == null || !expirationDate.before(now);
   }
 
 }

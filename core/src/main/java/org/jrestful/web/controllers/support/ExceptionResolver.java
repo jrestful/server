@@ -1,5 +1,8 @@
 package org.jrestful.web.controllers.support;
 
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.jrestful.business.exceptions.HttpStatusException;
@@ -11,6 +14,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,6 +36,13 @@ public class ExceptionResolver {
   public ResponseEntity<?> resolveHttpStatusException(HttpStatusException e) {
     LOGGER.error("HttpStatusException catched, returning " + e.getStatus(), e);
     return e.toResponseEntity();
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<?> resolveMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+    LOGGER.warn("MissingServletRequestParameterException catched, returning " + HttpStatus.UNPROCESSABLE_ENTITY, e);
+    String paramName = LOWER_CAMEL.to(UPPER_UNDERSCORE, e.getParameterName());
+    return new ResponseEntity<>("EMPTY_" + paramName, HttpStatus.UNPROCESSABLE_ENTITY);
   }
 
   @ExceptionHandler(Exception.class)

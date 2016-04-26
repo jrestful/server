@@ -2,8 +2,6 @@ package org.jrestful.web.security.auth.token;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public abstract class Token {
 
   protected final Date expirationDate;
@@ -16,11 +14,8 @@ public abstract class Token {
     return expirationDate;
   }
 
-  @JsonIgnore
-  public boolean isValid() {
-    return isValid(new Date());
-  }
-  
-  protected abstract boolean isValid(Date now);
+  public abstract boolean isSyntacticallyValid();
+
+  public abstract boolean isNotExpired(Date now);
 
 }

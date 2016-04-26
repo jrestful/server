@@ -7,6 +7,7 @@ import static org.jrestful.web.util.hateoas.LinkBuilder.link;
 import static org.jrestful.web.util.hateoas.LinkBuilder.to;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.jrestful.business.support.GenericAuthUser;
 import org.jrestful.business.support.GenericAuthUserService;
@@ -19,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public abstract class GenericAuthRestController<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
     GenericRestController {
@@ -33,8 +33,7 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity<?> getProfile() {
     AuthUserProfile<U, K> userProfile = createUserProfile(CurrentUser.<U> get());
-    RestResource<AuthUserProfile<U, K>> resource = new RestResource<>(userProfile, link(to(getClass()).getProfile()));
-    return ok(resource);
+    return ok(new RestResource<>(userProfile, link(to(getClass()).getProfile())));
   }
 
   @PreAuthorize("isAnonymous()")
@@ -45,14 +44,24 @@ public abstract class GenericAuthRestController<S extends GenericAuthUserService
   }
 
   @PreAuthorize("isAnonymous()")
-  @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation")
-  public ResponseEntity<?> confirmSignUpEmail(@RequestParam String token) {
-    U user = service.confirmSignUpEmail(token);
-    if (user == null) {
-      return noContent();
-    } else {
-      return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
-    }
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=signUpEmailConfirmation", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> confirmSignUpEmail(@RequestBody Map<String, String> payload) {
+    U user = service.confirmSignUpEmail(payload.get("token"));
+    return ok(new RestResource<>(user, link(to(getClass()).getProfile())));
+  }
+
+  @PreAuthorize("isAnonymous()")
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=tempPasswordGeneration", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> generateTempPassword(@RequestBody Map<String, String> payload) {
+    service.generateTempPassword(payload.get("email"));
+    return noContent();
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @RequestMapping(method = RequestMethod.PATCH, params = "type=passwordChange", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> changePassword(@RequestBody Map<String, String> payload) {
+    service.changePassword(CurrentUser.<U> get().getId(), payload.get("currentPassword"), payload.get("newPassword"));
+    return noContent();
   }
 
   protected AuthUserProfile<U, K> createUserProfile(U user) {

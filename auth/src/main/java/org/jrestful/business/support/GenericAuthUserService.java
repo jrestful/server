@@ -16,4 +16,12 @@ public interface GenericAuthUserService<U extends GenericAuthUser<K>, K extends 
 
   void persistRefreshToken(K userId, String refreshToken);
 
+  U generateTempPassword(String email);
+
+  void clearTempPassword(K userId);
+
+  void replacePasswordByTempPassword(K userId);
+
+  void changePassword(K userId, String currentPassword, String newPassword);
+
 }

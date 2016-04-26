@@ -73,7 +73,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
     String accessTokenString = tokenMapper.serialize(accessTokenObject);
     HttpUtils.writeHeader(response, accessTokenHeaderName, accessTokenString);
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("New access token added to response header " + accessTokenHeaderName);
+      LOGGER.debug("New AccessToken added to response header " + accessTokenHeaderName);
     }
     if (accessTokenCookieName != null) {
       Cookie cookie = HttpUtils.writeCookie(response, accessTokenCookieName, accessTokenString);
@@ -82,7 +82,7 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("New access token added to response cookie " + accessTokenCookieName);
+        LOGGER.debug("New AccessToken added to response cookie " + accessTokenCookieName);
       }
     }
     if (refreshTokenHeaderName != null) {
@@ -95,9 +95,11 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
         refreshTokenLifetime);
     RefreshToken refreshTokenObject = new RefreshToken(accessTokenExpirationDate, refreshTokenExpirationDate);
     String refreshTokenString = tokenMapper.serialize(refreshTokenObject);
+    userService.persistRefreshToken(user.getId(), refreshTokenString);
+    LOGGER.debug("New RefreshToken persisted");
     HttpUtils.writeHeader(response, refreshTokenHeaderName, refreshTokenString);
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("New refresh token added to response header " + refreshTokenHeaderName);
+      LOGGER.debug("New RefreshToken added to response header " + refreshTokenHeaderName);
     }
     if (refreshTokenCookieName != null) {
       Cookie cookie = HttpUtils.writeCookie(response, refreshTokenCookieName, refreshTokenString);
@@ -106,11 +108,9 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       cookie.setHttpOnly(true);
       cookie.setSecure(securedCookie);
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("New refresh token added to response cookie " + refreshTokenCookieName);
+        LOGGER.debug("New RefreshToken added to response cookie " + refreshTokenCookieName);
       }
     }
-    userService.persistRefreshToken(user.getId(), refreshTokenString);
-    LOGGER.debug("New refresh token persisted");
   }
 
   public U read(HttpServletRequest request, HttpServletResponse response) {
@@ -120,16 +120,20 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       accessTokenString = HttpUtils.readCookie(request, accessTokenCookieName);
     }
     if (accessTokenString != null) {
-      AccessToken accessTokenObject = tokenMapper.deserialize(accessTokenString, AccessToken.class);
+      AccessToken accessTokenObject = tokenMapper.deserialize(accessTokenString, AccessToken.class, request);
       if (accessTokenObject != null) {
-        if (accessTokenObject.isValid()) {
-          LOGGER.debug("Valid access token found in request");
-          user = userService.findOne(userIdConverter.convert(accessTokenObject.getUserId()));
-        } else {
-          LOGGER.debug("Invalid access token found in request");
-          if (refreshTokenHeaderName != null) {
-            user = readRefreshToken(accessTokenObject, request, response);
+        if (accessTokenObject.isSyntacticallyValid()) {
+          if (accessTokenObject.isNotExpired(new Date())) {
+            LOGGER.debug("Valid AccessToken found in request");
+            user = userService.findOne(userIdConverter.convert(accessTokenObject.getUserId()));
+          } else {
+            LOGGER.debug("Expired AccessToken found in request");
+            if (refreshTokenHeaderName != null) {
+              user = readRefreshToken(accessTokenObject, request, response);
+            }
           }
+        } else {
+          LOGGER.warn("AccessToken is syntactically invalid: " + accessTokenString + " | " + HttpUtils.serialize(request));
         }
       }
     }
@@ -143,24 +147,32 @@ public class TokenService<U extends GenericAuthUser<K>, K extends Serializable> 
       refreshTokenString = HttpUtils.readCookie(request, refreshTokenCookieName);
     }
     if (refreshTokenString != null) {
-      RefreshToken refreshTokenObject = tokenMapper.deserialize(refreshTokenString, RefreshToken.class);
+      RefreshToken refreshTokenObject = tokenMapper.deserialize(refreshTokenString, RefreshToken.class, request);
       if (refreshTokenObject != null) {
-        if (refreshTokenObject.isValid()) {
-          user = userService.findOneByRefreshToken(refreshTokenString);
-          if (user != null) {
-            if (user.getId().equals(accessTokenObject.getUserId())) {
-              LOGGER.debug("Valid refresh token found in request");
-              write(user, response);
+        if (refreshTokenObject.isSyntacticallyValid()) {
+          if (refreshTokenObject.isAvailable(new Date())) {
+            if (refreshTokenObject.isNotExpired(new Date())) {
+              user = userService.findOneByRefreshToken(refreshTokenString);
+              if (user != null) {
+                if (user.getId().equals(accessTokenObject.getUserId())) {
+                  LOGGER.debug("Valid refresh token found in request");
+                  write(user, response);
+                } else {
+                  LOGGER.warn("RefreshToken's linked user does not match with AccessToken embedded user: " + user.getId() + " (" + user.getEmail()
+                      + ") vs " + accessTokenObject.getUserId() + " | " + HttpUtils.serialize(request));
+                  user = null;
+                }
+              } else {
+                LOGGER.debug("Transient RefreshToken found in request");
+              }
             } else {
-              LOGGER.warn("Refresh token does not match with access token: " + user.getId() + " (" + user.getEmail() + ") vs "
-                  + accessTokenObject.getUserId());
-              user = null;
+              LOGGER.debug("Expired RefreshToken found in request");
             }
           } else {
-            LOGGER.debug("Transient refresh token found in request");
+            LOGGER.warn("RefreshToken is not available yet: " + refreshTokenString + " | " + HttpUtils.serialize(request));
           }
         } else {
-          LOGGER.debug("Invalid refresh token found in request");
+          LOGGER.warn("RefreshToken is syntactically invalid: " + refreshTokenString + " | " + HttpUtils.serialize(request));
         }
       }
     }
