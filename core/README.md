@@ -177,9 +177,9 @@ cors.maxAge=3600
 
 `org.jrestful.business.support.GenericService` and `org.jrestful.business.support.GenericServiceImpl` are an interface and an abstract class for your services.
 
-### For your controllers
+### For your API
 
-`org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericRestController` are abstract classes for your controllers and REST controllers.
+`org.jrestful.web.controllers.support.GenericController` and `org.jrestful.web.controllers.rest.support.GenericApi` are abstract classes for your controllers and API.
 
 `org.jrestful.web.hateoas.RestResource`, `org.jrestful.web.hateoas.RestResources` and `org.jrestful.web.hateoas.PagedRestResources` help you responding to REST requests with HATEOAS over HAL.
 
@@ -193,7 +193,7 @@ import static org.jrestful.web.hateoas.support.LinkBuilder.*;
 
 @RestController
 @RequestMapping(value = "/api/v${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
-public class ArticleRestController extends GenericRestController {
+public class ArticleApi extends GenericApi {
   
   ...
 

@@ -47,9 +47,9 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
-public class AuthRestControllerTest extends TestHelper {
+public class AuthApiTest extends TestHelper {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestControllerTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AuthApiTest.class);
 
   private static final ObjectMapperDecorator DISABLE_ANNOTATIONS = new ObjectMapperDecorator() {
 

@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-public abstract class GenericAuthRestController<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
-    GenericRestController {
+public abstract class GenericAuthApi<S extends GenericAuthUserService<U, K>, U extends GenericAuthUser<K>, K extends Serializable> extends
+    GenericApi {
 
   protected final S service;
 
-  public GenericAuthRestController(S service) {
+  public GenericAuthApi(S service) {
     this.service = service;
   }
 

@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * Generic abstract class for a sequenced document REST controller.
+ * Generic abstract class for a sequenced document API.
  * 
  * @param <D>
  *          The document type to manage.
  */
-public abstract class GenericSequencedDocumentRestController<S extends GenericSequencedDocumentService<D>, D extends GenericSequencedDocument>
-    extends GenericDocumentRestController<S, D> {
+public abstract class GenericSequencedDocumentApi<S extends GenericSequencedDocumentService<D>, D extends GenericSequencedDocument> extends
+    GenericDocumentApi<S, D> {
 
-  public GenericSequencedDocumentRestController(S service) {
+  public GenericSequencedDocumentApi(S service) {
     super(service);
   }
 

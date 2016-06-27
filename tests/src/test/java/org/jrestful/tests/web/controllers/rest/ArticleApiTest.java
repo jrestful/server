@@ -30,9 +30,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.google.common.collect.Lists;
 
-public class ArticleRestControllerTest extends TestHelper {
+public class ArticleApiTest extends TestHelper {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ArticleRestControllerTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ArticleApiTest.class);
 
   @Autowired
   private PasswordEncoder passwordEncoder;

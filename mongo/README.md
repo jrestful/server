@@ -116,9 +116,9 @@ mongo.writeFsync=true
 
 ### For your controllers
 
-`org.jrestful.web.controllers.rest.support.GenericDocumentRestController` and `org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController` are abstract classes for your documents and sequenced documents REST controllers.
+`org.jrestful.web.controllers.rest.support.GenericDocumentApi` and `org.jrestful.web.controllers.rest.support.GenericSequencedDocumentApi` are abstract classes for your documents and sequenced documents API.
 
-`GenericDocumentRestController` defines 5 methods:
+`GenericDocumentApi` defines 5 methods:
 
  - `list(int pageIndex, int pageSize)`, mapped on `GET /`, returning status 200 (OK)
  - `get(String id)`, mapped on `GET /{id}`, returning status 200 (OK) or 404 (NOT FOUND)
@@ -126,7 +126,7 @@ mongo.writeFsync=true
  - `update(String id, D document)`, mapped on `PUT /{id}`, returning status 200 (OK) or 404 (NOT FOUND)
  - `delete(String id)`, mapped on `DELETE /{id}`, returning status 204 (NO CONTENT) or 404 (NOT FOUND)
 
-`GenericSequencedDocumentRestController` defines 3 methods:
+`GenericSequencedDocumentApi` defines 3 methods:
 
  - `getBySequence(Long sequence)`, mapped on `GET /{sequence}` with param `by=sequence`, returning status 200 (OK) or 404 (NOT FOUND)
  - `updateBySequence(Long sequence, D document)`, mapped on `PUT /{sequence}` with param `by=sequence`, returning status 200 (OK) or 404 (NOT FOUND)

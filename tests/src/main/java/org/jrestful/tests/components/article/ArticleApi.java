@@ -2,17 +2,17 @@ package org.jrestful.tests.components.article;
 
 import org.jrestful.web.beans.RestResource;
 import org.jrestful.web.beans.RestResources;
-import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentRestController;
+import org.jrestful.web.controllers.rest.support.GenericSequencedDocumentApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/v${app.apiVersion}/articles", produces = RestResource.HAL_MEDIA_TYPE)
-public class ArticleRestController extends GenericSequencedDocumentRestController<ArticleService, Article> {
+public class ArticleApi extends GenericSequencedDocumentApi<ArticleService, Article> {
 
   @Autowired
-  public ArticleRestController(ArticleService service) {
+  public ArticleApi(ArticleService service) {
     super(service);
   }
 
